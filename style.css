@@ -1,0 +1,235 @@
+/* mengatur semua elemen agar ukuran tidak membengkak */
+* {
+  box-sizing: border-box;
+}
+
+/* tampilan dasar seluruh halaman */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #fff7f0;
+  margin: 0;
+  min-height: 100vh;
+
+  background: 
+    radial-gradient(circle at top left, #6b64a4, transparent 50%),
+    radial-gradient(circle at bottom right, #6b64a4, transparent 25%),
+    #11001c;
+  background-repeat: no-repeat;
+}
+
+/* untuk container rangkaian dan instruksi bersebelahan */
+.main-wrapper {
+  display: flex;
+  gap: 48px;
+  max-width: 1200px;
+  margin: 0 auto;
+  align-items: flex-start;
+  flex-wrap: nowrap;
+}
+
+/* container utama */
+.simulator {
+  flex: 1;
+  min-width: 0;
+  max-width: none;
+  margin: auto;
+
+  display: flex;
+  flex-wrap: wrap;
+  gap: 40px;
+}
+
+/* rumus */
+.rumus {
+  width: 100%;
+  text-align: center;
+  padding: 12px;
+
+  font-size: 2em;
+  font-weight: 600;
+
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 12px;
+  -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(5px);
+  box-shadow: 0 12px 24px rgba(66, 44, 69, 0.25);
+}
+
+/* kolom kiri: visual rangkaian seri */
+.rangkaianListrik {
+  flex: 2 1 400px;
+  min-width: 300px;
+  min-height: 300px;
+  padding: 28px;
+
+  position: relative;
+
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 20px;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(5px);
+  box-shadow: 0 12px 24px rgba(66, 44, 69, 0.25);
+}
+
+/* TODO: buat gambar baterai @charly */
+.kotakBaterai {
+  /* posisi absolut untuk baterai */
+  position: absolute;
+  top: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+
+  width: 150px;
+  height: 80px;
+  
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.25);
+}
+
+/* kotak hasil nilai arus */
+.hasilArusListrik {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+
+  width:fit-content;
+  white-space: nowrap;
+  text-align: center;
+  font-size: 1.1em;
+  padding: 16px 20px;
+
+  background: rgba(238, 152, 155, 0.25);
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 12px;
+  -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(5px);
+  box-shadow: 0 12px 24px rgba(66, 44, 69, 0.25);
+}
+
+#nilaiArus {
+  color:#ee989b;
+  font-size: 1.5em;
+  font-weight: 700;
+}
+
+/* kotak resistor */
+/* TODO: buat gambar hambatan @charly */
+.kotakHambatan {
+  /* posisi absolut untuk hambatan */
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+
+  width: 200px;
+  height: 45px;
+
+  border-radius: 5px;
+  background: rgba(255,255,255,0.15);
+  box-shadow: 0 12px 24px rgba(66, 44, 69, 0.25);
+}
+
+/* kolom kanan: slider */
+.panelKontrol {
+  flex: 1 1 250px;
+  min-width: 200px;
+  padding: 20px;
+
+  display: flex;
+  flex-direction: row;
+  gap: 28px;
+
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 20px;
+  -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(5px);
+  box-shadow: 0 12px 24px rgba(66, 44, 69, 0.25);
+}
+
+.kontrolTegangan, .kontrolHambatan {
+  flex: 1;
+  min-width: 0;
+  text-align: center;
+  padding: 16px;
+
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 12px 24px rgba(66, 44, 69, 0.25);
+}
+
+/* untuk slider vertikal */
+.sliderVertikal {
+  height: 180px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.sliderVertikal input[type="range"] {
+  width: 150px;
+  height: 8px;
+  transform: rotate(-90deg);
+
+  appearance: none;
+
+  background: #ee989b;
+  border-radius: 10px;
+  outline: none;
+  cursor: pointer;
+}
+
+.sliderVertikal input[type="range"]::-webkit-slider-thumb {
+  width: 25px;
+  height: 25px;
+
+  appearance: none;
+  -webkit-appearance: none; /* overide default look */
+
+  background: #ee989b;
+  border: 2px solid #422c45;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+/* TODO: kolom instruksi @charly */
+.instruction-panel {
+  /* edit flex untuk width */
+  flex: 0 0 350px;
+  border:1px solid black;
+}
+
+/* warna V, I, R */
+#teganganListrik, #arusListrik, #hambatanListrik {
+  color: #ee989b;
+}
+
+/* headings */
+h1 {
+  text-align: center;
+  color: #ee989b;
+  font-style: italic;
+  padding: 20px;
+}
+
+h2 {
+  font-size: 1.2em;
+}
+
+.kontrolTegangan h2, .kontrolHambatan h2 {
+  font-size: 2em;
+}
+
+/* responsif di layar hp: dijadikan 1 kolom */
+@media screen and (max-width: 900px) {
+  .main-wrapper {
+    flex-wrap: wrap;
+  }
+
+  .instruction-panel {
+    flex: 1 1 100%;
+  }
+}
