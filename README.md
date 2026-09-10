@@ -7,7 +7,7 @@ Repositori ini berisi kumpulan tugas yang dikerjakan untuk mata kuliah Pemrogram
 | Nama Lengkap            | NIM       |
 | ----------------------- | --------- |
 | Vianlienra Hung         | 535250012 |
-| M. Airlangga Khairudin  | 535250018 |
+| M. Airlangga Khairudin  | 535250022 |
 | Felicia Marmara Putri   | 535250025 |
 | Felicia Frederica       | 535250027 |
 | Charly                  | 535250039 |
