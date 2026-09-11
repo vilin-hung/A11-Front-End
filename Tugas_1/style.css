@@ -23,7 +23,7 @@ body {
   gap: 48px;
   max-width: 1200px;
   margin: 0 auto;
-  align-items: flex-start;
+  align-items: stretch; /* Tinggi kiri dan kanan dibuat sejajar sama rata */
   flex-wrap: nowrap;
 }
 
@@ -71,21 +71,56 @@ body {
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(5px);
   box-shadow: 0 12px 24px rgba(66, 44, 69, 0.25);
+
+  overflow: hidden;  /* agar bintik resistor tidak keluar dari kotak saat digeser */
 }
 
-/* TODO: buat gambar baterai @charly */
+.jalurKabel {
+  position: absolute;
+  top: 50px;
+  bottom: 50px;
+  left: 50px;
+  right: 50px;
+  border: 6px solid #281c3a;
+  border-radius: 10px;
+  z-index: 0;
+}
+
 .kotakBaterai {
   /* posisi absolut untuk baterai */
   position: absolute;
-  top: 30px;
-  left: 50%;
-  transform: translateX(-50%);
+  top: 34px; 
+  left: 60px; 
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 2px;
+  z-index: 2; 
+  background: rgba(40, 28, 58, 0.8);
+  padding: 4px 8px;
+  border-radius: 6px;
+}
 
-  width: 150px;
-  height: 80px;
-  
-  background: rgba(255,255,255,0.15);
-  border: 1px solid rgba(255,255,255,0.25);
+.bateraiItem {
+  height: 35px;
+  background: linear-gradient(to bottom, #8c82c3, #43386e);
+  border: 2px solid #281c3a;
+  border-radius: 4px;
+  color: white;
+  font-size: 0.75em;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bateraiKutub {
+  width: 4px;
+  height: 12px;
+  background: #ee989b;
+  border: 1px solid #281c3a;
+  border-left: none;
+  border-radius: 0 3px 3px 0;
 }
 
 /* kotak hasil nilai arus */
@@ -95,18 +130,19 @@ body {
   left: 50%;
   transform: translate(-50%,-50%);
 
-  width:fit-content;
+  width: fit-content;
   white-space: nowrap;
   text-align: center;
   font-size: 1.1em;
   padding: 16px 20px;
 
-  background: rgba(238, 152, 155, 0.25);
+  background: rgba(40, 28, 58, 0.85);
   border: 1px solid rgba(255,255,255,0.25);
   border-radius: 12px;
   -webkit-backdrop-filter: blur(5px);
   backdrop-filter: blur(5px);
   box-shadow: 0 12px 24px rgba(66, 44, 69, 0.25);
+  z-index: 2;
 }
 
 #nilaiArus {
@@ -115,21 +151,33 @@ body {
   font-weight: 700;
 }
 
-/* kotak resistor */
-/* TODO: buat gambar hambatan @charly */
+/* kotak hambatan */
 .kotakHambatan {
-  /* posisi absolut untuk hambatan */
+  /* posisi absolute untuk kotak hambatan */
   position: absolute;
-  bottom: 30px;
+  bottom: 25px; 
   left: 50%;
   transform: translateX(-50%);
 
   width: 200px;
   height: 45px;
 
-  border-radius: 5px;
-  background: rgba(255,255,255,0.15);
-  box-shadow: 0 12px 24px rgba(66, 44, 69, 0.25);
+  background: radial-gradient(circle, #ff6b6b, #c0392b);
+  border: 2px solid #281c3a;
+  border-radius: 10px;
+  z-index: 2; 
+  display: flex;
+  overflow: hidden;
+  box-shadow: 0 8px 16px rgba(66, 44, 69, 0.25);
+}
+
+/* partikel resistor */
+.partikelHambatan {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background-color: #11001c;
+  border-radius: 50%;
 }
 
 /* kolom kanan: slider */
@@ -163,14 +211,14 @@ body {
 
 /* untuk slider vertikal */
 .sliderVertikal {
-  height: 180px;
+  height: 150px;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
 .sliderVertikal input[type="range"] {
-  width: 150px;
+  width: 130px;
   height: 8px;
   transform: rotate(-90deg);
 
@@ -183,11 +231,11 @@ body {
 }
 
 .sliderVertikal input[type="range"]::-webkit-slider-thumb {
-  width: 25px;
-  height: 25px;
+  width: 22px;
+  height: 22px;
 
   appearance: none;
-  -webkit-appearance: none; /* overide default look */
+  -webkit-appearance: none;
 
   background: #ee989b;
   border: 2px solid #422c45;
@@ -195,11 +243,58 @@ body {
   cursor: pointer;
 }
 
-/* TODO: kolom instruksi @charly */
+.inputManual {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.inputManual input[type="number"] {
+  width: 65px;
+  padding: 4px 6px;
+  text-align: center;
+  background: rgba(40, 28, 58, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 6px;
+  color: #fff7f0;
+  font-size: 0.9em;
+  outline: none;
+}
+
+.inputManual input[type="number"]::-webkit-inner-spin-button,
+.inputManual input[type="number"]::-webkit-outer-spin-button {
+  opacity: 1;
+}
+
+/* sidebar instruction panel */
 .instruction-panel {
-  /* edit flex untuk width */
-  flex: 0 0 350px;
-  border:1px solid black;
+  flex: 0 0 380px; 
+  height: 100%;          /* Mengikuti tinggi kontainer utama */
+  max-height: 580px;     /* Batasan tinggi scrollbar */
+  overflow-y: auto;      /* Memastikan scrollbar bisa digulir */
+  padding: 24px;
+  padding-right: 14px; 
+  background: rgba(255, 255, 255, 0.15); 
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 20px;
+  box-shadow: 0 12px 24px rgba(66, 44, 69, 0.25);
+  scrollbar-gutter: stable;
+}
+
+.instruction-panel::-webkit-scrollbar {
+  width: 6px;
+}
+
+.instruction-panel::-webkit-scrollbar-thumb {
+  background: rgba(238, 152, 155, 0.6);
+  border-radius: 4px;
+}
+
+.instruction-panel::-webkit-scrollbar-track {
+  margin: 16px 0; 
+  background: transparent;
 }
 
 /* warna V, I, R */
@@ -231,5 +326,6 @@ h2 {
 
   .instruction-panel {
     flex: 1 1 100%;
+    max-height: none;
   }
 }

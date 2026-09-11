@@ -11,7 +11,7 @@
   <h1>Hukum Ohm</h1> 
   <div class="main-wrapper">
     <main class="simulator">
-      <!-- tampilan V = I R -->
+      <!-- Tampilan Rumus -->
       <section class="rumus">
         <span id="teganganListrik">V</span>
         <span>=</span>
@@ -19,11 +19,13 @@
         <span id="hambatanListrik">R</span>
       </section>
 
-      <!-- tampilan rangkaian listrik -->
+      <!-- Tampilan Visualisasi Rangkaian Listrik -->
       <section class="rangkaianListrik">
-        <div class="kotakBaterai" id="baterai">
+        <!-- jalur kabel ditambahkan agar visual rangkaian lebih rapi -->
+        <div class="jalurKabel"></div>
+
         <!-- space kosong utk tampilan baterai, 1 baterai penuh = 1.5 V -->
-        </div>
+        <div class="kotakBaterai" id="baterai"></div>
 
         <div class="hasilArusListrik">
           Arus Listrik =
@@ -32,13 +34,13 @@
         </div>
 
         <!-- space kosong utk tampilan hambatan (R) -->
-        <div class="kotakHambatan"></div>
+        <div class="kotakHambatan"  id="hambatanVisual"></div>
       </section>
 
       <section class="panelKontrol">
         <div class="kontrolTegangan">
           <h2>V</h2>
-          <p>tegangan</p>
+          <p>Tegangan</p>
           <!-- slider tegangan 0.1 V - 9 V dengan nilai awal 4.5 V -->
           <div class="sliderVertikal">
             <input
@@ -50,13 +52,24 @@
               value="4.5"   
             >
           </div>
-          <!-- nilaiTegangan yang ditampilkan akan berubah-ubah sesuai nilai pada sliderTegangan -->
-          <p> <span id="nilaiTegangan">4.5</span> V </p>
+          
+          <!-- selain slider, user dapat input nilai tegangan langsung -->
+          <div class="inputManual">
+            <input 
+              type="number" 
+              id="inputTegangan" 
+              min="0.1" 
+              max="9.0" 
+              step="any" 
+              value="4.5"
+            >
+            <span>V</span>
+          </div>
         </div>
 
         <div class="kontrolHambatan">
           <h2>R</h2>
-          <p>hambatan</p>
+          <p>Hambatan</p>
           <!-- slider hambatan 10 Ω - 1000 Ω dengan nilai awal 100 Ω -->
           <div class="sliderVertikal">
             <input
@@ -68,14 +81,22 @@
               value="100"
             >
           </div>
-          <!-- nilaiHambatan yang ditampilkan akan berubah-ubah sesuai nilai pada sliderHambatan -->
-          <p> <span id="nilaiHambatan">100</span> Ω </p>
+
+          <!-- selain slider, user dapat input nilai hambatan langsung -->
+          <div class="inputManual">
+            <input 
+              type="number" 
+              id="inputHambatan" 
+              min="10" max="1000" 
+              step="any" 
+              value="100"
+            >
+            <span>Ω</span>
+          </div>
         </div>
       </section>
-
     </main>
 
-  <!-- TODO: bagian instruksi @marmar -->
     <aside class="instruction-panel">
       <!-- Penjelasan singkat rangkaian seri yang kami buat -->
       <h2>Penjelasan Rangkaian Seri</h2>
@@ -103,3 +124,4 @@
   <script src="program.js"></script>
 </body>
 </html>
+
