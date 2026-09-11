@@ -3,11 +3,6 @@
   box-sizing: border-box;
 }
 
-header {
-    padding: 20px 40px;
-    text-align: left;
-}
-
 /* tampilan dasar seluruh halaman */
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -279,7 +274,7 @@ body {
   height: 100%;          /* Mengikuti tinggi kontainer utama */
   max-height: 580px;     /* Batasan tinggi scrollbar */
   overflow-y: auto;      /* Memastikan scrollbar bisa digulir */
-  padding: 24px;
+  padding: 28px;
   padding-right: 14px; 
   background: rgba(255, 255, 255, 0.15); 
   border: 1px solid rgba(255, 255, 255, 0.25);
@@ -312,7 +307,7 @@ h1 {
   text-align: center;
   color: #ee989b;
   font-style: italic;
-  padding: 20px;
+  padding: 12px;
 }
 
 h2 {
