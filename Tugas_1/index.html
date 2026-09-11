@@ -9,6 +9,15 @@
 
 <body>
   <h1>Hukum Ohm</h1> 
+  <header style="border-top: 3px solid #f7f8fa; padding-top: 20px; margin-top: 15px;">
+    <h2>Kelompok A11</h2>
+    <p>Vianlienra Hung (535250012)</p>
+    <p>M. Airlangga Khairudin (535250022)</p>
+    <p>Felicia Marmara Putri (535250025)</p>
+    <p>Felicia Frederica (535250027)</p>
+    <p>Charly (535250039)</p>
+</header>
+
   <div class="main-wrapper">
     <main class="simulator">
       <!-- Tampilan Rumus -->
@@ -98,30 +107,38 @@
     </main>
 
     <aside class="instruction-panel">
-      <!-- Penjelasan singkat rangkaian seri yang kami buat -->
-      <h2>Penjelasan Rangkaian Seri</h2>
+      <!-- Penjelasan singkat hukum Ohm yang kami buat -->
+      <h2>Penjelasan Hukum Ohm</h2>
       <p>
-        Rangkaian Seri merupakan susunan komponen-komponen listrik yang terhubung secara berurutan, sehingga arus yang mengalir melalui setiap komponen memiliki nilai yang sama. 
+        Hukum Ohm adalah hukum fisika yang menyatakan bahwa besar arus listrik yang mengalir pada kawat penghantar berbanding lurus dengan tegangan dan berbanding terbalik dengan hambatan listrik.
       </p>
-      <!-- Rumus rangkaian seri & penjelasannya -->
-      <h2>Rumus Rangkaian Seri</h2>
-      <p><Strong>Total hambatan (R)</Strong><br>
-      R<sub>Total</sub> = R<sub>1</sub> + R<sub>2</sub> + R<sub>3</sub> + ... + R<sub>n</sub><br>
-      <em>Semakin banyak resistor yang ditambahkan, semakin besar total hambatan rangkaian</em></p>
+      <!-- Rumus hukum Ohm & penjelasannya -->
+      <h2>Rumus Hukum Ohm</h2>
+      <p><Strong>Mencari Tegangan (V)</Strong><br>
+      V = I &times; R<br>
+      <em>Dengan menggunakan rumus ini, Kita dapat menghitung tegangan jika arus dan hambatan diketahui</em></p>
 
-      <p><Strong>Arus Listrik (I)</Strong><br>
-      I<sub>Total</sub> = I<sub>1</sub> = I<sub>2</sub> = I<sub>3</sub> = ... = I<sub>n</sub><br>
-      <em>Sifat ini membuat arus dalam rangkaian seri konstan</em></p>
+      <p><Strong>Mencari Arus (I)</Strong><br>
+      I = V / R<br>
+      <em>Dengan menggunakan rumus ini, Kita dapat menghitung arus jika tegangan dan hambatan diketahui</em></p>
 
-      <p><Strong>Total tegangan (V)</Strong><br>
-      V<sub>Total</sub> = V<sub>1</sub> + V<sub>2</sub> + V<sub>3</sub> + ... + V<sub>n</sub><br>
-      <em>Tegangan akan terbagi diantara setiap komponen sesuai dengan besar hambatannya</em></p>
-      
-      <p><Strong>Hukum Ohm:</Strong>V = I &times; R<br>
-      <em>Dengan menggunakan rumus ini, Kita dapat menghitung salah satu variabel jika dua variabel lainnya diketahui</em></p>
+      <p><Strong>Mencari Hambatan (R)</Strong><br>
+      R = V / I<br>
+      <em>Dengan menggunakan rumus ini, Kita dapat menghitung hambatan jika tegangan dan arus diketahui</em></p>
+
+      <p><Strong>Keterangan:</Strong><br>
+      V = Tegangan atau beda potensial(Volt)<br>
+      I = Kuat arus listrik (Ampere)<br>
+      R = Hambatan atau resistansi(Ohm)
+      </p>
+
+      <p><Strong>Efek perubahan variabel:</Strong><br>
+        <p>1. Jika tegangan (V) dinaikkan / dibesarkan, maka aliran (I) yang mengalir juga akan ikut meningkat / membesar.</p>
+        <p>2. Jika hambatan (R) dinaikkan / dibesarkan, maka aliran (I) yang mengalir akan mengecil / berkurang.</p>
+        <p>V Besar -> I Besar</p>
+        <p>R Besar -> I Kecil</p>
+      </p>
     </aside>
-  </div>
   <script src="program.js"></script>
 </body>
 </html>
-
