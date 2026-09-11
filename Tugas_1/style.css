@@ -3,6 +3,11 @@
   box-sizing: border-box;
 }
 
+header {
+    padding: 20px 40px;
+    text-align: left;
+}
+
 /* tampilan dasar seluruh halaman */
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
