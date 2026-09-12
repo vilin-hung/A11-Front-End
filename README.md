@@ -21,7 +21,8 @@ Repositori ini berisi kumpulan tugas yang dikerjakan untuk mata kuliah Pemrogram
 Sebuah aplikasi web perhitungan Hukum Ohm pada rangkaian seri sebagai alat hitung sekaligus media pembelajaran interaktif. Aplikasi ini dapat menghitung nilai kuat arus listik (disingkat I, dalam miliampere atau mA) berdasarkan besar tegangan listrik (disingkat V dengan satuan Volt) dan kuat hambatan listrik (disingkat R dengan satuan Ohm). Dilengkapi dengan panel informasi yang menjelaskan teori dan cara penggunaan.
 
 - **[Lihat Kode](./Tugas_1/)**
-- **[Lihat Laporan](./Tugas_1/)**
+- **[Lihat Laporan Lengkap](./Tugas_1/A11-demo-singkat.mp4)**
+- **[Lihat Demo Singkat](https://youtu.be/NgzFH425OC0)**
 
 **Teknologi:**
 - HTML
