@@ -16,11 +16,13 @@
         <div class="header-container">
             <a href="#beranda" class="logo">Kopi <span>Nusantara</span></a>
 
-            <!-- Checkbox mobile menu -->
-            <input type="checkbox" id="menu-toggle" class="menu-toggle">
-            <label for="menu-toggle" class="menu-icon-btn" aria-label="Toggle Navigation">
+            <!-- mobile navigation (tidak bergantung pada checkbox) -->
+            <button type="button"
+                class="menu-icon-btn"
+                id="menu-btn"
+                aria-label="Toggle Navigation">
                 <i class='bx bx-menu' id="menu-icon"></i>
-            </label>
+            </button>
 
             <nav class="nav-bar">
                 <a href="#beranda" class="nav-link active">Beranda</a>
@@ -593,5 +595,11 @@
             <p class="copyright">&copy; 2026 Kopi Nusantara. All Rights Reserved.</p>
         </div>
     </footer>
+
+    <!-- jQuery CDN -->
+     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+     <!-- Custom JavaScript -->
+      <script src="script.js"></script>
 </body>
 </html>

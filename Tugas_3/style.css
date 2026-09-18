@@ -137,6 +137,9 @@ a {
     cursor: pointer;
     display: flex;
     align-items: center;
+    background: none;
+    border: none;
+    padding: 0;
 }
 
 .nav-bar {
@@ -149,7 +152,7 @@ a {
     gap: 13px;
 }
 
-.menu-toggle:checked ~ .nav-bar { /* pilih .nav-bar yang berada sehabis .menu-toggle di HTML yang sama */
+.nav-bar.active {
     display: flex;
 }
 
@@ -180,16 +183,10 @@ a {
     display: flex;
     justify-content: center;  /* tombol-tombol di tengah horizontal */
     gap: 10px;
-    overflow-x: auto; /* jika tombol lebih lebar dari layar, bisa di-swipe horizontal */
-    white-space: nowrap; /* teks tombol tidak wrap ke baris baru */
+    flex-wrap: wrap;
     max-width: 1200px;
     margin: 0 auto;
-    scrollbar-width: none; /* sembunyikan scrollbar*/
     padding: 0 16px;   /* buffer kalau tombol overflow di layar sempit */
-}
-
-.kategori-container::-webkit-scrollbar {
-    display: none;
 }
 
 .kategori-btn {
@@ -199,7 +196,6 @@ a {
     color: var(--white);
     border-radius: 20px;
     padding: 6px 16px;
-    flex-shrink: 0; /* tombol tidak mengecil, saat ruang mengecil */
     transition: var(--transition);
 }
 
@@ -572,6 +568,78 @@ footer {
     padding-top: 13px;
 }
 
+/* FAQ */
+.faq-list {
+    max-width: 800px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.faq-item {
+    background-color: var(--card-bg);
+    border-radius: 12px;
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    transition: var(--transition);
+}
+
+.faq-item:hover {
+    box-shadow: var(--shadow-md);
+}
+
+/* Tombol pertanyaan */
+.faq-question {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    background: none;
+    border: none;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-dark);
+    text-align: left;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.faq-question:hover {
+    color: var(--coffee-bean);
+}
+
+/* Ikon panah */
+.faq-icon {
+    font-size: 20px;
+    color: var(--faded-copper);
+    flex-shrink: 0;
+    transition: transform 0.35s ease;
+}
+
+/* Rotasi ikon dan penambahan border saat item aktif */
+.faq-item.active .faq-icon {
+    transform: rotate(180deg);
+}
+
+.faq-item.active .faq-question {
+    border-bottom: 1px solid var(--almond-cream);
+}
+
+/* Jawaban tertutup secara default */
+.faq-answer {
+    display: none;              /* tersembunyi secara default */
+    padding: 15px 20px 16px;
+    color: var(--text-muted);
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+.faq-answer p {
+    margin: 0;
+}
 
 /* Media Query */
 
@@ -636,84 +704,10 @@ footer {
     #tentang,
     #rekomendasi,
     /* FAQ */
-#faq {
-    scroll-margin-top: 70px;   /* offset karena header sticky */
-}
-
-.faq-list {
-    max-width: 800px;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.faq-item {
-    background-color: var(--card-bg);
-    border-radius: 12px;
-    box-shadow: var(--shadow-sm);
-    overflow: hidden;
-    transition: var(--transition);
-}
-
-.faq-item:hover {
-    box-shadow: var(--shadow-md);
-}
-
-/* Tombol pertanyaan */
-.faq-question {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 12px;
-    padding: 16px 20px;
-    background: none;
-    border: none;
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--text-dark);
-    text-align: left;
-    cursor: pointer;
-    transition: var(--transition);
-}
-
-.faq-question:hover {
-    color: var(--coffee-bean);
-}
-
-/* Ikon panah */
-.faq-icon {
-    font-size: 20px;
-    color: var(--faded-copper);
-    flex-shrink: 0;
-    transition: transform 0.35s ease;
-}
-
-/* Rotasi ikon saat item aktif (dipakai nanti oleh jQuery) */
-.faq-item.active .faq-icon {
-    transform: rotate(180deg);
-}
-
-/* Jawaban tertutup secara default */
-.faq-answer {
-    display: none;              /* tersembunyi secara default */
-    padding: 0 20px 16px;
-    color: var(--text-muted);
-    font-size: 14px;
-    line-height: 1.7;
-}
-
-.faq-answer p {
-    margin: 0;
-}
-
-/* Jawaban terbuka saat .active ditambah (nanti oleh jQuery) */
-.faq-item.active .faq-answer {
-    max-height: 300px;
-    padding-bottom: 16px;
-}
-    #kontak {
+    #faq {
+        scroll-margin-top: 70px;   /* offset karena header sticky */
+    }
+        #kontak {
         scroll-margin-top: 75px;
     }
 
