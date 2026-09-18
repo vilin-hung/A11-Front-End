@@ -4,277 +4,529 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kopi Nusantara</title>
-    <link rel="stylesheet" href="style.css">
+
+     <!-- Boxicons Icon Set -->
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Header + Navigation-->
-    <header class= "header">
-        <h1 class="logo">Kopi <span>Nusantara</span></h1>
-        <i class='bx bx-menu' id="menu-icon"></i>
+    <!-- Header dan navigation -->
+    <header class="header">
+        <div class="header-container">
+            <a href="#beranda" class="logo">Kopi <span>Nusantara</span></a>
 
-        <nav class="nav-bar">
-            <a href="#beranda" class="active">Beranda</a>
-            <a href="#tentang">Tentang</a>
-            <a href="#menu">Menu</a>
-            <a href="#kontak">Kontak</a>
-        </nav>
+            <!-- Checkbox mobile menu -->
+            <input type="checkbox" id="menu-toggle" class="menu-toggle">
+            <label for="menu-toggle" class="menu-icon-btn" aria-label="Toggle Navigation">
+                <i class='bx bx-menu' id="menu-icon"></i>
+            </label>
 
-        <!-- Search Bar -->
-        <div class="search-bar">
-            <input type="text" id="searchInput" placeholder="Cari menu...">
-            <i class='bx bx-search'></i>
+            <nav class="nav-bar">
+                <a href="#beranda" class="nav-link active">Beranda</a>
+                <a href="#tentang" class="nav-link">Tentang</a>
+                <a href="#menu" class="nav-link">Menu</a>
+                <a href="#kontak" class="nav-link">Kontak</a>
+            </nav>
         </div>
     </header>
 
-    <!-- Sub Navigation: Menu Category-->
-    <nav class="kategori-nav">
-        <a href="#classic" class="kategori-btn active">Classic Coffee</a>
-        <a href="#smoothies" class="kategori-btn">Smoothies</a>
-        <a href="#tea" class="kategori-btn">Tea Series</a>
-        <a href="#others" class="kategori-btn">Others</a>
-    </nav>
-
-    <!-- Hero Section-->
+    <!-- Hero Section -->
     <section class="beranda" id="beranda">
-        <div class="beranda-gambar">
-            <img src="images/kopi.jpg" alt="Kopi Nusantara - Kedai Kopi Rumahan">
-        </div>
-
-        <div class="home-content">
-            <h1>Kopi Nusantara</h1>
-            <h3>Racikan Rumah, Cita Rasa Nusantara</h3>
-            <p>Nikmati kehangatan racikan kopi rumahan khas tanah air langsung di tempat kami atau dari rumah Anda.</p>
-            <a href="#menu" class="btn">Lihat Menu</a>
+        <div class="beranda-overlay">
+            <div class="home-content">
+                <span class="label">Kedai Kopi Rumahan</span>
+                <h1>Kopi <span>Nusantara</span></h1>
+                <h3>Racikan Rumah, Cita Rasa Nusantara</h3>
+                <p>Nikmati kehangatan racikan kopi rumahan khas tanah air langsung di tempat kami atau dari kenyamanan rumah Anda.</p>
+                <a href="#menu" class="btn">Lihat Menu</a>
+            </div>
         </div>
     </section>
 
     <main>
         <!-- Section Tentang -->
         <section id="tentang" class="tentang">
-            <h2>Tentang Kami</h2>
-            <p>
-                Kopi Nusantara adalah usaha kedai kopi rumahan yang berdiri sejak tahun 2024. 
-                Kami menyajikan biji kopi pilihan terbaik dari berbagai daerah di Indonesia dengan 
-                proses penyeduhan penuh dedikasi untuk menghadirkan rasa otentik di setiap cangkirnya.
-            </p>
+            <div class="section-container">
+                <div class="tentang-wrapper">
+                    <span class="tentang-label">Tentang Kopi Nusantara</span>
+                    <div class="tentang-gambar">
+                        <!-- logo hanya hiasan digenerate menggunakan ai -->
+                        <img src="images/logo.jpg" alt="Kopi Nusantara Logo" class="responsive-img">
+                    </div>
+
+                    <div class="tentang-content">
+                        <p class="tentang-deskripsi">
+                            Kopi Nusantara adalah usaha kedai kopi rumahan yang berdiri sejak tahun 2024. 
+                            Kami menyajikan biji kopi pilihan terbaik dari berbagai daerah di Indonesia dan dunia dengan 
+                            proses penyeduhan penuh dedikasi untuk menghadirkan rasa otentik di setiap cangkirnya.
+                        </p>
+                    </div>
+                </div>
+            </div>
         </section>
 
         <!-- Section Rekomendasi -->
         <section id="rekomendasi" class="rekomendasi">
-            <h2>Rekomendasi</h2>
-            <div class="rekomendasi-grid">
-                <article class="rekomendasi-produk">
-                    <img src="images/espresso.jpg" alt="Espresso" class="responsive-img">
-                    <div class="card-info">
-                        <h4>Espresso</h4>
-                        <p>5 star</p>
-                        <a href="#rekomendasi-produk-classic" class="kategori-btn">Show Details</a>
-                    </div>
-                </article>
-
-                <article class="rekomendasi-produk">
-                    <img src="images/mango-smoothie.jpg" alt="Mango Blast" class="responsive-img">
-                    <div class="card-info">
-                        <h4>Mango Blast</h4>
-                        <p>5 star</p>
-                        <a href="#rekomendasi-produk-smoothies" class="kategori-btn">Show Details</a>
-                    </div>
-                </article>
-
-                <article class="rekomendasi-produk">
-                    <img src="images/lemon-tea.jpg" alt="Lemon Tea" class="responsive-img">
-                    <div class="card-info">
-                        <h4>Lemon Tea</h4>
-                        <p>5 star</p>
-                        <a href="#rekomendasi-produk-tea" class="kategori-btn">Show Details</a>
-                    </div>
-                </article>
-
-                <article class="rekomendasi-produk">
-                    <img src="images/chocolate.jpg" alt="Chocolate Signature" class="responsive-img">
-                    <div class="card-info">
-                        <h4>Chocolate Signature</h4>
-                        <p>5 star</p>
-                        <a href="#rekomendasi-produk-others" class="kategori-btn">Show Details</a>
-                    </div>
-                </article>
-            </div>
-        </section>
-        
-        <!-- Section Menu, 4 kategori: classic, smoothies, tea, others -->
-        <section id="menu" class="menu">
-            <h2>Daftar Menu</h2>
-
-            <!-- Kategori 1: Classic -->
-            <div id="classic" class="kategori-menu">
-                <h3 class="judul-kategori">Classic Coffee</h3>
-                <div class="menu-grid">
-                    <!-- Produk 1 -->
-                    <article id="rekomendasi-produk-classic" class="card-produk">
-                        <img src="images/espresso.jpg" alt="Espresso" class="responsive-img">
+            <div class="section-container">
+                <h2 class="section-title">Rekomendasi Favorit</h2>
+                <div class="rekomendasi-grid">
+                    <article class="rekomendasi-produk">
+                        <div class="img-wrapper">
+                            <img src="images/menu/tubruk.jpg" alt="Kopi Tubruk" class="responsive-img">
+                        </div>
                         <div class="card-info">
-                            <h4>Espresso</h4>
-                            <p class="deskripsi">Ekstrak kopi murni dengan rasa yang kuat dan pekat.</p>
-                            <span class="harga">Rp 15.000</span>
+                            <h4>Kopi Tubruk</h4>
+                            <div class="detail-content">
+                                <p class="rating"><i class='bx bxs-star'></i> 5.0</p>
+                                <a href="#coffee" class="btn-detail">Lihat Detail</a>
+                            </div>
                         </div>
                     </article>
 
-                    <!-- Produk 2 -->
-                    <article class="card-produk">
-                        <img src="images/americano.jpg" alt="Americano" class="responsive-img">
-                        <div class="card-info">
-                            <h4>Americano</h4>
-                            <p class="deskripsi">Espresso encer disajikan panas atau dengan es segar.</p>
-                            <span class="harga">Rp 18.000</span>
+                    <article class="rekomendasi-produk">
+                        <div class="img-wrapper">
+                            <img src="images/menu/mango.jpg" alt="Mango Blast" class="responsive-img">
                         </div>
-                    </article>
-
-                    <!-- Produk 3 -->
-                    <article class="card-produk">
-                        <img src="images/latte.jpg" alt="Caffe Latte" class="responsive-img">
-                        <div class="card-info">
-                            <h4>Caffe Latte</h4>
-                            <p class="deskripsi">Perpaduan espresso halus dan *steamed milk* yang lembut.</p>
-                            <span class="harga">Rp 22.000</span>
-                        </div>
-                    </article>
-
-                    <!-- Produk 4 -->
-                    <article class="card-produk">
-                        <img src="images/cappuccino.jpg" alt="Cappuccino" class="responsive-img">
-                        <div class="card-info">
-                            <h4>Cappuccino</h4>
-                            <p class="deskripsi">Espresso dengan lapisan *foam* susu yang tebal dan kaya.</p>
-                            <span class="harga">Rp 22.000</span>
-                        </div>
-                    </article>
-                </div>
-            </div>
-
-            <!-- Kategori 2: Smoothies -->
-            <div id="smoothies" class="kategori-menu">
-                <h3 class="judul-kategori">Smoothies</h3>
-                <div class="menu-grid">
-                    <article id="rekomendasi-produk-smoothies" class="card-produk">
-                        <img src="images/mango-smoothie.jpg" alt="Mango Blast" class="responsive-img">
                         <div class="card-info">
                             <h4>Mango Blast</h4>
-                            <p class="deskripsi">Olahan buah mangga segar disajikan dingin manis.</p>
-                            <span class="harga">Rp 25.000</span>
+                            <div class="detail-content">
+                                <p class="rating"><i class='bx bxs-star'></i> 5.0</p>
+                                <a href="#smoothies" class="btn-detail">Lihat Detail</a>
+                            </div>
                         </div>
                     </article>
 
-                    <article class="card-produk">
-                        <img src="images/berry-smoothie.jpg" alt="Strawberry Delight" class="responsive-img">
+                    <article class="rekomendasi-produk">
+                        <div class="img-wrapper">
+                            <img src="images/menu/melati.jpg" alt="Teh Melati" class="responsive-img">
+                        </div>
                         <div class="card-info">
-                            <h4>Strawberry Delight</h4>
-                            <p class="deskripsi">Paduan segar buah stroberi segar dan yogurt pilihan.</p>
-                            <span class="harga">Rp 25.000</span>
+                            <h4>Teh Melati</h4>
+                            <div class="detail-content">
+                                <p class="rating"><i class='bx bxs-star'></i> 5.0</p>
+                                <a href="#tea" class="btn-detail">Lihat Detail</a>
+                            </div>
                         </div>
                     </article>
 
-                    <article class="card-produk">
-                        <img src="images/avocado-smoothie.jpg" alt="Avocado Cream" class="responsive-img">
-                        <div class="card-info">
-                            <h4>Avocado Cream</h4>
-                            <p class="deskripsi">Jus alpukat lembut dengan sentuhan kental manis.</p>
-                            <span class="harga">Rp 26.000</span>
+                    <article class="rekomendasi-produk">
+                        <div class="img-wrapper">
+                            <img src="images/menu/chocolate.jpeg" alt="Chocolate Signature" class="responsive-img">
                         </div>
-                    </article>
-
-                    <article class="card-produk">
-                        <img src="images/banana-smoothie.jpg" alt="Banana Berry" class="responsive-img">
-                        <div class="card-info">
-                            <h4>Banana Berry</h4>
-                            <p class="deskripsi">Campuran buah pisang dan beri yang mengenyangkan.</p>
-                            <span class="harga">Rp 24.000</span>
-                        </div>
-                    </article>
-                </div>
-            </div>
-
-            <!-- Kategori 3: Tea -->
-            <div id="tea" class="kategori-menu">
-                <h3 class="judul-kategori">Tea Series</h3>
-                <div class="menu-grid">
-                    <article id="rekomendasi-produk-tea" class="card-produk">
-                        <img src="images/lemon-tea.jpg" alt="Lemon Tea" class="responsive-img">
-                        <div class="card-info">
-                            <h4>Lemon Tea</h4>
-                            <p class="deskripsi">Teh hitam nikmat dengan perasan lemon segar.</p>
-                            <span class="harga">Rp 15.000</span>
-                        </div>
-                    </article>
-
-                    <article class="card-produk">
-                        <img src="images/lychee-tea.jpg" alt="Lychee Tea" class="responsive-img">
-                        <div class="card-info">
-                            <h4>Lychee Tea</h4>
-                            <p class="deskripsi">Teh melati manis dengan tambahan buah lici utuh.</p>
-                            <span class="harga">Rp 18.000</span>
-                        </div>
-                    </article>
-
-                    <article class="card-produk">
-                        <img src="images/green-tea.jpg" alt="Matcha Green Tea" class="responsive-img">
-                        <div class="card-info">
-                            <h4>Matcha Green Tea</h4>
-                            <p class="deskripsi">Seduhan racikan matcha khas dengan aroma autentik.</p>
-                            <span class="harga">Rp 20.000</span>
-                        </div>
-                    </article>
-
-                    <article class="card-produk">
-                        <img src="images/earl-grey.jpg" alt="Earl Grey Milk Tea" class="responsive-img">
-                        <div class="card-info">
-                            <h4>Earl Grey Milk Tea</h4>
-                            <p class="deskripsi">Teh Earl Grey aromatik dipadukan susu kental lembut.</p>
-                            <span class="harga">Rp 20.000</span>
-                        </div>
-                    </article>
-                </div>
-            </div>
-
-            <!-- Kategori 4: Others -->
-            <div id="others" class="kategori-menu">
-                <h3 class="judul-kategori">Others</h3>
-                <div class="menu-grid">
-                    <article id="rekomendasi-produk-others" class="card-produk">
-                        <img src="images/chocolate.jpg" alt="Chocolate Signature" class="responsive-img">
                         <div class="card-info">
                             <h4>Chocolate Signature</h4>
-                            <p class="deskripsi">Cokelat pekat pilihan disajikan creamy dan manis.</p>
-                            <span class="harga">Rp 22.000</span>
+                            <div class="detail-content">
+                                <p class="rating"><i class='bx bxs-star'></i> 5.0</p>
+                                <a href="#others" class="btn-detail">Lihat Detail</a>
+                            </div>
                         </div>
                     </article>
+                </div>
+            </div>
+        </section>
 
-                    <article class="card-produk">
-                        <img src="images/red-velvet.jpg" alt="Red Velvet Latte" class="responsive-img">
-                        <div class="card-info">
-                            <h4>Red Velvet Latte</h4>
-                            <p class="deskripsi">Rasa khas red velvet klasik dipadu *steam milk* gurih.</p>
-                            <span class="harga">Rp 22.000</span>
-                        </div>
-                    </article>
+        <!-- Section Menu Utama -->
+        <section id="menu" class="menu">
+            <div class="section-container">
+                <h2 class="section-title">Daftar Menu</h2>
 
-                    <article class="card-produk">
-                        <img src="images/croissant.jpg" alt="Butter Croissant" class="responsive-img">
-                        <div class="card-info">
-                            <h4>Butter Croissant</h4>
-                            <p class="deskripsi">Pastri renyah *butter* cocok dipadu dengan kopi.</p>
-                            <span class="harga">Rp 18.000</span>
-                        </div>
-                    </article>
+                <!-- Navigasi Menu -->
+                <nav class="kategori-nav">
+                    <div class="kategori-container">
+                        <a href="#coffee" class="kategori-btn active">Kopi</a>
+                        <a href="#smoothies" class="kategori-btn">Smoothies</a>
+                        <a href="#tea" class="kategori-btn">Teh</a>
+                        <a href="#others" class="kategori-btn">Lainnya</a>
+                    </div>
+                </nav>
 
-                    <article class="card-produk">
-                        <img src="images/french-fries.jpg" alt="French Fries" class="responsive-img">
-                        <div class="card-info">
-                            <h4>French Fries</h4>
-                            <p class="deskripsi">Kentang goreng renyah gurih disajikan dengan saus.</p>
-                            <span class="harga">Rp 15.000</span>
-                        </div>
-                    </article>
+                <!-- Kategori 1: Coffee -->
+                <div id="coffee" class="kategori-menu">
+                    <h3 class="judul-kategori">Kopi</h3>
+                    <div class="menu-grid">
+                        <article class="card-produk" tabindex="0">
+                            <div class="img-wrapper">
+                                <img src="images/menu/tubruk.jpg" alt="Kopi Tubruk" class="responsive-img">
+                            </div>
+                            <div class="card-info">
+                                <h4>Kopi Tubruk</h4>
+                                <div class="detail-expand">
+                                    <p class="deskripsi">Kopi hitam tradisional diseduh langsung dengan gula batu.</p>
+                                    <span class="harga">Rp 15.000</span>
+                                </div>
+                            </div>
+                        </article>
+
+                        <article class="card-produk" tabindex="0">
+                            <div class="img-wrapper">
+                                <img src="images/menu/gayo.jpeg" alt="Kopi Aceh Gayo" class="responsive-img">
+                            </div>
+                            <div class="card-info">
+                                <h4>Kopi Aceh Gayo</h4>
+                                <div class="detail-expand">
+                                    <p class="deskripsi">Biji kopi arabika Gayo dengan aroma khas dan body tebal.</p>
+                                    <span class="harga">Rp 23.000</span>
+                                </div>
+                            </div>
+                        </article>
+
+                        <article class="card-produk" tabindex="0">
+                            <div class="img-wrapper">
+                                <img src="images/menu/toraja.jpeg" alt="Kopi Toraja" class="responsive-img">
+                            </div>
+                            <div class="card-info">
+                                <h4>Kopi Toraja</h4>
+                                <div class="detail-expand">
+                                    <p class="deskripsi">Kopi single origin Sulawesi dengan rasa cokelat dan rempah.</p>
+                                    <span class="harga">Rp 24.000</span>
+                                </div>
+                            </div>
+                        </article>
+
+                        <article class="card-produk" tabindex="0">
+                            <div class="img-wrapper">
+                                <img src="images/menu/kintamani.png" alt="Kopi Kintamani" class="responsive-img">
+                            </div>
+                            <div class="card-info">
+                                <h4>Kopi Kintamani</h4>
+                                <div class="detail-expand">
+                                    <p class="deskripsi">Kopi Bali dengan sentuhan rasa buah segar yang khas.</p>
+                                    <span class="harga">Rp 27.000</span>
+                                </div>
+                            </div>
+                        </article>
+
+                        <article class="card-produk" tabindex="0">
+                            <div class="img-wrapper">
+                                <img src="images/menu/luwak.jpg" alt="Kopi Luwak" class="responsive-img">
+                            </div>
+                            <div class="card-info">
+                                <h4>Kopi Luwak</h4>
+                                <div class="detail-expand">
+                                    <p class="deskripsi">Kopi premium khas Indonesia dengan rasa lembut dan aroma unik.</p>
+                                    <span class="harga">Rp 42.000</span>
+                                </div>
+                            </div>
+                        </article>
+
+                        <article class="card-produk" tabindex="0">
+                            <div class="img-wrapper">
+                                <img src="images/menu/flores.jpg" alt="Kopi Flores Bajawa" class="responsive-img">
+                            </div>
+                            <div class="card-info">
+                                <h4>Kopi Flores Bajawa</h4>
+                                <div class="detail-expand">
+                                    <p class="deskripsi">Kopi NTT dengan body tebal dan rasa cokelat manis alami.</p>
+                                    <span class="harga">Rp 26.000</span>
+                                </div>
+                            </div>
+                        </article>
+
+                        <article class="card-produk" tabindex="0">
+                            <div class="img-wrapper">
+                                <img src="images/menu/mandailing.jpg" alt="Kopi Mandailing" class="responsive-img">
+                            </div>
+                            <div class="card-info">
+                                <h4>Kopi Mandailing</h4>
+                                <div class="detail-expand">
+                                    <p class="deskripsi">Kopi Sumatera dengan aroma rempah dan keasaman yang seimbang.</p>
+                                    <span class="harga">Rp 24.000</span>
+                                </div>
+                            </div>
+                        </article>
+
+                        <article class="card-produk" tabindex="0">
+                            <div class="img-wrapper">
+                                <img src="images/menu/robusta.png" alt="Kopi Robusta Lampung" class="responsive-img">
+                            </div>
+                            <div class="card-info">
+                                <h4>Kopi Robusta Lampung</h4>
+                                <div class="detail-expand">
+                                    <p class="deskripsi">Kopi Lampung dengan karakter rasa bold, sedikit pahit, dan aroma khas</p>
+                                    <span class="harga">Rp 23.000</span>
+                                </div>
+                            </div>
+                        </article>
+
+                        <article class="card-produk" tabindex="0">
+                            <div class="img-wrapper">
+                                <img src="images/menu/espresso.jpg" alt="Espresso" class="responsive-img">
+                            </div>
+                            <div class="card-info">
+                                <h4>Espresso</h4>
+                                <div class="detail-expand">
+                                    <p class="deskripsi">Ekstrak kopi murni dengan rasa yang kuat dan pekat.</p>
+                                    <span class="harga">Rp 15.000</span>
+                                </div>
+                            </div>
+                        </article>
+
+                        <article class="card-produk" tabindex="0">
+                            <div class="img-wrapper">
+                                <img src="images/menu/americano.jpg" alt="Americano" class="responsive-img">
+                            </div>
+                            <div class="card-info">
+                                <h4>Americano</h4>
+                                <div class="detail-expand">
+                                    <p class="deskripsi">Espresso encer disajikan panas atau dengan es segar.</p>
+                                    <span class="harga">Rp 18.000</span>
+                                </div>
+                            </div>
+                        </article>
+
+                        <article class="card-produk" tabindex="0">
+                            <div class="img-wrapper">
+                                <img src="images/menu/latte.jpg" alt="Caffe Latte" class="responsive-img">
+                            </div>
+                            <div class="card-info">
+                                <h4>Caffe Latte</h4>
+                                <div class="detail-expand">
+                                    <p class="deskripsi">Perpaduan espresso halus dan steamed milk yang lembut.</p>
+                                    <span class="harga">Rp 22.000</span>
+                                </div>
+                            </div>
+                        </article>
+
+                        <article class="card-produk" tabindex="0">
+                            <div class="img-wrapper">
+                                <img src="images/menu/cappuccino.jpg" alt="Cappuccino" class="responsive-img">
+                            </div>
+                            <div class="card-info">
+                                <h4>Cappuccino</h4>
+                                <div class="detail-expand">
+                                    <p class="deskripsi">Espresso dengan lapisan foam susu yang tebal dan kaya.</p>
+                                    <span class="harga">Rp 22.000</span>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+
+                <!-- Kategori 2: Smoothies -->
+                <div id="smoothies" class="kategori-menu">
+                    <h3 class="judul-kategori">Smoothies</h3>
+                    <div class="menu-grid">
+                        <article class="card-produk" tabindex="0">
+                            <div class="img-wrapper">
+                                <img src="images/menu/mango.jpg" alt="Mango Blast" class="responsive-img">
+                            </div>
+                            <div class="card-info">
+                                <h4>Mango Blast</h4>
+                                <div class="detail-expand">
+                                    <p class="deskripsi">Olahan buah mangga segar disajikan dingin manis.</p>
+                                    <span class="harga">Rp 25.000</span>
+                                </div>
+                            </div>
+                        </article>
+
+                        <article class="card-produk" tabindex="0">
+                            <div class="img-wrapper">
+                                <img src="images/menu/strawberry.jpg" alt="Strawberry Delight" class="responsive-img">
+                            </div>
+                            <div class="card-info">
+                                <h4>Strawberry Delight</h4>
+                                <div class="detail-expand">
+                                    <p class="deskripsi">Paduan segar buah stroberi segar dan yogurt pilihan.</p>
+                                    <span class="harga">Rp 25.000</span>
+                                </div>
+                            </div>
+                        </article>
+
+                        <article class="card-produk" tabindex="0">
+                            <div class="img-wrapper">
+                                <img src="images/menu/avocado.jpg" alt="Avocado Cream" class="responsive-img">
+                            </div>
+                            <div class="card-info">
+                                <h4>Avocado Cream</h4>
+                                <div class="detail-expand">
+                                    <p class="deskripsi">Jus alpukat lembut dengan sentuhan kental manis.</p>
+                                    <span class="harga">Rp 26.000</span>
+                                </div>
+                            </div>
+                        </article>
+
+                        <article class="card-produk" tabindex="0">
+                            <div class="img-wrapper">
+                                <img src="images/menu/banana.jpeg" alt="Banana Berry" class="responsive-img">
+                            </div>
+                            <div class="card-info">
+                                <h4>Banana Berry</h4>
+                                <div class="detail-expand">
+                                    <p class="deskripsi">Campuran buah pisang dan beri yang mengenyangkan.</p>
+                                    <span class="harga">Rp 24.000</span>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+
+                <!-- Kategori 3: Tea -->
+                <div id="tea" class="kategori-menu">
+                    <h3 class="judul-kategori">Teh</h3>
+                    <div class="menu-grid">
+                        <article class="card-produk" tabindex="0">
+                            <div class="img-wrapper">
+                                <img src="images/menu/melati.jpg" alt="Teh Melati" class="responsive-img">
+                            </div>
+                            <div class="card-info">
+                                <h4>Teh Melati</h4>
+                                <div class="detail-expand">
+                                    <p class="deskripsi">Teh hijau wangi melati khas tanah air, hangat dan menenangkan.</p>
+                                    <span class="harga">Rp 15.000</span>
+                                </div>
+                            </div>
+                        </article>
+
+                        <article class="card-produk" tabindex="0">
+                            <div class="img-wrapper">
+                                <img src="images/menu/serai.jpg" alt="Teh Serai" class="responsive-img">
+                            </div>
+                            <div class="card-info">
+                                <h4>Teh Serai</h4>
+                                <div class="detail-expand">
+                                    <p class="deskripsi">Seduhan serai segar dengan aroma lemon yang menyegarkan.</p>
+                                    <span class="harga">Rp 18.000</span>
+                                </div>
+                            </div>
+                        </article>
+
+                        <article class="card-produk" tabindex="0">
+                            <div class="img-wrapper">
+                                <img src="images/menu/jahe.jpg" alt="Teh Jahe Merah" class="responsive-img">
+                            </div>
+                            <div class="card-info">
+                                <h4>Teh Jahe Merah</h4>
+                                <div class="detail-expand">
+                                    <p class="deskripsi">Teh hangat dengan jahe merah, cocok untuk menghangatkan tubuh.</p>
+                                    <span class="harga">Rp 20.000</span>
+                                </div>
+                            </div>
+                        </article>
+
+                        <article class="card-produk" tabindex="0">
+                            <div class="img-wrapper">
+                                <img src="images/menu/rossela.jpg" alt="Teh Rosella" class="responsive-img">
+                            </div>
+                            <div class="card-info">
+                                <h4>Teh Rosella</h4>
+                                <div class="detail-expand">
+                                    <p class="deskripsi">Seduhan bunga rosella dengan rasa asam segar dan warna merah alami.</p>
+                                    <span class="harga">Rp 20.000</span>
+                                </div>
+                            </div>
+                        </article>
+
+                        <article class="card-produk" tabindex="0">
+                            <div class="img-wrapper">
+                                <img src="images/menu/lemon-tea.jpg" alt="Lemon Tea" class="responsive-img">
+                            </div>
+                            <div class="card-info">
+                                <h4>Lemon Tea</h4>
+                                <div class="detail-expand">
+                                    <p class="deskripsi">Teh hitam nikmat dengan perasan lemon segar.</p>
+                                    <span class="harga">Rp 15.000</span>
+                                </div>
+                            </div>
+                        </article>
+
+                        <article class="card-produk" tabindex="0">
+                            <div class="img-wrapper">
+                                <img src="images/menu/lychee.jpeg" alt="Lychee Tea" class="responsive-img">
+                            </div>
+                            <div class="card-info">
+                                <h4>Lychee Tea</h4>
+                                <div class="detail-expand">
+                                    <p class="deskripsi">Teh melati manis dengan tambahan buah lici utuh.</p>
+                                    <span class="harga">Rp 18.000</span>
+                                </div>
+                            </div>
+                        </article>
+
+                        <article class="card-produk" tabindex="0">
+                            <div class="img-wrapper">
+                                <img src="images/menu/matcha.jpeg" alt="Matcha Green Tea" class="responsive-img">
+                            </div>
+                            <div class="card-info">
+                                <h4>Matcha Green Tea</h4>
+                                <div class="detail-expand">
+                                    <p class="deskripsi">Seduhan racikan matcha khas dengan aroma autentik.</p>
+                                    <span class="harga">Rp 20.000</span>
+                                </div>
+                            </div>
+                        </article>
+
+                        <article class="card-produk" tabindex="0">
+                            <div class="img-wrapper">
+                                <img src="images/menu/earl.jpeg" alt="Earl Grey Milk Tea" class="responsive-img">
+                            </div>
+                            <div class="card-info">
+                                <h4>Earl Grey Milk Tea</h4>
+                                <div class="detail-expand">
+                                    <p class="deskripsi">Teh Earl Grey aromatik dipadukan susu kental lembut.</p>
+                                    <span class="harga">Rp 20.000</span>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+
+                <!-- Kategori 4: Others -->
+                <div id="others" class="kategori-menu">
+                    <h3 class="judul-kategori">Lainnya</h3>
+                    <div class="menu-grid">
+                        <article class="card-produk" tabindex="0">
+                            <div class="img-wrapper">
+                                <img src="images/menu/chocolate.jpeg" alt="Chocolate Signature" class="responsive-img">
+                            </div>
+                            <div class="card-info">
+                                <h4>Chocolate Signature</h4>
+                                <div class="detail-expand">
+                                    <p class="deskripsi">Cokelat pekat pilihan disajikan creamy dan manis.</p>
+                                    <span class="harga">Rp 22.000</span>
+                                </div>
+                            </div>
+                        </article>
+
+                        <article class="card-produk" tabindex="0">
+                            <div class="img-wrapper">
+                                <img src="images/menu/redvelvet.jpeg" alt="Red Velvet Latte" class="responsive-img">
+                            </div>
+                            <div class="card-info">
+                                <h4>Red Velvet Latte</h4>
+                                <div class="detail-expand">
+                                    <p class="deskripsi">Rasa khas red velvet klasik dipadu steam milk gurih.</p>
+                                    <span class="harga">Rp 22.000</span>
+                                </div>
+                            </div>
+                        </article>
+
+                        <article class="card-produk" tabindex="0">
+                            <div class="img-wrapper">
+                                <img src="images/menu/croissant.jpeg" alt="Butter Croissant" class="responsive-img">
+                            </div>
+                            <div class="card-info">
+                                <h4>Butter Croissant</h4>
+                                <div class="detail-expand">
+                                    <p class="deskripsi">Pastri renyah butter cocok dipadu dengan kopi.</p>
+                                    <span class="harga">Rp 18.000</span>
+                                </div>
+                            </div>
+                        </article>
+
+                        <article class="card-produk" tabindex="0">
+                            <div class="img-wrapper">
+                                <img src="images/menu/kentang.jpg" alt="French Fries" class="responsive-img">
+                            </div>
+                            <div class="card-info">
+                                <h4>French Fries</h4>
+                                <div class="detail-expand">
+                                    <p class="deskripsi">Kentang goreng renyah gurih disajikan dengan saus.</p>
+                                    <span class="harga">Rp 15.000</span>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
                 </div>
             </div>
         </section>
@@ -284,7 +536,11 @@
     <footer id="kontak">
         <div class="isi-footer">
             <h3>Kopi Nusantara</h3>
-            <p>Jl. Nagara No. 25, Jakarta | Buka Setiap Hari: 08.00 - 22.00 WIB</p>
+            <p>
+                <i class='bx bx-map'></i> Jl. Nagara No. 25, Jakarta | 
+                <i class='bx bx-time-five'></i> Buka Setiap Hari: 08.00 - 22.00 WIB | 
+                <i class="bx bx-phone"></i> 081122334455
+            </p>
             <p class="copyright">&copy; 2026 Kopi Nusantara. All Rights Reserved.</p>
         </div>
     </footer>
