@@ -166,17 +166,26 @@ a {
     color: var(--white);
 }
 
-
 /* Nav Kategori Menu */
 .kategori-nav {
     position: sticky;
     top: 57px;   /* menempel tepat di bawah header */
     z-index: 900;
+    padding: 10px 16px;
+    /* Saat belum menempel: transparan, menyatu dengan background */
+    background-color: transparent;
+    border-top: 1px solid transparent;
+    border-bottom: 1px solid transparent;
+    box-shadow: none;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+/* Saat menempel di atas */
+.kategori-nav.stuck {
     background-color: var(--card-bg);
     border-top: 1px solid var(--almond-cream);
     border-bottom: 1px solid var(--almond-cream);
     box-shadow: var(--shadow-nav);
-    padding: 10px 16px;
 }
 
 .kategori-container {
@@ -433,6 +442,45 @@ a {
     color: var(--white);
 }
 
+/* Pencarian Menu */
+.search-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    max-width: 400px;
+    margin: 0 auto 24px;
+    padding: 10px 16px;
+    background-color: var(--card-bg);
+    border: 1px solid var(--almond-cream);
+    border-radius: 25px;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition);
+}
+
+.search-wrapper:focus-within {
+    border-color: var(--faded-copper);
+    box-shadow: var(--shadow-md);
+}
+
+.search-wrapper i {
+    font-size: 20px;
+    color: var(--faded-copper);
+    flex-shrink: 0;
+}
+
+.search-input {
+    width: 100%;
+    border: none;
+    outline: none;
+    background: none;
+    font-family: inherit;
+    font-size: 15px;
+    color: var(--text-dark);
+}
+
+.search-input::placeholder {
+    color: var(--text-muted);
+}
 
 /* Daftar Menu */
 .kategori-menu {
@@ -566,6 +614,30 @@ footer {
     margin-top: 16px;
     border-top: 1px solid var(--border-footer);
     padding-top: 13px;
+}
+
+/* Back to Top */
+.back-to-top {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 46px;
+    height: 46px;
+    border: none;
+    border-radius: 50%;
+    background-color: var(--coffee-bean);
+    color: var(--white);
+    font-size: 24px;
+    cursor: pointer;
+    box-shadow: var(--shadow-md);
+    display: none;
+    z-index: 1100;
+    transition: background-color 0.35s ease, transform 0.35s ease, box-shadow 0.35s ease;
+}
+
+.back-to-top:hover {
+    background-color: var(--faded-copper);
+    transform: translateY(-3px);
 }
 
 /* FAQ */
