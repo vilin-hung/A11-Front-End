@@ -43,7 +43,7 @@ Diberikan pada: Teori Pertemuan 4 - Senin, 14 September 2026
 
 ### 📂 Tugas 3: Website Interaktif dengan jQuery
 
-Sebuah website Kopi Nusantara dengan penerapan **jQuery** untuk **menambahkan interaksi pada halaman**. Website memiliki fitur **FAQ Accordion** yang memungkinkan pengguna membuka dan menutup jawaban secara interaktif dengan animasi, serta fitur interaktif [punya angga]. jQuery digunakan untuk mengatur interaksi navigasi pada tampilan mobile.
+Sebuah website Kopi Nusantara dengan penerapan **jQuery** untuk **menambahkan interaksi pada halaman**. Website memiliki fitur **FAQ Accordion**, fitur interaktif **Menu Search Filter**, dan **Back-To-Top Button**.
 
 - **[Download ZIP](./Tugas_3/A11_T3_jQuery.zip)**
 - **[Lihat Laporan](./Tugas_3/A11_T3_Laporan_jQuery.pdf)**
