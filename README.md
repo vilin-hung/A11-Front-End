@@ -1,4 +1,4 @@
-# Kumpulan Tugas Pemrograman Front-End Kelompok A11
+# Kumpulan Tugas Front-End Programming Kelompok A11
 Repositori ini berisi kumpulan tugas yang dikerjakan untuk mata kuliah Pemrograman Front-End. Setiap tugas ditempatkan di folder terpisah.
 
 ## Dibuat oleh
@@ -32,7 +32,7 @@ Diberikan pada: Teori Pertemuan 3 - Senin, 7 September 2026
 
 Sebuah website Kopi Nusantara dengan penerapan **responsivitas UI** yang menyesuaikan tampilan dan tata letak berdasarkan ukuran layar. Terdapat beberapa bagian pada website, yakni navigasi, halaman utama, informasi tentang Kopi Nusantara, menu kopi beserta rekomendasi, dan kontak. Responsive layout diterapkan menggunakan **CSS Grid, Flexbox, dan media query** agar website dapat digunakan pada perangkan mobile, tablet (kecil dan besar), dan dekstop.
 
-- **[Download ZIP](./Tugas_2/A11_T2_Responsive_UI.zip)**
+- **[Download ZIP](./A11_T2_Responsive_UI.zip)**
 - **[Lihat Laporan](./Tugas_2/A11_T2_Laporan_Responsive_UI.pdf)**
 - **[Lihat Kode](./Tugas_2/)**
 
@@ -45,7 +45,7 @@ Diberikan pada: Teori Pertemuan 4 - Senin, 14 September 2026
 
 Sebuah website Kopi Nusantara dengan penerapan **jQuery** untuk **menambahkan interaksi pada halaman**. Website memiliki fitur **FAQ Accordion**, fitur interaktif **Menu Search Filter**, dan **Back-To-Top Button**.
 
-- **[Download ZIP](./Tugas_3/A11_T3_jQuery.zip)**
+- **[Download ZIP](./A11_T3_jQuery.zip)**
 - **[Lihat Laporan](./Tugas_3/A11_T3_Laporan_jQuery.pdf)**
 - **[Lihat Kode](./Tugas_3/)**
 
