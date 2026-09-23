@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tambah Kuliner - JelajahRasa</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header id="main-header" class="site-header">
+        <div class="header-container">
+            
+            <!-- Kiri: Tombol Garis Tiga & Logo -->
+            <div id="header-left" class="header-section-left">
+                <!-- Tombol Garis Tiga  -->
+                <button id="btn-toggle-sidebar" class="btn-sidebar" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar">
+                    <i class='bx bx-menu'></i>
+                </button>
+                <!-- Logo -->
+                <a id="logo" class="logo-link" href="index.html">
+                    <i class='bx bx-map-pin'></i> JelajahRasa
+                </a>
+            </div>
+
+            <!-- Tengah: Search Bar Template -->
+            <div id="header-center" class="header-section-center">
+                <form id="form-search-header" class="search-form" action="daftar-kuliner.html" method="GET">
+                    <span class="search-icon-wrapper">
+                        <i class='bx bx-search'></i>
+                    </span>
+                    <input id="input-search" class="search-input" type="text" name="search" placeholder="Cari kuliner atau daerah...">
+                    <button id="btn-search-submit" class="btn-search-submit" type="submit">Cari</button>
+                </form>
+            </div>
+
+            <!-- Kanan: Profil -->
+            <div id="header-right" class="header-profile-container">
+                <!-- Default Profil, berubah ketika sudah login (read name dari login) -->
+                <img id="user-avatar-desktop" class="user-avatar" src="images/default-avatar.png" alt="Foto Profil">
+                <div class="user-info-wrapper">
+                    <span id="user-name-desktop" class="user-name">Pengunjung</span>
+                    <a id="user-link-desktop" class="user-profile-link" href="login.html">Masuk / Daftar</a>
+                </div>
+            </div>
+
+        </div>
+    </header>
+
+    <!-- Sidebar Navigasi (Muncul saat Tombol Garis Tiga Diklik) -->
+    <div class="offcanvas-sidebar" tabindex="-1" id="offcanvasNavbar">
+        <div class="sidebar-header">
+            <h5 id="offcanvasNavbarLabel" class="sidebar-title">
+                <i class='bx bx-map-pin'></i> JelajahRasa
+            </h5>
+            <button id="btn-close-sidebar" class="btn-sidebar-close" type="button" data-bs-dismiss="offcanvas"></button>
+        </div>
+        <div class="sidebar-body">
+
+            <!-- Profil Pengguna Mobile / Tablet -->
+            <div id="sidebar-profile-section" class="sidebar-profile-container">
+                <div class="profile-card-mobile">
+                    <!-- Default Profil Mobile, berubah ketika sudah login -->
+                    <img id="user-avatar-mobile" class="user-avatar" src="images/default-avatar.png" alt="Foto Profil">
+                    <div class="user-info-mobile">
+                        <h6 id="user-name-mobile" class="user-name">Pengunjung</h6>
+                        <a id="user-link-mobile" class="user-profile-link" href="login.html">Masuk / Daftar</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- List Navigasi -->
+            <ul id="sidebar-nav-list" class="sidebar-nav-list">
+                <li class="nav-item">
+                    <a class="nav-link" href="index.html">
+                        <i class='bx bx-home-alt'></i>Beranda
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="daftar-kuliner.html">
+                        <i class='bx bx-restaurant'></i>Daftar Kuliner
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="tambah-kuliner.html">
+                        <i class='bx bx-plus-circle'></i>Tambah Kuliner
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="favorit.html">
+                        <i class='bx bx-heart'></i>Favorit
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="faq.html" data-bs-dismiss="offcanvas">
+                        <i class='bx bx-help-circle'></i>FAQ
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <main id="main-content" class="tambah-kuliner-page">
+        <div class="container">
+            
+            <!-- Breadcrumb Navigation -->
+            <nav id="breadcrumb-nav" class="mb-3">
+                <ol class="breadcrumb breadcrumb-list small">
+                    <li class="breadcrumb-item"><a href="index.html" class="text-success text-decoration-none nav-home-link"><i class='bx bx-home-alt me-1'></i>Beranda</a></li>
+                    <li class="breadcrumb-item active text-dark">Tambah Kuliner</li>
+                </ol>
+            </nav>
+
+            <!-- Page Header -->
+            <div id="catalog-header" class="mb-4 page-header-wrapper">
+                <h4 class="fw-bold text-dark mb-1 page-title">Tambah Kuliner Baru</h4>
+                <p class="text-muted small page-subtitle">Bagikan rekomendasi hidangan otentik daerahmu untuk melengkapi peta rasa Jawa Barat.</p>
+            </div>
+
+        <!-- Form Utama Tambah Kuliner -->
+        <form id="form-tambah-kuliner" class="needs-validation" novalidate>
+            <div class="row g-4">
+                <div class="col-lg-7">
+                    
+                    <!-- Card 1: Informasi Utama -->
+                    <div class="card border-0 shadow-sm rounded-4 mb-4">
+                        <div class="card-header bg-white border-0 pt-4 px-4 pb-0">
+                            <h5 class="fw-bold text-dark mb-0 d-flex align-items-center gap-2">
+                                <i class='bx bx-info-circle text-success fs-4'></i> Informasi Utama
+                            </h5>
+                        </div>
+                        <div class="card-body p-4">
+                            
+                            <!-- Nama Kuliner -->
+                            <div class="mb-3">
+                                <label for="nama-kuliner" class="form-label small fw-semibold text-dark">Nama Kuliner <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="nama-kuliner" name="nama-kuliner" placeholder="Contoh: Nasi Tutug Oncom, Es Goyobod" required>
+                                <div class="invalid-feedback">Mohon masukkan nama kuliner.</div>
+                            </div>
+
+                            <!-- Asal Daerah -->
+                            <div class="mb-3">
+                                <label for="asal-daerah" class="form-label small fw-semibold text-dark">Asal Daerah (Kota/Kabupaten) <span class="text-danger">*</span></label>
+                                <select class="form-select" id="asal-daerah" name="asal-daerah" required>
+                                    <option value="" selected disabled>-- Pilih 1 dari 27 Daerah --</option>
+                                    <optgroup label="Kota (9)">
+                                        <option value="Kota Bandung">Kota Bandung</option>
+                                        <option value="Kota Banjar">Kota Banjar</option>
+                                        <option value="Kota Bekasi">Kota Bekasi</option>
+                                        <option value="Kota Bogor">Kota Bogor</option>
+                                        <option value="Kota Cimahi">Kota Cimahi</option>
+                                        <option value="Kota Cirebon">Kota Cirebon</option>
+                                        <option value="Kota Depok">Kota Depok</option>
+                                        <option value="Kota Sukabumi">Kota Sukabumi</option>
+                                        <option value="Kota Tasikmalaya">Kota Tasikmalaya</option>
+                                    </optgroup>
+                                    <optgroup label="Kabupaten (18)">
+                                        <option value="Kabupaten Bandung">Kabupaten Bandung</option>
+                                        <option value="Kabupaten Bandung Barat">Kabupaten Bandung Barat</option>
+                                        <option value="Kabupaten Bekasi">Kabupaten Bekasi</option>
+                                        <option value="Kabupaten Bogor">Kabupaten Bogor</option>
+                                        <option value="Kabupaten Ciamis">Kabupaten Ciamis</option>
+                                        <option value="Kabupaten Cianjur">Kabupaten Cianjur</option>
+                                        <option value="Kabupaten Cirebon">Kabupaten Cirebon</option>
+                                        <option value="Kabupaten Garut">Kabupaten Garut</option>
+                                        <option value="Kabupaten Indramayu">Kabupaten Indramayu</option>
+                                        <option value="Kabupaten Karawang">Kabupaten Karawang</option>
+                                        <option value="Kabupaten Kuningan">Kabupaten Kuningan</option>
+                                        <option value="Kabupaten Majalengka">Kabupaten Majalengka</option>
+                                        <option value="Kabupaten Pangandaran">Kabupaten Pangandaran</option>
+                                        <option value="Kabupaten Purwakarta">Kabupaten Purwakarta</option>
+                                        <option value="Kabupaten Subang">Kabupaten Subang</option>
+                                        <option value="Kabupaten Sukabumi">Kabupaten Sukabumi</option>
+                                        <option value="Kabupaten Sumedang">Kabupaten Sumedang</option>
+                                        <option value="Kabupaten Tasikmalaya">Kabupaten Tasikmalaya</option>
+                                    </optgroup>
+                                </select>
+                                <div class="invalid-feedback">Mohon pilih asal daerah kuliner.</div>
+                            </div>
+
+                            <!-- Kategori Kuliner -->
+                            <div class="mb-0">
+                                <label class="form-label small fw-semibold text-dark d-block">Kategori Kuliner <span class="text-danger">*</span></label>
+                                <div class="row g-2">
+                                    <div class="col-6 col-sm-3">
+                                        <input type="radio" class="category-radio" name="kategori-kuliner" id="kat-makanan-utama" value="Makanan" required>
+                                        <label class="category-card h-100 d-flex flex-column align-items-center justify-content-center" for="kat-makanan-utama">
+                                            <i class='bx bx-bowl-rice text-success fs-3 mb-1'></i>
+                                            <span class="small fw-semibold">Makanan</span>
+                                        </label>
+                                    </div>
+                                    <div class="col-6 col-sm-3">
+                                        <input type="radio" class="category-radio" name="kategori-kuliner" id="kat-jajanan" value="Jajanan">
+                                        <label class="category-card h-100 d-flex flex-column align-items-center justify-content-center" for="kat-jajanan">
+                                            <i class='bx bx-cookie text-warning fs-3 mb-1'></i>
+                                            <span class="small fw-semibold">Jajanan</span>
+                                        </label>
+                                    </div>
+                                    <div class="col-6 col-sm-3">
+                                        <input type="radio" class="category-radio" name="kategori-kuliner" id="kat-minuman" value="Minuman">
+                                        <label class="category-card h-100 d-flex flex-column align-items-center justify-content-center" for="kat-minuman">
+                                            <i class='bx bx-drink text-info fs-3 mb-1'></i>
+                                            <span class="small fw-semibold">Minuman</span>
+                                        </label>
+                                    </div>
+                                    <div class="col-6 col-sm-3">
+                                        <input type="radio" class="category-radio" name="kategori-kuliner" id="kat-oleh-oleh" value="Oleh-Oleh Khas">
+                                        <label class="category-card h-100 d-flex flex-column align-items-center justify-content-center" for="kat-oleh-oleh">
+                                            <i class='bx bx-gift text-danger fs-3 mb-1'></i>
+                                            <span class="small fw-semibold">Oleh-Oleh Khas</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="invalid-feedback text-start feedback-kategori">Mohon pilih salah satu kategori.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 2: Detail & Karakteristik -->
+                    <div class="card border-0 shadow-sm rounded-4 mb-4">
+                        <div class="card-header bg-white border-0 pt-4 px-4 pb-0">
+                            <h5 class="fw-bold text-dark mb-0 d-flex align-items-center gap-2">
+                                <i class='bx bx-detail text-success fs-4'></i> Detail & Karakteristik Rasa
+                            </h5>
+                        </div>
+                        <div class="card-body p-4">
+                            
+                            <!-- Deskripsi Singkat -->
+                            <div class="mb-3">
+                                <label for="deskripsi" class="form-label small fw-semibold text-dark">Deskripsi Singkat <span class="text-danger">*</span></label>
+                                <textarea class="form-control" id="deskripsi" name="deskripsi" rows="3" placeholder="Ceritakan keunikan rasa, kebiasaan penyajian secara singkat..." required></textarea>
+                                <div class="invalid-feedback">Mohon tuliskan deskripsi singkat kuliner.</div>
+                            </div>
+
+                            <!-- Bahan Utama -->
+                            <div class="mb-3">
+                                <label for="bahan-utama" class="form-label small fw-semibold text-dark">Bahan Utama</label>
+                                <input type="text" class="form-control" id="bahan-utama" name="bahan-utama" placeholder="Misal: Beras ketan, Oncom, Santan, Serai">
+                                <div class="form-text small">Pisahkan dengan koma untuk bahan-bahan dominan.</div>
+                            </div>
+
+                            <!-- Karakter Rasa -->
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold text-dark d-block">Karakter Rasa Utama (Pilih 1 atau lebih)</label>
+                                <div class="d-flex flex-wrap gap-2">
+                                    <input type="checkbox" class="taste-pill-input" id="rasa-gurih" name="karakter-rasa" value="Gurih">
+                                    <label class="taste-pill-label" for="rasa-gurih"><i class='bx bx-check-circle'></i> Gurih</label>
+
+                                    <input type="checkbox" class="taste-pill-input" id="rasa-pedas" name="karakter-rasa" value="Pedas">
+                                    <label class="taste-pill-label" for="rasa-pedas"><i class='bx bx-check-circle'></i> Pedas</label>
+
+                                    <input type="checkbox" class="taste-pill-input" id="rasa-manis" name="karakter-rasa" value="Manis">
+                                    <label class="taste-pill-label" for="rasa-manis"><i class='bx bx-check-circle'></i> Manis</label>
+
+                                    <input type="checkbox" class="taste-pill-input" id="rasa-asam" name="karakter-rasa" value="Asam">
+                                    <label class="taste-pill-label" for="rasa-asam"><i class='bx bx-check-circle'></i> Asam Segar</label>
+
+                                    <input type="checkbox" class="taste-pill-input" id="rasa-asin" name="karakter-rasa" value="Asin">
+                                    <label class="taste-pill-label" for="rasa-asin"><i class='bx bx-check-circle'></i> Asin</label>
+
+                                    <input type="checkbox" class="taste-pill-input" id="rasa-renyah" name="karakter-rasa" value="Renyah">
+                                    <label class="taste-pill-label" for="rasa-renyah"><i class='bx bx-check-circle'></i> Renyah / Crispy</label>
+
+                                    <input type="checkbox" class="taste-pill-input" id="rasa-fermentasi" name="karakter-rasa" value="Fermentasi">
+                                    <label class="taste-pill-label" for="rasa-fermentasi"><i class='bx bx-check-circle'></i> Fermentasi</label>
+
+                                    <input type="checkbox" class="taste-pill-input" id="rasa-hangat" name="karakter-rasa" value="Hangat Rempah">
+                                    <label class="taste-pill-label" for="rasa-hangat"><i class='bx bx-check-circle'></i> Hangat Rempah</label>
+                                </div>
+                            </div>
+
+                            <!-- Estimasi Harga -->
+                            <div class="mb-0">
+                                <label for="estimasi-harga" class="form-label small fw-semibold text-dark">Estimasi Harga Per Porsi / Kemasan</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light text-muted border-end-0">Rp</span>
+                                    <input type="text" class="form-control border-start-0" id="estimasi-harga" name="estimasi-harga" placeholder="Misal: 15.000 - 25.000">
+                                </div>
+                                <div class="form-text small">Tulis perkiraan kisaran harga pasaran lokal.</div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-5">
+                    
+                    <!-- Card 3: Upload Foto -->
+                    <div class="card border-0 shadow-sm rounded-4 mb-4">
+                        <div class="card-header bg-white border-0 pt-4 px-4 pb-0">
+                            <h5 class="fw-bold text-dark mb-0 d-flex align-items-center gap-2">
+                                <i class='bx bx-image-add text-success fs-4'></i> Foto Kuliner
+                            </h5>
+                        </div>
+                        <div class="card-body p-4">
+                            
+                            <div class="upload-zone" id="upload-zone">
+                                <input type="file" id="foto-kuliner" name="foto-kuliner" accept="image/*" class="d-none">
+                                
+                                <div id="upload-placeholder">
+                                    <i class='bx bx-cloud-upload text-success display-4 mb-2'></i>
+                                    <h6 class="fw-bold mb-1 text-dark">Klik atau Seret Foto ke Sini</h6>
+                                    <p class="text-muted small mb-0">Format: png, PNG, atau WEBP (Maks. 5MB)</p>
+                                </div>
+                                
+                                <div id="preview-wrapper" class="d-none">
+                                    <div class="img-preview-container mb-2">
+                                        <img id="image-preview" src="#" alt="Preview Foto" class="img-preview img-fluid shadow-sm">
+                                    </div>
+                                    <div>
+                                        <button type="button" id="btn-hapus-foto" class="btn btn-sm btn-outline-danger mt-1">
+                                            <i class='bx bx-trash me-1'></i>Ganti Foto
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Submit & Batal -->
+                    <div class="card border-0 shadow-sm rounded-4 p-4 text-center">
+                        <button type="submit" id="btn-submit-kuliner" class="btn btn-success btn-lg fw-bold w-100 mb-2 py-2 fs-6 shadow-sm">
+                            <i class='bx bx-send me-1'></i> Kirim Rekomendasi
+                        </button>
+                        <a href="daftar-kuliner.html" id="btn-batal" class="btn btn-link text-muted text-decoration-none small">
+                            Batal & Kembali
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <!-- Modal Konfirmasi Sukses Submit -->
+        <div class="modal fade" id="modal-sukses" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content border-0 rounded-4 shadow">
+                    <div class="modal-body text-center p-4">
+                        <div class="my-3">
+                            <i class='bx bx-check-circle text-success display-1'></i>
+                        </div>
+                        <h4 class="fw-bold text-dark mb-2">Terima Kasih!</h4>
+                        <p class="text-muted small mb-4">Rekomendasi kuliner Anda telah berhasil terkirim dan akan diverifikasi oleh tim penjelajah rasa.</p>
+                        <div class="d-flex justify-content-center gap-2">
+                            <a href="daftar-kuliner.html" id="btn-ke-daftar-kuliner" class="btn btn-success px-4">Lihat Daftar Kuliner</a>
+                            <button type="button" id="btn-tambah-lagi" class="btn btn-light border px-4" data-bs-dismiss="modal">Tambah Lagi</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    <!-- Footer -->
+    <footer id="main-footer" class="site-footer">
+        <div class="footer-container">
+            <div class="footer-grid">
+                <div id="footer-col-about" class="footer-col">
+                    <h5 id="footer-brand-title" class="footer-brand">
+                        <i class='bx bx-map-pin icon-brand'></i> JelajahRasa
+                    </h5>
+                    <p class="footer-desc">Platform direktori kuliner yang merangkum kekayaan rasa dari berbagai kota dan kabupaten di Jawa Barat.</p>
+                </div>
+                <!-- Kolom Navigasi -->
+                <div id="footer-col-nav" class="footer-col">
+                    <h6 class="footer-heading">Navigasi Halaman</h6>
+                    <ul class="footer-nav-list">
+                        <li class="footer-nav-item"><a href="index.html" class="footer-nav-link">Beranda</a></li>
+                        <li class="footer-nav-item"><a href="daftar-kuliner.html" class="footer-nav-link">Daftar Kuliner</a></li>
+                        <li class="footer-nav-item"><a href="tambah-kuliner.html" class="footer-nav-link">Tambah Kuliner</a></li>
+                        <li class="footer-nav-item"><a href="favorit.html" class="footer-nav-link">Favorit</a></li>
+                        <li class="footer-nav-item"><a href="faq.html" class="footer-nav-link">FAQ</a></li>
+                    </ul>
+                </div>
+                <!-- Kolom Kontak -->
+                <div id="footer-col-contact" class="footer-col">
+                    <h6 class="footer-heading">Hubungi Kami</h6>
+                    <p class="contact-item"><i class='bx bx-envelope icon-contact'></i> halo@jelajahrasajabar.id</p>
+                    <p class="contact-item"><i class='bx bx-phone icon-contact'></i> +62 812-1326-3927</p>
+                    <div class="social-links-wrapper">
+                        <a href="#" id="link-instagram" class="social-link"><i class='bx bxl-instagram'></i></a>
+                        <a href="#" id="link-facebook" class="social-link"><i class='bx bxl-facebook'></i></a>
+                        <a href="#" id="link-youtube" class="social-link"><i class='bx bxl-youtube'></i></a>
+                    </div>
+                </div>
+            </div>
+            <hr class="footer-divider">
+            <!-- Copyright -->
+            <div class="footer-copyright">
+                <p id="copyright-text" class="copyright-text">&copy; 2026 Jelajah Rasa Jawa Barat. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
