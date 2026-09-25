@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard- JelajahRasa</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+</head>
+<body class="body-admin">
+    <!-- Header / Navbar Admin -->
+    <header class="header-admin border-bottom py-2 px-4 d-flex justify-content-between align-items-center">
+        <a class="logo-brand text-decoration-none text-dark" href="admin-dashboard.html">
+            <i class='bx bx-map-pin'></i> JelajahRasa <span class="badge bg-primary">Admin Dashboard</span>
+        </a>
+        <div class="profil-admin d-flex align-items-center">
+            <img src="images/default-avatar.png" class="rounded-circle" width="35" height="35" alt="Foto Admin">
+            <span>Admin</span>
+            <a href="login.html" class="btn btn-sm btn-outline-danger">
+                <i class='bx bx-log-out'></i> Keluar
+            </a>
+        </div>
+    </header>
+
+    <div class="container-fluid my-4">
+        <div class="row">
+            <nav class="col-md-3 col-lg-2">
+                <div class="list-group nav-menu" id="tab-menu" role="tablist">
+                    <a href="#tab-ringkasan" class="list-group-item list-group-item-action active" data-bs-toggle="pill" role="tab">
+                        <i class='bx bx-grid-alt me-2'></i>Ringkasan
+                    </a>
+                    <a href="#tab-kelola-kuliner" class="list-group-item list-group-item-action" data-bs-toggle="pill" role="tab">
+                        <i class='bx bx-restaurant me-2'></i>Kelola Kuliner
+                    </a>
+                </div>
+            </nav>
+
+            <!-- Konten Utama -->
+            <main class="col-md-9 col-lg-10 tab-content">
+                <!-- Ringkasan & Statistik -->
+                <div class="tab-pane fade show active" id="tab-ringkasan" role="tabpanel">
+                    <h3>Ringkasan Statistik</h3>
+                    
+                    <!-- Kartu Statistik -->
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <div class="kartu-stat border rounded bg-white">
+                                <span>Total Kuliner</span>
+                                <h3 id="stat-total-kuliner">0</h3>
+                                <small class="text-muted">Terdaftar dalam sistem</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="kartu-stat border rounded bg-white">
+                                <span>Perlu Menunggu</span>
+                                <h3 id="stat-perlu-menunggu">0</h3>
+                                <small class="text-muted">Perlu ditinjau admin</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="kartu-stat border rounded bg-white">
+                                <span>Total Usulan</span>
+                                <h3 id="stat-total-usulan">0</h3>
+                                <small class="text-muted">Total dari pengguna</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="kartu-stat kartu-tombol border rounded bg-white" data-bs-toggle="modal" data-bs-target="#modal-peringkat-favorit">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span>Total Favorit</span>
+                                    <i class='bx bx-chevron-right'></i>
+                                </div>
+                                <h3 id="stat-total-favorit">0</h3>
+                                <small class="text-danger"><i class='bx bx-trophy me-1'></i>Top 5 Terfavorit</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Statistik per Kategori -->
+                    <div class="box-stat-kategori border rounded bg-white">
+                        <h5>Sebaran Data per Kategori</h5>
+                        <div class="row text-center g-2" id="wadah-stat-kategori">
+                            <div class="col-6 col-md-3">
+                                <div class="border rounded bg-light">
+                                    <small class="text-muted d-block">Makanan</small>
+                                    <h4 id="hitung-makanan">0</h4>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <div class="border rounded bg-light">
+                                    <small class="text-muted d-block">Minuman</small>
+                                    <h4 id="hitung-minuman">0</h4>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <div class="border rounded bg-light">
+                                    <small class="text-muted d-block">Jajanan</small>
+                                    <h4 id="hitung-jajanan">0</h4>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <div class="border rounded bg-light">
+                                    <small class="text-muted d-block">Oleh-Oleh Khas</small>
+                                    <h4 id="hitung-oleholeh">0</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tabel Usulan Terbaru dari User -->
+                    <div class="box-tabel border rounded bg-white">
+                        <h5>Pengajuan Rekomendasi Terbaru</h5>
+                        <div class="table-responsive">
+                            <table class="table align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Nama Kuliner</th>
+                                        <th>Pengirim</th>
+                                        <th>Tanggal</th>
+                                        <th>Status</th>
+                                        <th class="text-center">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabel-usulan-terbaru">
+                                    <tr class="baris-kosong">
+                                        <td colspan="5" class="text-center text-muted">
+                                            <i class='bx bx-inbox d-block'></i>
+                                            <span>Belum ada pengajuan rekomendasi kuliner baru.</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Kelola Kuliner -->
+                <div class="tab-pane fade" id="tab-kelola-kuliner" role="tabpanel">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4>Daftar Semua Kuliner</h4>
+                        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modal-tambah-kuliner">
+                            <i class='bx bx-plus me-1'></i>Tambah Kuliner
+                        </button>
+                    </div>
+
+                    <div class="box-tabel border rounded bg-white">
+                        <div class="table-responsive">
+                            <table class="table align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Nama Kuliner</th>
+                                        <th>Kategori</th>
+                                        <th>Asal Daerah</th>
+                                        <th>Status</th>
+                                        <th class="text-center">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabel-daftar-kuliner">
+                                    <tr class="baris-kosong">
+                                        <td colspan="5" class="text-center text-muted">
+                                            <i class='bx bx-folder-open d-block'></i>
+                                            <span>Dataset kuliner belum tersedia. Silakan tambah data baru.</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Popup: Tambah Kuliner -->
+    <div class="modal fade" id="modal-tambah-kuliner" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class='bx bx-plus-circle me-1'></i> Tambah Kuliner Baru</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="form-tambah-kuliner">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="tambah-nama" class="form-label">Nama Kuliner *</label>
+                                <input type="text" class="form-control" id="tambah-nama" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="tambah-kategori" class="form-label">Kategori *</label>
+                                <select class="form-select" id="tambah-kategori" required>
+                                    <option value="" selected disabled>-- Pilih Kategori --</option>
+                                    <option value="Makanan">Makanan</option>
+                                    <option value="Jajanan">Jajanan</option>
+                                    <option value="Minuman">Minuman</option>
+                                    <option value="Oleh-Oleh Khas">Oleh-Oleh Khas</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="tambah-daerah" class="form-label">Asal Daerah *</label>
+                                <select class="form-select" id="tambah-daerah" required>
+                                    <option value="" selected disabled>-- Pilih Kota/Kabupaten --</option>
+                                    <!-- Penyesuaian kota/kab belum fix -->
+                                    <option value="Kota Bandung">Kota Bandung</option>
+                                    <option value="Kota Tasikmalaya">Kota Tasikmalaya</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="tambah-status" class="form-label">Status Publikasi</label>
+                                <select class="form-select" id="tambah-status">
+                                    <option value="Aktif" selected>Aktif</option>
+                                    <option value="Nonaktif">Nonaktif</option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label for="tambah-bahan" class="form-label">Bahan Utama</label>
+                                <input type="text" class="form-control" id="tambah-bahan">
+                            </div>
+                            <div class="col-12">
+                                <label for="tambah-deskripsi" class="form-label">Deskripsi</label>
+                                <textarea class="form-control" id="tambah-deskripsi" rows="3"></textarea>
+                            </div>
+                            <div class="col-12">
+                                <label for="tambah-gambar" class="form-label">Unggah Gambar</label>
+                                <input type="file" class="form-control" id="tambah-gambar" accept="image/*">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" form="form-tambah-kuliner" class="btn btn-success">Simpan Data</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Popup: Edit Kuliner -->
+    <div class="modal fade" id="modal-edit-kuliner" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class='bx bx-edit me-1'></i> Perbarui Data Kuliner</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="form-edit-kuliner">
+                        <input type="hidden" id="edit-id">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="edit-nama" class="form-label">Nama Kuliner *</label>
+                                <input type="text" class="form-control" id="edit-nama" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="edit-kategori" class="form-label">Kategori *</label>
+                                <select class="form-select" id="edit-kategori" required>
+                                    <option value="Makanan">Makanan</option>
+                                    <option value="Jajanan">Jajanan</option>
+                                    <option value="Minuman">Minuman</option>
+                                    <option value="Oleh-Oleh Khas">Oleh-Oleh Khas</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="edit-daerah" class="form-label">Asal Daerah *</label>
+                                <select class="form-select" id="edit-daerah" required>
+                                    <option value="Kota Tasikmalaya">Kota Tasikmalaya</option>
+                                    <option value="Kota Bandung">Kota Bandung</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="edit-status" class="form-label">Status Publikasi</label>
+                                <select class="form-select" id="edit-status">
+                                    <option value="Aktif">Aktif</option>
+                                    <option value="Nonaktif">Nonaktif</option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label for="edit-bahan" class="form-label">Bahan Utama</label>
+                                <input type="text" class="form-control" id="edit-bahan">
+                            </div>
+                            <div class="col-12">
+                                <label for="edit-deskripsi" class="form-label">Deskripsi</label>
+                                <textarea class="form-control" id="edit-deskripsi" rows="3"></textarea>
+                            </div>
+                            <div class="col-12">
+                                <label for="edit-gambar" class="form-label">Ganti Gambar (Opsional)</label>
+                                <input type="file" class="form-control" id="edit-gambar" accept="image/*">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" form="form-edit-kuliner" class="btn btn-warning text-white">Perbarui Data</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Popup: Tolak / Revisi Note -->
+    <div class="modal fade" id="modal-tolak-usulan" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title"><i class='bx bx-x-circle me-1'></i> Tolak & Kirim Catatan Revisi</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="form-tolak-usulan">
+                        <input type="hidden" id="tolak-id-usulan">
+                        <div>
+                            <label for="tolak-alasan" class="form-label">Alasan Penolakan / Catatan Revisi *</label>
+                            <textarea class="form-control" id="tolak-alasan" rows="4" placeholder="Contoh: Foto kurang jelas, silakan ganti dengan foto yang lebih terang dan deskripsi kurang rinci." required></textarea>
+                            <div class="form-text">Catatan ini akan dikirimkan kepada pengirim agar mereka dapat melakukan perbaikan.</div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" form="form-tolak-usulan" class="btn btn-danger">Kirim Catatan Penolakan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Popup: Peringkat TOP 5 Favorit -->
+    <div class="modal fade" id="modal-peringkat-favorit" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class='bx bx-trophy text-warning me-2'></i>Top 5 Kuliner Terfavorit</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-0">
+                    <div class="table-responsive">
+                        <table class="table align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>No</th>
+                                    <th>Nama Kuliner</th>
+                                    <th>Kategori</th>
+                                    <th class="text-end">Jumlah Favorit</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabel-peringkat-favorit">
+                                <tr class="baris-kosong">
+                                    <td colspan="4" class="text-center text-muted">
+                                        <i class='bx bx-heart d-block'></i>
+                                        <span>Belum ada data favorit dari pengguna.</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="admin-script.js"></script>
+</body>
+</html>

@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Favorit - JelajahRasa</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header id="main-header" class="site-header">
+        <div class="header-container">
+            
+            <!-- Kiri: Tombol Garis Tiga & Logo -->
+            <div id="header-left" class="header-section-left">
+                <!-- Tombol Garis Tiga  -->
+                <button id="btn-toggle-sidebar" class="btn-sidebar" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar">
+                    <i class='bx bx-menu'></i>
+                </button>
+                <!-- Logo -->
+                <a id="logo" class="logo-link" href="index.html">
+                    <i class='bx bx-map-pin'></i> JelajahRasa
+                </a>
+            </div>
+
+            <!-- Tengah: Search Bar Template -->
+            <div id="header-center" class="header-section-center">
+                <form id="form-search-header" class="search-form" action="daftar-kuliner.html" method="GET">
+                    <span class="search-icon-wrapper">
+                        <i class='bx bx-search'></i>
+                    </span>
+                    <input id="input-search" class="search-input" type="text" name="search" placeholder="Cari kuliner atau daerah...">
+                    <button id="btn-search-submit" class="btn-search-submit" type="submit">Cari</button>
+                </form>
+            </div>
+
+            <!-- Kanan: Profil -->
+            <div id="header-right" class="header-profile-container">
+                <!-- Default Profil, berubah ketika sudah login (read name dari login) -->
+                <img id="user-avatar-desktop" class="user-avatar" src="images/default-avatar.png" alt="Foto Profil">
+                <div class="user-info-wrapper">
+                    <span id="user-name-desktop" class="user-name">Pengunjung</span>
+                    <a id="user-link-desktop" class="user-profile-link" href="login.html">Masuk / Daftar</a>
+                </div>
+            </div>
+
+        </div>
+    </header>
+
+    <!-- Sidebar Navigasi (Muncul saat Tombol Garis Tiga Diklik) -->
+    <div class="offcanvas-sidebar" tabindex="-1" id="offcanvasNavbar">
+        <div class="sidebar-header">
+            <h5 id="offcanvasNavbarLabel" class="sidebar-title">
+                <i class='bx bx-map-pin'></i> JelajahRasa
+            </h5>
+            <button id="btn-close-sidebar" class="btn-sidebar-close" type="button" data-bs-dismiss="offcanvas"></button>
+        </div>
+        <div class="sidebar-body">
+
+            <!-- Profil Pengguna Mobile / Tablet -->
+            <div id="sidebar-profile-section" class="sidebar-profile-container">
+                <div class="profile-card-mobile">
+                    <!-- Default Profil Mobile, berubah ketika sudah login -->
+                    <img id="user-avatar-mobile" class="user-avatar" src="images/default-avatar.png" alt="Foto Profil">
+                    <div class="user-info-mobile">
+                        <h6 id="user-name-mobile" class="user-name">Pengunjung</h6>
+                        <a id="user-link-mobile" class="user-profile-link" href="login.html">Masuk / Daftar</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- List Navigasi -->
+            <ul id="sidebar-nav-list" class="sidebar-nav-list">
+                <li class="nav-item">
+                    <a class="nav-link" href="index.html">
+                        <i class='bx bx-home-alt'></i>Beranda
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="daftar-kuliner.html">
+                        <i class='bx bx-restaurant'></i>Daftar Kuliner
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="tambah-kuliner.html">
+                        <i class='bx bx-plus-circle'></i>Tambah Kuliner
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="favorit.html">
+                        <i class='bx bx-heart'></i>Favorit
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#faq" data-bs-dismiss="offcanvas">
+                        <i class='bx bx-help-circle'></i>FAQ
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <main id="main-content" class="favorit-page">
+        <div class="container">
+            <!-- Breadcrumb Navigation -->
+            <nav id="breadcrumb-nav" class="mb-3">
+                <ol class="breadcrumb breadcrumb-list small">
+                    <li class="breadcrumb-item"><a href="index.html" class="text-success text-decoration-none nav-home-link"><i class='bx bx-home-alt me-1'></i>Beranda</a></li>
+                    <li class="breadcrumb-item active text-dark">Favorit</li>
+                </ol>
+            </nav>
+
+            <!-- Page Header -->
+            <header id="favorit-header" class="fav-header-container">
+                <div class="fav-header-text">
+                    <h2 id="favorit-title" class="fav-title">Kuliner Favorit Saya</h2>
+                    <p id="favorit-subtitle" class="fav-subtitle">Daftar hidangan khas Jawa Barat yang telah Anda simpan.</p>
+                </div>
+
+                <div class="fav-header-badge">
+                    <!-- Tersembunyi di Awal (Muncul saat ada Card Kuliner Difavoritkan) -->
+                    <span id="fav-badge-container" class="fav-badge">
+                        <i class='bx bxs-heart fav-badge-icon'></i> 
+                        <span id="favCount">0</span> Kuliner Disimpan
+                    </span>
+                </div>
+            </header>
+        </div>
+
+        <!-- Tampilan Saat Favorit Kosong (Default) -->
+        <div id="empty-favorite" class="text-center py-5">
+            <div class="mb-3">
+                <i class="bi bi-heartbreak text-muted"></i>
+            </div>
+            <h4 class="fw-bold text-secondary">Belum ada kuliner favorit</h4>
+            <p class="text-muted mb-4">Anda belum menambahkan kuliner Jawa Barat ke dalam daftar favorit Anda.</p>
+            <a href="daftar-kuliner.html" class="btn btn-primary rounded-pill px-4 py-2">
+                Jelajahi Kuliner
+            </a>
+        </div>
+
+        <!-- Container Card Favorit (Awalnya Disembunyikan) -->
+        <div id="favorite-container" class="row g-4 d-none">
+            <!-- Card kuliner favorit akan dimasukkan di sini lewat JavaScript -->
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white pt-5 pb-3 mt-5">
+        <div class="container">
+            <div class="row g-4 mb-4">
+                <div class="col-md-4">
+                    <h5 class="fw-bold text-success d-flex align-items-center mb-3">
+                        <i class='bx bx-map-pin me-1 fs-4'></i> JelajahRasa
+                    </h5>
+                    <p class="small text-secondary">Platform direktori kuliner khas Jawa Barat yang merangkum kekayaan rasa dari 27 Kota & Kabupaten Parahyangan.</p>
+                </div>
+                <div class="col-md-4">
+                    <h6 class="fw-bold mb-3">Navigasi Cepat</h6>
+                    <ul class="list-unstyled small">
+                        <li class="mb-2"><a href="index.html" class="text-secondary text-decoration-none">Beranda</a></li>
+                        <li class="mb-2"><a href="daftar-kuliner.html" class="text-secondary text-decoration-none">Daftar Kuliner</a></li>
+                        <li class="mb-2"><a href="favorit.html" class="text-secondary text-decoration-none">Kuliner Favorit</a></li>
+                        <li class="mb-2"><a href="tambah-kuliner.html" class="text-secondary text-decoration-none">Tambah Kuliner Baru</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h6 class="fw-bold mb-3">Hubungi Kami</h6>
+                    <p class="small text-secondary mb-1"><i class='bx bx-envelope me-2'></i> info@jelajahrasajabar.id</p>
+                    <p class="small text-secondary mb-3"><i class='bx bx-phone me-2'></i> +62 812-3456-7890</p>
+                    <div class="d-flex gap-2 fs-5">
+                        <a href="#" class="text-secondary"><i class='bx bxl-instagram'></i></a>
+                        <a href="#" class="text-secondary"><i class='bx bxl-facebook'></i></a>
+                        <a href="#" class="text-secondary"><i class='bx bxl-youtube'></i></a>
+                    </div>
+                </div>
+            </div>
+            <hr class="border-secondary">
+            <div class="text-center small text-secondary">
+                <p class="mb-0">&copy; 2026 Jelajah Rasa Jawa Barat. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Script Interaktif Hapus Favorit -->
+    <script>
+        function removeFavorit(button) {
+            const cardItem = button.closest('.favorit-item');
+            cardItem.remove();
+
+            // Update jumlah hitungan
+            const remainingItems = document.querySelectorAll('.favorit-item').length;
+            document.getElementById('favCount').textContent = remainingItems;
+
+            // Jika item habis, tampilkan ucapan/halaman kosong
+            if (remainingItems === 0) {
+                document.getElementById('favoritContainer').classList.add('d-none');
+                document.getElementById('emptyFavorit').classList.remove('d-none');
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beranda - JelajahRasa</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+</head>
+    
+<body>
+    <!-- Header -->
+    <header id="main-header" class="site-header">
+        <div class="header-container">
+            
+            <!-- Kiri: Tombol Garis Tiga & Logo -->
+            <div id="header-left" class="header-section-left">
+                <!-- Tombol Garis Tiga  -->
+                <button id="btn-toggle-sidebar" class="btn-sidebar" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar">
+                    <i class='bx bx-menu'></i>
+                </button>
+                <!-- Logo -->
+                <a id="logo" class="logo-link" href="index.html">
+                    <i class='bx bx-map-pin'></i> JelajahRasa
+                </a>
+            </div>
+
+            <!-- Tengah: Search Bar Template -->
+            <div id="header-center" class="header-section-center">
+                <form id="form-search-header" class="search-form" action="daftar-kuliner.html" method="GET">
+                    <span class="search-icon-wrapper">
+                        <i class='bx bx-search'></i>
+                    </span>
+                    <input id="input-search" class="search-input" type="text" name="search" placeholder="Cari kuliner atau daerah...">
+                    <button id="btn-search-submit" class="btn-search-submit" type="submit">Cari</button>
+                </form>
+            </div>
+
+            <!-- Kanan: Profil -->
+            <div id="header-right" class="header-profile-container">
+                <!-- Default Profil, berubah ketika sudah login (read name dari login) -->
+                <img id="user-avatar-desktop" class="user-avatar" src="images/default-avatar.png" alt="Foto Profil">
+                <div class="user-info-wrapper">
+                    <span id="user-name-desktop" class="user-name">Pengunjung</span>
+                    <a id="user-link-desktop" class="user-profile-link" href="login.html">Masuk / Daftar</a>
+                </div>
+            </div>
+
+        </div>
+    </header>
+
+    <!-- Sidebar Navigasi (Muncul saat Tombol Garis Tiga Diklik) -->
+    <div class="offcanvas-sidebar" tabindex="-1" id="offcanvasNavbar">
+        <div class="sidebar-header">
+            <h5 id="offcanvasNavbarLabel" class="sidebar-title">
+                <i class='bx bx-map-pin'></i> JelajahRasa
+            </h5>
+            <button id="btn-close-sidebar" class="btn-sidebar-close" type="button" data-bs-dismiss="offcanvas"></button>
+        </div>
+        <div class="sidebar-body">
+
+            <!-- Profil Pengguna Mobile / Tablet -->
+            <div id="sidebar-profile-section" class="sidebar-profile-container">
+                <div class="profile-card-mobile">
+                    <!-- Default Profil Mobile, berubah ketika sudah login -->
+                    <img id="user-avatar-mobile" class="user-avatar" src="images/default-avatar.png" alt="Foto Profil">
+                    <div class="user-info-mobile">
+                        <h6 id="user-name-mobile" class="user-name">Pengunjung</h6>
+                        <a id="user-link-mobile" class="user-profile-link" href="login.html">Masuk / Daftar</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- List Navigasi -->
+            <ul id="sidebar-nav-list" class="sidebar-nav-list">
+                <li class="nav-item">
+                    <a class="nav-link" href="index.html">
+                        <i class='bx bx-home-alt'></i>Beranda
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="daftar-kuliner.html">
+                        <i class='bx bx-restaurant'></i>Daftar Kuliner
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="tambah-kuliner.html">
+                        <i class='bx bx-plus-circle'></i>Tambah Kuliner
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="favorit.html">
+                        <i class='bx bx-heart'></i>Favorit
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#faq" data-bs-dismiss="offcanvas">
+                        <i class='bx bx-help-circle'></i>FAQ
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <main id="main-content" class="main-content">
+        <!-- Hero Section -->
+        <section id="hero-section" class="hero-section">
+            <div class="hero-container">
+                <div class="hero-wrapper">
+                    <div class="hero-text-content">
+                        <span class="hero-quote">
+                            "Satu Tampah Rasa, Sejuta Cerita Parahyangan"
+                        </span>
+                        <h1 class="hero-title">Jelajah Rasa Jawa Barat</h1>
+                        <p class="hero-description">Temukan 200+ cita rasa otentik yang tersebar dari pusat kota hingga sudut Pasundan.</p>
+                        <div class="hero-action-buttons">
+                            <a href="#peta-rasa" id="btn-hero-peta" class="btn-hero btn-hero-primary">Jelajah Peta Rasa</a>
+                            <a href="daftar-kuliner.html" id="btn-hero-daftar" class="btn-hero btn-hero-secondary">Lihat Daftar Kuliner</a>
+                        </div>
+                    </div>
+                    <!-- Carousel Slider Gambar -->
+                    <div class="hero-carousel-wrapper">
+                        <div id="heroCarousel" class="hero-carousel" data-bs-ride="carousel" data-bs-interval="3500">
+                            <div class="carousel-inner-list">
+                                <div class="carousel-item-wrapper active">
+                                    <img id="img-hero-1" class="carousel-image" src="images/nasi-tutug-oncom.jpg" alt="Nasi Tutug Oncom">
+                                    <div class="carousel-caption-overlay">
+                                        <h6 class="carousel-caption-title">Nasi Tutug Oncom Tasikmalaya</h6>
+                                    </div>
+                                </div>
+                                <div class="carousel-item-wrapper">
+                                    <img id="img-hero-2" class="carousel-image" src="images/batagor.jpg" alt="Batagor Bandung">
+                                    <div class="carousel-caption-overlay">
+                                        <h6 class="carousel-caption-title">Batagor Bandung</h6>
+                                    </div>
+                                </div>
+                                <div class="carousel-item-wrapper">
+                                    <img id="img-hero-3" class="carousel-image" src="images/es-goyobod.jpg" alt="Es Goyobod Garut">
+                                    <div class="carousel-caption-overlay">
+                                        <h6 class="carousel-caption-title">Es Goyobod Garut</h6>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Ringkasan Statistik -->
+        <section id="stats-section" class="stats-section">
+            <div class="stats-container">
+                <div class="stats-grid">
+                    <div class="stat-card"><h5 class="stat-number">200+</h5><small class="stat-label">Kuliner</small></div>
+                    <div class="stat-card"><h5 class="stat-number">27</h5><small class="stat-label">Kota/Kab</small></div>
+                    <div class="stat-card"><h5 class="stat-number">4</h5><small class="stat-label">Kategori</small></div>
+                    <div class="stat-card"><h5 class="stat-number">100%</h5><small class="stat-label">Lokal</small></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Kategori Utama -->
+        <section id="kategori" class="kategori-section">
+            <div class="kategori-container">
+                <div class="section-header center-text">
+                    <h3 class="section-title">Kategori Utama</h3>
+                    <p class="section-subtitle">Pilih jenis kuliner khas yang ingin dicari</p>
+                </div>
+                <div class="kategori-grid">
+                    <div class="kategori-card-wrapper">
+                        <div class="kategori-card">
+                            <i class="kategori-icon icon-makanan"></i>
+                            <h6 class="kategori-title">Makanan</h6>
+                            <a class="kategori-link" href="daftar-kuliner.html">Lihat Kategori</a>
+                        </div>
+                    </div>
+                    <div class="kategori-card-wrapper">
+                        <div class="kategori-card">
+                            <i class="kategori-icon icon-jajanan"></i>
+                            <h6 class="kategori-title">Jajanan</h6>
+                            <a class="kategori-link" href="daftar-kuliner.html">Lihat Kategori</a>
+                        </div>
+                    </div>
+                    <div class="kategori-card-wrapper">
+                        <div class="kategori-card">
+                            <i class="kategori-icon icon-minuman"></i>
+                            <h6 class="kategori-title">Minuman</h6>
+                            <a class="kategori-link" href="daftar-kuliner.html">Lihat Kategori</a>
+                        </div>
+                    </div>
+                    <div class="kategori-card-wrapper">
+                        <div class="kategori-card">
+                            <i class="kategori-icon icon-oleh-oleh"></i>
+                            <h6 class="kategori-title">Oleh-Oleh Khas</h6>
+                            <a class="kategori-link" href="daftar-kuliner.html">Lihat Kategori</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Peta Rasa Jawa Barat -->
+        <section id="peta-rasa" class="peta-section">
+            <div class="peta-container-main">
+                <div class="section-header">
+                    <h3 class="section-title">Peta Rasa Jawa Barat</h3>
+                    <p class="section-subtitle">Peta interaktif sebaran kuliner khas di seluruh wilayah Jawa Barat.</p>
+                </div>
+                
+                <div class="peta-wrapper">
+                    <div class="peta-instruction">
+                        <small class="instruction-text">
+                            <i class='bx bx-info-circle'></i> Arahkan kursor pada titik lokasi
+                        </small>
+                    </div>
+
+                    <!-- Tombol Kontrol Zoom -->
+                    <div id="peta-zoom-controls" class="zoom-controls-wrapper">
+                        <button class="btn-zoom" id="btnZoomIn" title="Zoom In"><i class='bx bx-plus'></i></button>
+                        <button class="btn-zoom" id="btnZoomOut" title="Zoom Out"><i class='bx bx-minus'></i></button>
+                        <button class="btn-zoom" id="btnResetZoom" title="Reset Ukuran"><i class='bx bx-reset'></i></button>
+                    </div>
+
+                    <!-- Area Viewport Peta -->
+                    <div class="peta-viewport" id="petaViewport">
+                        <div id="petaContainer" class="peta-inner-container">
+                            <img id="img-peta-jabar" class="peta-image" src="images/peta-jabar.png" alt="Peta Jawa Barat">
+                            <!-- 9 KOTA -->
+                            <div class="peta-pin-item pin-kota-bandung">
+                                <button class="btn-pin" data-bs-toggle="popover" data-bs-trigger="hover" title="Kota Bandung" data-bs-content="Dominan Gurih, Olahan Tapioka, Herbal & Dingin Segar."><i class="bx bx-map-pin"></i></button>
+                                <span class="pin-label">Kota Bandung</span>
+                            </div>
+                            <div class="peta-pin-item pin-kota-bogor">
+                                <button class="btn-pin" data-bs-toggle="popover" data-bs-trigger="hover" title="Kota Bogor" data-bs-content="Segar Asam-Manis, Olahan Fermentasi (Asinan/Toge Goreng)."><i class="bx bx-map-pin"></i></button>
+                                <span class="pin-label">Kota Bogor</span>
+                            </div>
+                            <div class="peta-pin-item pin-kota-cirebon">
+                                <button class="btn-pin" data-bs-toggle="popover" data-bs-trigger="hover" title="Kota Cirebon" data-bs-content="Gurih Asin, Kuah Rempah Daging, & Olahan Hasil Laut."><i class="bx bx-map-pin"></i></button>
+                                <span class="pin-label">Kota Cirebon</span>
+                            </div>
+                            <div class="peta-pin-item pin-kota-bekasi">
+                                <button class="btn-pin" data-bs-toggle="popover" data-bs-trigger="hover" title="Kota Bekasi" data-bs-content="Gurih Pedas, Akulturasi Betawi-Sunda."><i class="bx bx-map-pin"></i></button>
+                                <span class="pin-label">Kota Bekasi</span>
+                            </div>
+                            <div class="peta-pin-item pin-kota-depok">
+                                <button class="btn-pin" data-bs-toggle="popover" data-bs-trigger="hover" title="Kota Depok" data-bs-content="Gurih Manis & Camilan Tradisional."><i class="bx bx-map-pin"></i></button>
+                                <span class="pin-label">Kota Depok</span>
+                            </div>
+                            <div class="peta-pin-item pin-kota-cimahi">
+                                <button class="btn-pin" data-bs-toggle="popover" data-bs-trigger="hover" title="Kota Cimahi" data-bs-content="Gurih, Olahan Singkong & Camilan Renyah."><i class="bx bx-map-pin"></i></button>
+                                <span class="pin-label">Kota Cimahi</span>
+                            </div>
+                            <div class="peta-pin-item pin-kota-tasikmalaya">
+                                <button class="btn-pin" data-bs-toggle="popover" data-bs-trigger="hover" title="Kota Tasikmalaya" data-bs-content="Gurih Pedas, Oncom Fermentasi, & Olahan Bakso."><i class="bx bx-map-pin"></i></button>
+                                <span class="pin-label">Kota Tasikmalaya</span>
+                            </div>
+                            <div class="peta-pin-item pin-kota-banjar">
+                                <button class="btn-pin" data-bs-toggle="popover" data-bs-trigger="hover" title="Kota Banjar" data-bs-content="Gurih Asin, Kuah Kaldu Daging & Jajanan Pasar."><i class="bx bx-map-pin"></i></button>
+                                <span class="pin-label">Kota Banjar</span>
+                            </div>
+                            <div class="peta-pin-item pin-kota-sukabumi">
+                                <button class="btn-pin" data-bs-toggle="popover" data-bs-trigger="hover" title="Kota Sukabumi" data-bs-content="Manis Kenyal (Mochi), Bubur Gurih Rempah."><i class="bx bx-map-pin"></i></button>
+                                <span class="pin-label">Kota Sukabumi</span>
+                            </div>
+
+                            <!-- 18 KABUPATEN -->
+                            <div class="peta-pin-item pin-kab-sumedang">
+                                <button class="btn-pin" data-bs-toggle="popover" data-bs-trigger="hover" title="Kab. Sumedang" data-bs-content="Gurih Renyah (Tahu) & Manis Alami (Ubi Cilembu).">
+                                    <i class="bx bx-map-pin"></i>
+                                </button>
+                                <span class="pin-label">Kab. Sumedang</span>
+                            </div>
+
+                            <div class="peta-pin-item pin-kab-garut">
+                                <button class="btn-pin" data-bs-toggle="popover" data-bs-trigger="hover" title="Kab. Garut" data-bs-content="Manis Legit (Dodol), Gurih Pedas, & Es Goyobod.">
+                                    <i class="bx bx-map-pin"></i>
+                                </button>
+                                <span class="pin-label">Kab. Garut</span>
+                            </div>
+
+                            <div class="peta-pin-item pin-kab-tasikmalaya">
+                                <button class="btn-pin" data-bs-toggle="popover" data-bs-trigger="hover" title="Kab. Tasikmalaya" data-bs-content="Pedas Segar (Sambal Goang) & Rempah Nasi Cikur.">
+                                    <i class="bx bx-map-pin"></i>
+                                </button>
+                                <span class="pin-label">Kab. Tasikmalaya</span>
+                            </div>
+
+                            <div class="peta-pin-item pin-kab-ciamis">
+                                <button class="btn-pin" data-bs-toggle="popover" data-bs-trigger="hover" title="Kab. Ciamis" data-bs-content="Gurih Kelapa (Galendo) & Sale Pisang Manis.">
+                                    <i class="bx bx-map-pin"></i>
+                                </button>
+                                <span class="pin-label">Kab. Ciamis</span>
+                            </div>
+
+                            <div class="peta-pin-item pin-kab-kuningan">
+                                <button class="btn-pin" data-bs-toggle="popover" data-bs-trigger="hover" title="Kab. Kuningan" data-bs-content="Manis Fermentasi (Tape Ketan) & Nasi Kasreng.">
+                                    <i class="bx bx-map-pin"></i>
+                                </button>
+                                <span class="pin-label">Kab. Kuningan</span>
+                            </div>
+
+                            <div class="peta-pin-item pin-kab-majalengka">
+                                <button class="btn-pin" data-bs-toggle="popover" data-bs-trigger="hover" title="Kab. Majalengka" data-bs-content="Gurih Jalakotek & Kecap Manis Legendaris.">
+                                    <i class="bx bx-map-pin"></i>
+                                </button>
+                                <span class="pin-label">Kab. Majalengka</span>
+                            </div>
+
+                            <div class="peta-pin-item pin-kab-indramayu">
+                                <button class="btn-pin" data-bs-toggle="popover" data-bs-trigger="hover" title="Kab. Indramayu" data-bs-content="Manis Segar Mangga Dermayu & Nasi Lengko.">
+                                    <i class="bx bx-map-pin"></i>
+                                </button>
+                                <span class="pin-label">Kab. Indramayu</span>
+                            </div>
+
+                            <div class="peta-pin-item pin-kab-subang">
+                                <button class="btn-pin" data-bs-toggle="popover" data-bs-trigger="hover" title="Kab. Subang" data-bs-content="Manis Asam Segar (Nanas Madu Subang).">
+                                    <i class="bx bx-map-pin"></i>
+                                </button>
+                                <span class="pin-label">Kab. Subang</span>
+                            </div>
+
+                            <div class="peta-pin-item pin-kab-purwakarta">
+                                <button class="btn-pin" data-bs-toggle="popover" data-bs-trigger="hover" title="Kab. Purwakarta" data-bs-content="Manis Gurih Bakaran (Sate Maranggi) & Simping.">
+                                    <i class="bx bx-map-pin"></i>
+                                </button>
+                                <span class="pin-label">Kab. Purwakarta</span>
+                            </div>
+
+                            <div class="peta-pin-item pin-kab-karawang">
+                                <button class="btn-pin" data-bs-toggle="popover" data-bs-trigger="hover" title="Kab. Karawang" data-bs-content="Manis Pandan (Sorabi Hijau) & Opak Ketan.">
+                                    <i class="bx bx-map-pin"></i>
+                                </button>
+                                <span class="pin-label">Kab. Karawang</span>
+                            </div>
+
+                            <div class="peta-pin-item pin-kab-cianjur">
+                                <button class="btn-pin" data-bs-toggle="popover" data-bs-trigger="hover" title="Kab. Cianjur" data-bs-content="Asin Gurih Tauco & Manisan Buah Khas.">
+                                    <i class="bx bx-map-pin"></i>
+                                </button>
+                                <span class="pin-label">Kab. Cianjur</span>
+                            </div>
+
+                            <div class="peta-pin-item pin-kab-sukabumi">
+                                <button class="btn-pin" data-bs-toggle="popover" data-bs-trigger="hover" title="Kab. Sukabumi" data-bs-content="Gurih Santan Roti Priangan & Olahan Laut.">
+                                    <i class="bx bx-map-pin"></i>
+                                </button>
+                                <span class="pin-label">Kab. Sukabumi</span>
+                            </div>
+
+                            <div class="peta-pin-item pin-kab-bogor">
+                                <button class="btn-pin" data-bs-toggle="popover" data-bs-trigger="hover" title="Kab. Bogor" data-bs-content="Gurih Laksa Rempah & Roti Unyil.">
+                                    <i class="bx bx-map-pin"></i>
+                                </button>
+                                <span class="pin-label">Kab. Bogor</span>
+                            </div>
+
+                            <div class="peta-pin-item pin-kab-bandung">
+                                <button class="btn-pin" data-bs-toggle="popover" data-bs-trigger="hover" title="Kab. Bandung" data-bs-content="Manis Kalua Jeruk & Hangat Bajigur.">
+                                    <i class="bx bx-map-pin"></i>
+                                </button>
+                                <span class="pin-label">Kab. Bandung</span>
+                            </div>
+
+                            <div class="peta-pin-item pin-kab-bandung-barat">
+                                <button class="btn-pin" data-bs-toggle="popover" data-bs-trigger="hover" title="Kab. Bandung Barat" data-bs-content="Manis Legit Wajit Cililin Khas Ketan.">
+                                    <i class="bx bx-map-pin"></i>
+                                </button>
+                                <span class="pin-label">Kab. Bandung Barat</span>
+                            </div>
+
+                            <div class="peta-pin-item pin-kab-pangandaran">
+                                <button class="btn-pin" data-bs-toggle="popover" data-bs-trigger="hover" title="Kab. Pangandaran" data-bs-content="Asam Gurih Pindang Gunung & Seafood Segar.">
+                                    <i class="bx bx-map-pin"></i>
+                                </button>
+                                <span class="pin-label">Kab. Pangandaran</span>
+                            </div>
+
+                            <div class="peta-pin-item pin-kab-bekasi">
+                                <button class="btn-pin" data-bs-toggle="popover" data-bs-trigger="hover" title="Kab. Bekasi" data-bs-content="Gurih Gabus Pucung & Sayur Asem Khas.">
+                                    <i class="bx bx-map-pin"></i>
+                                </button>
+                                <span class="pin-label">Kab. Bekasi</span>
+                            </div>
+
+                            <div class="peta-pin-item pin-kab-cirebon">
+                                <button class="btn-pin" data-bs-toggle="popover" data-bs-trigger="hover" title="Kab. Cirebon" data-bs-content="Asam Manis Gurih (Tahu Gejrot) & Es Doger.">
+                                    <i class="bx bx-map-pin"></i>
+                                </button>
+                                <span class="pin-label">Kab. Cirebon</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Rekomendasi Kuliner -->
+        <section id="rekomendasi" class="rekomendasi-section">
+            <div class="rekomendasi-container">
+                <div class="section-header">
+                    <h3 class="section-title">Rekomendasi Kuliner</h3>
+                    <p class="section-subtitle">Pilihan favorit dari beragam kategori cita rasa khas Jawa Barat.</p>
+                </div>
+
+                <!-- Card Rekomendasi (Satu per Kategori) -->
+                <div class="rekomendasi-grid">
+                    <!-- Kategori Makanan -->
+                    <div class="rekomendasi-card-item">
+                        <div id="card-tutug-oncom" class="makanan-card">
+                            <img id="img-tutug-oncom" class="food-card-img" src="images/nasi-tutug-oncom.jpg" alt="Nasi Tutug Oncom">
+                            <div class="makanan-card-body">
+                                <span class="food-badge">Makanan</span>
+                                <h6 id="title-tutug-oncom" class="food-title">Nasi Tutug Oncom</h6>
+                                <p class="food-location"><i class='bx bx-map-pin'></i> Kota Tasikmalaya</p>
+                                
+                                <!-- Tombol Toggle Collapse -->
+                                <button id="btn-toggle-tutug-oncom" class="btn-collapse-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#detailTutugOncom" aria-expanded="false" aria-controls="detailTutugOncom">
+                                    <span class="btn-text">Lihat Detail</span>
+                                    <i class='bx bx-chevron-down'></i>
+                                </button>
+
+                                <!-- Konten Detail yang Bisa Membuka ke Bawah -->
+                                <div class="collapse" id="detailTutugOncom">
+                                    <div class="detail-info border-top">
+                                        <p class="deskripsi">Nasi hangat yang ditumbuk bersama oncom goreng gurih bumbu kencur dan bawang.</p>
+                                        <p class="detail-item"><strong>Bahan utama:</strong> Nasi, Oncom, Kencur, Bawang Merah, Sambal.</p>
+                                        <p class="detail-item"><strong>Karakter Rasa:</strong> Gurih, Harum Kencur, Pedas.</p>
+                                        <p class="harga-range"><strong>Estimasi Harga:</strong> Rp 15.000 - Rp 30.000 / porsi</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Kategori Jajanan -->
+                    <div class="rekomendasi-card-item">
+                        <div id="card-batagor" class="makanan-card">
+                            <img id="img-batagor" class="food-card-img" src="images/batagor.jpg" alt="Batagor Bandung">
+                            <div class="makanan-card-body">
+                                <span class="food-badge">Jajanan</span>
+                                <h6 id="title-batagor" class="food-title">Batagor Bandung</h6>
+                                <p class="food-location"><i class='bx bx-map-pin'></i> Kota Bandung</p>
+                                
+                                <!-- Tombol Toggle Collapse -->
+                                <button id="btn-toggle-batagor" class="btn-collapse-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#detailBatagor" aria-expanded="false" aria-controls="detailBatagor">
+                                    <span class="btn-text">Lihat Detail</span>
+                                    <i class='bx bx-chevron-down'></i>
+                                </button>
+
+                                <!-- Konten Detail Batagor -->
+                                <div class="collapse" id="detailBatagor">
+                                    <div class="detail-info border-top">
+                                        <p class="deskripsi">Bakso tahu goreng berbahan dasar adonan ikan tenggiri yang disiram kuah kacang gurih dan perasan jeruk purut.</p>
+                                        <p class="detail-item"><strong>Bahan utama:</strong> Tahu, Ikan Tenggiri, Tepung Tapioka, Bumbu Kacang, Jeruk Purut.</p>
+                                        <p class="detail-item"><strong>Karakter Rasa:</strong> Gurih, Renyah, Manis Pedas Bumbu Kacang.</p>
+                                        <p class="harga-range"><strong>Estimasi Harga:</strong> Rp 10.000 - Rp 25.000 / porsi</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Kategori Minuman -->
+                    <div class="rekomendasi-card-item">
+                        <div id="card-es-goyobod" class="makanan-card">
+                            <img id="img-es-goyobod" class="food-card-img" src="images/es-goyobod.jpg" alt="Es Goyobod">
+                            <div class="makanan-card-body">
+                                <span class="food-badge">Minuman</span>
+                                <h6 id="title-es-goyobod" class="food-title">Es Goyobod</h6>
+                                <p class="food-location"><i class='bx bx-map-pin'></i> Kab. Garut</p>
+                                
+                                <!-- Tombol Toggle Collapse -->
+                                <button id="btn-toggle-es-goyobod" class="btn-collapse-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#detailEsGoyobod" aria-expanded="false" aria-controls="detailEsGoyobod">
+                                    <span class="btn-text">Lihat Detail</span>
+                                    <i class='bx bx-chevron-down'></i>
+                                </button>
+
+                                <!-- Konten Detail Es Goyobod -->
+                                <div class="collapse" id="detailEsGoyobod">
+                                    <div class="detail-info border-top">
+                                        <p class="deskripsi">Minuman es tradisional khas Sunda berbasis santan dengan potongan hunwe (tepung arena), alpukat, kelapa muda, dan roti tawar.</p>
+                                        <p class="detail-item"><strong>Bahan utama:</strong> Tepung Hunkwe, Santan, Sirup Merah, Alpukat, Kelapa Muda, Roti Tawar.</p>
+                                        <p class="detail-item"><strong>Karakter Rasa:</strong> Manis, Gurih Santan, Segar.</p>
+                                        <p class="harga-range"><strong>Estimasi Harga:</strong> Rp 8.000 - Rp 15.000 / porsi</p>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Kategori Oleh-Oleh Khas -->
+                    <div class="rekomendasi-card-item">
+                        <div id="card-tahu-sumedang" class="makanan-card">
+                            <img id="img-tahu-sumedang" class="food-card-img" src="images/peuyeum.jpg" alt="Tahu Sumedang">
+                            <div class="makanan-card-body">
+                                <span class="food-badge">Oleh-Oleh Khas</span>
+                                <h6 id="title-tahu-sumedang" class="food-title">Tahu Sumedang</h6>
+                                <p class="food-location"><i class='bx bx-map-pin'></i> Kab. Sumedang</p>
+
+                                <!-- Tombol Toggle Collapse -->
+                                <button id="btn-toggle-tahu-sumedang" class="btn-collapse-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#detailTahuSumedang" aria-expanded="false" aria-controls="detailTahuSumedang">
+                                    <span class="btn-text">Lihat Detail</span>
+                                    <i class='bx bx-chevron-down'></i>
+                                </button>
+
+                                <!-- Konten Detail Tahu Sumedang -->
+                                <div class="collapse" id="detailTahuSumedang">
+                                    <div class="detail-info border-top">
+                                        <p class="deskripsi">Tahu goreng khas Sumedang yang renyah dan gurih di luar namun sangat lembut di dalam, nikmat disajikan hangat bersama cabai rawit.</p>
+                                        <p class="detail-item"><strong>Bahan utama:</strong> Kedelai, Garam, Bumbu Tradisional, Cabai Rawit.</p>
+                                        <p class="detail-item"><strong>Karakter Rasa:</strong> Gurih, Renyah di Luar, Lembut di Dalam.</p>
+                                        <p class="harga-range"><strong>Estimasi Harga:</strong> Rp 10.000 - Rp 25.000 / keranjang</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Tombol Lihat Selengkapnya -->
+                <div id="wrapper-btn-more" class="more-button-wrapper">
+                    <a id="btn-see-more-kuliner" href="daftar-kuliner.html" class="btn-see-more">
+                        Lihat Selengkapnya <i class='bx bx-right-arrow-alt icon-arrow-right'></i>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Ulasan Kata Penjelajah Kuliner -->
+        <section id="testimoni" class="section-testimoni">
+            <div class="testimoni-container">
+                <div class="testimoni-header">
+                    <h3 class="testimoni-title">Kata Penjelajah Kuliner</h3>
+                    <p class="testimoni-subtitle">Apa kata mereka tentang pengalaman menjelajah kuliner Pasundan</p>
+                </div>
+
+                <div class="testimoni-grid">
+                    <!-- Card Testimoni 1 -->
+                    <div id="testi-card-rina" class="testimoni-card-item">
+                        <div class="testimoni-card">
+                            <div class="user-profile">
+                                <img id="img-user-rina" src="images/user1.jpg" alt="Rina S." class="user-avatar">
+                                <div class="user-info">
+                                    <h6 id="name-rina" class="user-name">Rina S.</h6>
+                                    <span class="user-origin">Wisatawan dari Jakarta</span>
+                                </div>
+                            </div>
+                            <div class="star-rating">
+                                <i class='bx bxs-star'></i>
+                                <i class='bx bxs-star'></i>
+                                <i class='bx bxs-star'></i>
+                                <i class='bx bxs-star'></i>
+                                <i class='bx bxs-star'></i>
+                            </div>
+                            <p class="user-review">"Sangat membantu pas mau road trip kuliner ke Garut & Tasikmalaya. Pilihan makanannya mantapp!"</p>
+                        </div>
+                    </div>
+                    <!-- Card Testimoni 2 -->
+                    <div id="testi-card-aris" class="testimoni-card-item">
+                        <div class="testimoni-card">
+                            <div class="user-profile">
+                                <img id="img-user-aris" src="images/user2.jpg" alt="Aris Munandar" class="user-avatar">
+                                <div class="user-info">
+                                    <h6 id="name-aris" class="user-name">Aris Munandar</h6>
+                                    <span class="user-origin">Food Blogger Bogor</span>
+                                </div>
+                            </div>
+                            <div class="star-rating">
+                                <i class='bx bxs-star'></i>
+                                <i class='bx bxs-star'></i>
+                                <i class='bx bxs-star'></i>
+                                <i class='bx bxs-star'></i>
+                                <i class='bx bxs-star-half'></i>
+                            </div>
+                            <p class="user-review">"Tampilannya simpel dan langsung kelihatan makanan khas tiap kabupaten. Sangat informatif!"</p>
+                        </div>
+                    </div>
+                    <!-- Card Testimoni 3 -->
+                    <div id="testi-card-dewi" class="testimoni-card-item">
+                        <div class="testimoni-card">
+                            <div class="user-profile">
+                                <img id="img-user-dewi" src="images/user3.jpg" alt="Dewi Lestari" class="user-avatar">
+                                <div class="user-info">
+                                    <h6 id="name-dewi" class="user-name">Dewi Lestari</h6>
+                                    <span class="user-origin">Warga Bandung</span>
+                                </div>
+                            </div>
+                            <div class="star-rating">
+                                <i class='bx bxs-star'></i>
+                                <i class='bx bxs-star'></i>
+                                <i class='bx bxs-star'></i>
+                                <i class='bx bxs-star'></i>
+                                <i class='bx bxs-star'></i>
+                            </div>
+                            <p class="user-review">"Bisa nemu resep dan rekomendasi oleh-oleh khas Sumedang & Ciamis yang langka!"</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tombol Tulis Ulasan -->
+                <div class="testimoni-action">
+                    <button id="btn-write-review" class="btn-tulis-ulasan" type="button" data-bs-toggle="modal" data-bs-target="#modalUlasan">
+                        <i class='bx bx-edit icon-edit'></i> Tulis Ulasan Anda
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Form Ulasan (Modal) -->
+        <div class="modal fade" id="modalUlasan" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content modal-ulasan-content">
+                    <div class="modal-header modal-ulasan-header">
+                        <h5 id="title-modal-ulasan" class="modal-title ulasan-title">Tulis Ulasan Kuliner</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body modal-ulasan-body">
+                        <form id="form-tulis-ulasan">
+                            <div class="form-group-item">
+                                <label for="input-nama-user" class="form-label-custom">Nama Lengkap</label>
+                                <input id="input-nama-user" type="text" class="form-input-custom" placeholder="Nama Anda" required>
+                            </div>
+                            <div class="form-group-item">
+                                <label for="input-asal-user" class="form-label-custom">Asal / Kota</label>
+                                <input id="input-asal-user" type="text" class="form-input-custom" placeholder="Kota Asal Anda" required>
+                            </div>
+                            <div class="form-group-item">
+                                <label for="input-pesan-ulasan" class="form-label-custom">Ulasan Anda</label>
+                                <textarea id="input-pesan-ulasan" class="form-input-custom textarea-custom" rows="3" placeholder="Bagikan cerita pengalaman kulinermu..." required></textarea>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer modal-ulasan-footer">
+                        <button id="btn-cancel-ulasan" type="button" class="btn-modal-cancel" data-bs-dismiss="modal">Batal</button>
+                        <button id="btn-submit-ulasan" type="submit" form="form-tulis-ulasan" class="btn-modal-submit" data-bs-dismiss="modal">Kirim Ulasan</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section Favorit -->
+        <section id="section-favorit" class="section-favorit-wrapper">
+            <div class="favorit-container">
+                <div class="favorit-card-box">
+                    <i class='bx bx-bookmark-heart icon-favorit'></i>
+                    <h4 id="title-favorit" class="favorit-title">Simpan Kuliner Favoritmu</h4>
+                    <p class="favorit-desc">Tandai makanan favorit agar mudah dicari saat hendak berwisata kuliner.</p>
+                    <a id="btn-see-favorite" href="favorite.html" class="btn-favorit-link">Lihat Favorit Saya</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section Tambah Kuliner -->
+        <section id="section-tambah-kuliner" class="section-tambah-wrapper">
+            <div class="tambah-kuliner-container">
+                <h3 id="title-tambah-kuliner" class="tambah-title">Punya Rekomendasi Kuliner Daerahmu?</h3>
+                <p class="tambah-subtitle">Bagikan rekomendasimu di sini!</p>
+                <a id="btn-add-kuliner" href="tambah-kuliner.html" class="btn-tambah-link">
+                    <i class='bx bx-plus-circle icon-plus'></i> Tambah Kuliner
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer id="main-footer" class="site-footer">
+        <div class="footer-container">
+            <div class="footer-grid">
+                <div id="footer-col-about" class="footer-col">
+                    <h5 id="footer-brand-title" class="footer-brand">
+                        <i class='bx bx-map-pin icon-brand'></i> JelajahRasa
+                    </h5>
+                    <p class="footer-desc">Platform direktori kuliner yang merangkum kekayaan rasa dari berbagai kota dan kabupaten di Jawa Barat.</p>
+                </div>
+                <!-- Kolom Navigasi -->
+                <div id="footer-col-nav" class="footer-col">
+                    <h6 class="footer-heading">Navigasi Halaman</h6>
+                    <ul class="footer-nav-list">
+                        <li class="footer-nav-item"><a href="index.html" class="footer-nav-link">Beranda</a></li>
+                        <li class="footer-nav-item"><a href="daftar-kuliner.html" class="footer-nav-link">Daftar Kuliner</a></li>
+                        <li class="footer-nav-item"><a href="tambah-kuliner.html" class="footer-nav-link">Tambah Kuliner</a></li>
+                        <li class="footer-nav-item"><a href="favorit.html" class="footer-nav-link">Favorit</a></li>
+                        <li class="footer-nav-item"><a href="faq.html" class="footer-nav-link">FAQ</a></li>
+                    </ul>
+                </div>
+                <!-- Kolom Kontak -->
+                <div id="footer-col-contact" class="footer-col">
+                    <h6 class="footer-heading">Hubungi Kami</h6>
+                    <p class="contact-item"><i class='bx bx-envelope icon-contact'></i> halo@jelajahrasajabar.id</p>
+                    <p class="contact-item"><i class='bx bx-phone icon-contact'></i> +62 812-1326-3927</p>
+                    <div class="social-links-wrapper">
+                        <a href="#" id="link-instagram" class="social-link"><i class='bx bxl-instagram'></i></a>
+                        <a href="#" id="link-facebook" class="social-link"><i class='bx bxl-facebook'></i></a>
+                        <a href="#" id="link-youtube" class="social-link"><i class='bx bxl-youtube'></i></a>
+                    </div>
+                </div>
+            </div>
+            <hr class="footer-divider">
+            <!-- Copyright -->
+            <div class="footer-copyright">
+                <p id="copyright-text" class="copyright-text">&copy; 2026 Jelajah Rasa Jawa Barat. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
