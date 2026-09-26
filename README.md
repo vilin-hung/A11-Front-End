@@ -51,3 +51,16 @@ Sebuah website Kopi Nusantara dengan penerapan **jQuery** untuk **menambahkan in
 
 **Teknologi:** HTML, CSS, JavaScript, jQuery<br>
 Diberikan pada: Teori Pertemuan 5 - Senin, 14 September 2026
+
+--- 
+
+### 📂 Tugas 4: Bootstrap
+
+Sebuah website Kopi Nusantara dengan penerapan **Bootstrap** untuk **membangun layout responsif dan komponen interaktif pada halaman**. Website menggunakan **Bootstrap Grid** untuk mengatur layout menu pada berbagai ukuran layar, serta menerapkan komponen **Reponsive Navbar**, **Card**, dan **Accordion**.
+
+- **[Download ZIP](./A11_T4_Bootstrap.zip)**
+- **[Lihat Laporan](./Tugas_4/A11_T4_Laporan_Bootstrap.pdf)**
+- **[Lihat Kode](./Tugas_4/)**
+
+**Teknologi:** HTML, CSS, JavaScript, jQuery<br>
+Diberikan pada: Teori Pertemuan 6 - Senin, 21 September 2026
