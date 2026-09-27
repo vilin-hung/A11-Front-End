@@ -1,0 +1,694 @@
+/* =========================
+   MAIN CONTENT
+   ========================= */
+.profile-page {
+    background-color: var(--deep-green-shadow);
+    padding-top: 32px;
+    padding-bottom: 64px;
+}
+
+.profile-container {
+    max-width: 1200px;
+}
+
+/* Override `.text-success` Bootstrap */
+.profile-page .text-success {
+    color: var(--deep-green) !important;
+}
+
+/* =========================
+   KARTU PROFIL UTAMA (KIRI ATAS)
+   ========================= */
+.profile-card-main {
+    background-color: var(--bg-white);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    box-shadow: var(--shadow-sm);
+    padding: 28px 22px;
+    text-align: center;
+}
+
+/* Avatar Besar */
+.profil-avatar-large {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid var(--sage-green);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Tombol Upload Avatar (ikon kamera) */
+.avatar-upload-btn {
+    position: absolute;
+    bottom: 4px;
+    right: 4px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: var(--deep-green);
+    color: var(--bg-white);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition);
+    border: 2px solid var(--bg-white);
+    margin: 0;
+}
+
+.avatar-upload-btn:hover {
+    background-color: var(--warm-amber);
+    transform: scale(1.1);
+}
+
+/* Nama & Role */
+.profile-display-name {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--deep-green);
+    margin-top: 0;
+    margin-bottom: 4px;
+    line-height: 1.3;
+}
+
+.profile-display-role {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin: 0 0 20px 0;
+}
+
+/* Statistik */
+.profile-stats-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    padding: 14px 12px;
+    background-color: var(--deep-green-shadow);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    margin-bottom: 18px;
+}
+
+.profile-stat-item {
+    flex: 1;
+    text-align: center;
+}
+
+.profile-stat-number {
+    font-size: 22px;
+    font-weight: 800;
+    margin: 0 0 2px 0;
+    line-height: 1.1;
+    letter-spacing: -0.5px;
+}
+
+.profile-stat-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 500;
+}
+
+.profile-stat-divider {
+    width: 1px;
+    height: 36px;
+    background-color: var(--border-color);
+}
+
+.profile-stat-link {
+    display: block;
+    color: inherit;
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.profile-stat-link:hover .profile-stat-number {
+    opacity: 0.8;
+}
+
+/* Tombol Logout */
+.btn-logout-profile {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+    padding: 11px 20px;
+    background-color: transparent;
+    color: var(--label-makanan);
+    border: 1.5px solid var(--label-makanan);
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn-logout-profile i {
+    font-size: 18px;
+}
+
+.btn-logout-profile:hover {
+    background-color: var(--label-makanan);
+    color: var(--bg-white);
+}
+
+/* =========================
+   FORM INFORMASI PERSONAL (KIRI BAWAH)
+   ========================= */
+.profile-card-form {
+    background-color: var(--bg-white);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    box-shadow: var(--shadow-sm);
+    padding: 22px;
+    margin-top: 24px;
+}
+
+.profile-form-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--deep-green);
+    margin-top: 0;
+    margin-bottom: 18px;
+}
+
+.profile-form-title i {
+    color: var(--warm-amber);
+    font-size: 20px;
+}
+
+.profile-form-group {
+    margin-bottom: 16px;
+}
+
+.profile-form-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--deep-green);
+    margin-bottom: 6px;
+}
+
+.profile-form-input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid var(--border-color);
+    border-radius: 10px;
+    font-size: 14px;
+    font-family: inherit;
+    color: var(--text-dark);
+    background-color: var(--bg-white);
+    transition: var(--transition);
+    box-sizing: border-box;
+}
+
+.profile-form-input::placeholder {
+    color: var(--text-muted);
+    opacity: 0.6;
+}
+
+.profile-form-input:focus {
+    outline: none;
+    border-color: var(--deep-green);
+    box-shadow: 0 0 0 3px var(--deep-green-shadow);
+}
+
+.profile-form-input:disabled {
+    background-color: var(--bg-input);
+    color: var(--text-muted);
+    cursor: not-allowed;
+}
+
+.btn-save-profile {
+    display: block;
+    width: 100%;
+    padding: 11px 20px;
+    background-color: var(--deep-green);
+    color: var(--bg-white);
+    border: 1.5px solid var(--deep-green);
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn-save-profile:hover {
+    transform: translateY(-2px);
+}
+
+/* =========================
+   HISTORI KULINER (KANAN)
+   ========================= */
+.profile-card-history {
+    background-color: var(--bg-white);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    box-shadow: var(--shadow-sm);
+    padding: 24px;
+    min-height: 400px;
+}
+
+.history-header-wrapper {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding-bottom: 16px;
+    margin-bottom: 20px;
+}
+
+.history-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--deep-green);
+    margin-top: 0;
+    margin-bottom: 4px;
+}
+
+.history-subtitle {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* Container untuk item histori */
+.history-list-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* Card histori (dipanggil JS) */
+.history-item {
+    background-color: var(--warm-cream);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    transition: var(--transition);
+}
+
+.history-item:hover {
+    border-color: var(--sage-green);
+    box-shadow: var(--shadow-sm);
+}
+
+.history-item-img {
+    width: 80px;
+    height: 80px;
+    border-radius: 10px;
+    object-fit: cover;
+    flex-shrink: 0;
+    background-color: var(--bg-placeholder);
+}
+
+.history-item-body {
+    flex: 1;
+    min-width: 0;
+}
+
+.history-item-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--deep-green);
+    margin-top: 0;
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.history-item-meta {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 2px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.history-item-meta i {
+    color: var(--warm-amber);
+    font-size: 14px;
+}
+
+.history-item-actions {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.history-btn {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border-color);
+    background-color: var(--bg-white);
+    color: var(--deep-green);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition);
+    font-size: 16px;
+}
+
+.history-btn:hover {
+    background-color: var(--deep-green);
+    color: var(--bg-white);
+    border-color: var(--deep-green);
+}
+
+.history-btn.btn-hapus:hover {
+    background-color: var(--label-makanan);
+    border-color: var(--label-makanan);
+    color: var(--bg-white);
+}
+
+/* =========================
+   EMPTY STATE (Histori Kosong)
+   ========================= */
+.empty-history-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 48px 24px;
+}
+
+.empty-history-icon {
+    font-size: 56px;
+    color: var(--border-color);
+    margin-bottom: 12px;
+    display: inline-block;
+}
+
+.empty-history-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--deep-green);
+    margin-top: 0;
+    margin-bottom: 6px;
+}
+
+.empty-history-text {
+    font-size: 13px;
+    color: var(--text-muted);
+    max-width: 340px;
+    margin: 0 0 20px 0;
+    line-height: 1.6;
+}
+
+.btn-empty-history {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 24px;
+    background-color: var(--deep-green);
+    color: var(--bg-white);
+    border: 1.5px solid var(--deep-green);
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 600;
+    transition: var(--transition);
+}
+
+.btn-empty-history:hover {
+    transform: translateY(-2px);
+}
+
+/* =========================
+   MODAL EDIT KULINER
+   ========================= */
+#modal-edit-kuliner .modal-content {
+    border: none;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+}
+
+#modal-edit-kuliner .modal-header {
+    background-color: var(--bg-white);
+    border-bottom: 1px solid var(--border-color);
+    padding: 18px 22px;
+}
+
+#modal-edit-kuliner .modal-title {
+    color: var(--deep-green);
+    font-weight: 700;
+    font-size: 16px;
+}
+
+#modal-edit-kuliner .modal-body {
+    padding: 22px;
+    background-color: var(--bg-white);
+}
+
+#modal-edit-kuliner .form-label {
+    color: var(--deep-green);
+    font-weight: 600;
+    font-size: 13px;
+    margin-bottom: 6px;
+}
+
+#modal-edit-kuliner .form-control {
+    padding: 10px 14px;
+    border: 1.5px solid var(--border-color);
+    border-radius: 10px;
+    font-size: 14px;
+    color: var(--text-dark);
+    background-color: var(--bg-white);
+    transition: var(--transition);
+}
+
+#modal-edit-kuliner .form-control:focus {
+    border-color: var(--deep-green);
+    box-shadow: 0 0 0 3px var(--deep-green-shadow);
+    outline: none;
+}
+
+#modal-edit-kuliner .btn-success {
+    background-color: var(--deep-green);
+    border: 1.5px solid var(--deep-green);
+    color: var(--bg-white);
+    border-radius: 50px;
+    font-weight: 600;
+    padding: 8px 20px;
+    font-size: 13px;
+    transition: var(--transition);
+}
+
+#modal-edit-kuliner .btn-success:hover {
+    background-color: var(--warm-cream);
+    color: var(--deep-green);
+    border-color: var(--deep-green);
+}
+
+#modal-edit-kuliner .btn-secondary {
+    background-color: transparent;
+    color: var(--text-muted);
+    border: 1.5px solid var(--border-color);
+    border-radius: 50px;
+    font-weight: 600;
+    padding: 8px 20px;
+    font-size: 13px;
+    transition: var(--transition);
+}
+
+#modal-edit-kuliner .btn-secondary:hover {
+    background-color: var(--bg-input);
+    color: var(--text-dark);
+    border-color: var(--text-muted);
+}
+
+/* =========================
+   TABLET (≤992px)
+   ========================= */
+@media (max-width: 992px) {
+    .profile-card-main,
+    .profile-card-form,
+    .profile-card-history {
+        padding: 20px;
+    }
+
+    .profil-avatar-large {
+        width: 100px;
+        height: 100px;
+    }
+
+    .profile-display-name {
+        font-size: 18px;
+    }
+}
+
+/* =========================
+   MOBILE (≤768px)
+   ========================= */
+@media (max-width: 768px) {
+    .profile-page {
+        padding-top: 24px;
+        padding-bottom: 48px;
+    }
+
+    .profil-avatar-large {
+        width: 90px;
+        height: 90px;
+    }
+
+    .avatar-upload-btn {
+        width: 30px;
+        height: 30px;
+    }
+
+    .avatar-upload-btn i {
+        font-size: 14px !important;
+    }
+
+    .profile-stat-number {
+        font-size: 20px;
+    }
+
+    .history-item-img {
+        width: 64px;
+        height: 64px;
+    }
+
+    .history-item-title {
+        font-size: 14px;
+    }
+
+    .history-btn {
+        width: 30px;
+        height: 30px;
+        font-size: 14px;
+    }
+}
+
+/* =========================
+   MOBILE KECIL (≤576px)
+   ========================= */
+@media (max-width: 576px) {
+    .profile-page {
+        padding-top: 20px;
+        padding-bottom: 40px;
+    }
+
+    .profile-card-main,
+    .profile-card-form,
+    .profile-card-history {
+        padding: 18px 16px;
+        border-radius: 14px;
+    }
+
+    .profil-avatar-large {
+        width: 80px;
+        height: 80px;
+        border-width: 3px;
+    }
+
+    .profile-display-name {
+        font-size: 17px;
+    }
+
+    .profile-display-role {
+        font-size: 12px;
+        margin-bottom: 16px;
+    }
+
+    .profile-stats-wrapper {
+        padding: 12px 10px;
+        gap: 12px;
+    }
+
+    .profile-stat-number {
+        font-size: 18px;
+    }
+
+    .profile-stat-label {
+        font-size: 10px;
+    }
+
+    .btn-logout-profile {
+        font-size: 13px;
+        padding: 10px 16px;
+    }
+
+    .profile-form-title {
+        font-size: 15px;
+    }
+
+    .profile-form-input {
+        font-size: 13px;
+        padding: 9px 12px;
+    }
+
+    .btn-save-profile {
+        font-size: 13px;
+        padding: 10px 18px;
+    }
+
+    .history-title {
+        font-size: 16px;
+    }
+
+    .history-subtitle {
+        font-size: 12px;
+    }
+
+    .history-item {
+        padding: 12px;
+        gap: 12px;
+    }
+
+    .history-item-img {
+        width: 56px;
+        height: 56px;
+    }
+
+    .history-item-title {
+        font-size: 13px;
+    }
+
+    .history-item-meta {
+        font-size: 11px;
+    }
+
+    .empty-history-state {
+        padding: 32px 16px;
+    }
+
+    .empty-history-icon {
+        font-size: 44px;
+    }
+
+    .empty-history-title {
+        font-size: 15px;
+    }
+
+    .empty-history-text {
+        font-size: 12px;
+    }
+
+    .btn-empty-history {
+        font-size: 12px;
+        padding: 9px 20px;
+    }
+
+    .breadcrumb-list .breadcrumb-item {
+        font-size: 12px;
+    }
+}

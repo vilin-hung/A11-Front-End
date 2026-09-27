@@ -1,0 +1,502 @@
+/* =========================
+   MAIN CONTENT
+   ========================= */
+.daftar-kuliner-page {
+    background-color: var(--deep-green-shadow);
+    padding-top: 32px;
+    padding-bottom: 64px;
+}
+
+.catalog-container {
+    max-width: 1200px;
+}
+
+/* Override `.text-success` Bootstrap */
+.daftar-kuliner-page .text-success {
+    color: var(--deep-green) !important;
+}
+
+/* =========================
+   FILTER PANEL
+   ========================= */
+.filter-panel {
+    background-color: var(--bg-white) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 16px !important;
+    padding: 20px 22px !important;
+    box-shadow: var(--shadow-sm);
+}
+
+.filter-hint {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-bottom: 14px;
+    font-style: italic;
+}
+
+.filter-label {
+    color: var(--deep-green) !important;
+    font-size: 15px;
+    font-weight: 600 !important;
+    margin-bottom: 8px;
+    display: inline-block;
+}
+
+.filter-label i {
+    color: var(--warm-amber) !important;
+    font-size: 18px;
+    vertical-align: middle;
+}
+
+/* Multi-select box */
+.multi-select-box {
+    border: 1.5px solid var(--border-color) !important;
+    border-radius: 10px !important;
+    font-size: 15px;
+    color: var(--text-dark);
+    background-color: var(--bg-white);
+    padding: 6px 10px;
+    transition: var(--transition);
+}
+
+.multi-select-box option {
+    padding: 8px 12px;
+    font-size: 15px;
+    color: var(--text-dark);
+    background-color: var(--bg-white);
+    border-radius: 4px;
+}
+
+.multi-select-box option:checked {
+    background-color: var(--deep-green) !important;
+    color: var(--bg-white) !important;
+}
+
+.multi-select-box:focus {
+    border-color: var(--deep-green) !important;
+    box-shadow: 0 0 0 3px var(--deep-green-shadow);
+    outline: none;
+}
+
+/* Submit button */
+.filter-submit-btn {
+    background-color: var(--deep-green) !important;
+    border: 1.5px solid var(--deep-green) !important;
+    color: var(--bg-white) !important;
+    border-radius: 50px !important;
+    font-size: 15px;
+    font-weight: 600;
+    padding: 11px 22px;
+    transition: var(--transition);
+}
+
+.filter-submit-btn:hover {
+    transform: translateY(-2px);
+}
+
+.filter-submit-wrapper {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+    padding-top: 15px;
+}
+
+/* =========================
+   CATALOG
+   ========================= */
+.catalog-grid {
+    margin-top: 8px;
+}
+
+.catalog-col {
+    display: flex;
+}
+
+.catalog-card {
+    background-color: var(--bg-white) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 16px !important;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out, border-color 0.3s ease-in-out;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+.catalog-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--sage-green) !important;
+}
+
+/* Card media (image wrapper) */
+.card-media-wrapper {
+    position: relative;
+    overflow: hidden;
+    background-color: var(--bg-placeholder);
+}
+
+.item-img {
+    width: 100%;
+    height: 220px !important;
+    object-fit: cover;
+    display: block;
+    transition: height 0.4s ease-in-out;
+}
+
+.catalog-card:hover .item-img {
+    height: 340px !important;
+}
+
+/* Action buttons */
+.item-actions {
+    z-index: 2;
+}
+
+.btn-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    padding: 0;
+    transition: var(--transition);
+    background-color: var(--white-soft-95) !important;
+}
+
+.btn-icon i {
+    line-height: 1;
+}
+
+/* Tombol like */
+.btn-like {
+    color: var(--label-makanan) !important;
+}
+
+.btn-like:hover {
+    background-color: var(--label-makanan) !important;
+    color: var(--bg-white) !important;
+    transform: scale(1.1);
+}
+
+.btn-like.active {
+    background-color: var(--label-makanan) !important;
+    color: var(--bg-white) !important;
+}
+
+/* Tombol share */
+.btn-share {
+    color: var(--deep-green) !important;
+}
+
+.btn-share:hover {
+    background-color: var(--deep-green) !important;
+    color: var(--bg-white) !important;
+    transform: scale(1.1);
+}
+
+/* =========================
+   CARD CONTENT
+   ========================= */
+.item-content {
+    padding: 20px !important;
+}
+
+.tag-wrapper {
+    margin-bottom: 10px;
+}
+
+/* Badge default (fallback) */
+.item-badge {
+    background-color: var(--deep-green-soft) !important;
+    color: var(--deep-green) !important;
+    border: 1px solid rgba(45, 90, 39, 0.2) !important;
+    font-weight: 600 !important;
+    font-size: 11px !important;
+    padding: 5px 12px !important;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    border-radius: 50px !important;
+}
+
+/* Badge berwarna-warni per warna kategori */
+.catalog-card[data-category="makanan"] .item-badge {
+    background-color: var(--label-makanan-soft) !important;
+    color: var(--label-makanan) !important;
+    border-color: rgba(214, 40, 40, 0.25) !important;
+}
+
+.catalog-card[data-category="jajanan"] .item-badge {
+    background-color: var(--label-jajanan-soft) !important;
+    color: var(--label-jajanan) !important;
+    border-color: rgba(232, 163, 23, 0.3) !important;
+}
+
+.catalog-card[data-category="minuman"] .item-badge {
+    background-color: var(--label-minuman-soft) !important;
+    color: var(--label-minuman) !important;
+    border-color: rgba(52, 152, 219, 0.25) !important;
+}
+
+.catalog-card[data-category="oleh-oleh"] .item-badge {
+    background-color: var(--label-oleh-soft) !important;
+    color: var(--label-oleh) !important;
+    border-color: rgba(214, 51, 132, 0.25) !important;
+}
+
+.item-title {
+    font-size: 18px !important;
+    font-weight: 700 !important;
+    color: var(--deep-green) !important;
+    margin-top: 0;
+    margin-bottom: 6px !important;
+    line-height: 1.3;
+}
+
+.item-origin {
+    font-size: 13px !important;
+    color: var(--text-muted) !important;
+    margin-bottom: 10px !important;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.item-origin i {
+    color: var(--warm-amber) !important;
+    font-size: 15px;
+}
+
+.item-description {
+    font-size: 13px !important;
+    color: var(--text-dark) !important;
+    line-height: 1.6 !important;
+    margin-bottom: 16px !important;
+}
+
+/* Detail toggle button */
+.btn-toggle-detail {
+    background-color: var(--bg-light);
+    border: 1.5px solid var(--border-color) !important;
+    color: var(--deep-green) !important;
+    border-radius: 50px !important;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 9px 16px;
+    transition: var(--transition);
+}
+
+.btn-toggle-detail:hover {
+    background-color: var(--deep-green) !important;
+    color: var(--bg-white) !important;
+    border-color: var(--deep-green) !important;
+}
+
+.btn-toggle-detail i {
+    font-size: 16px;
+    transition: transform 0.3s ease-in-out;
+}
+
+.btn-toggle-detail[aria-expanded="true"] i {
+    transform: rotate(180deg);
+}
+
+/* Detail info box */
+.detail-info-box {
+    background-color: var(--warm-cream) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 10px !important;
+    padding: 14px 16px !important;
+}
+
+.detail-info-box p {
+    color: var(--text-dark);
+    line-height: 1.55;
+}
+
+.detail-info-box strong {
+    color: var(--deep-green);
+    font-weight: 600;
+}
+
+.detail-info-box .price-range strong {
+    color: var(--deep-green) !important;
+}
+
+/* =========================
+   TABLET (≤992px)
+   ========================= */
+@media (max-width: 992px) {
+    .page-title {
+        font-size: 24px;
+    }
+
+    .filter-panel {
+        padding: 18px 18px !important;
+    }
+
+    .item-title {
+        font-size: 17px !important;
+    }
+
+    .item-img {
+        height: 200px !important;
+    }
+
+    .catalog-card:hover .item-img {
+        height: 300px !important;
+    }
+}
+
+/* =========================
+   MOBILE (≤768px)
+   ========================= */
+@media (max-width: 768px) {
+    .daftar-kuliner-page {
+        padding-top: 24px;
+        padding-bottom: 48px;
+    }
+
+    .page-header-wrapper {
+        padding-bottom: 16px;
+        margin-bottom: 24px;
+    }
+
+    .page-title {
+        font-size: 22px;
+    }
+
+    .page-subtitle {
+        font-size: 13px;
+    }
+
+    .filter-panel {
+        padding: 16px !important;
+        border-radius: 14px !important;
+    }
+
+    .filter-hint {
+        font-size: 13px;
+    }
+
+    .filter-label {
+        font-size: 14px;
+    }
+
+    .filter-label i {
+        font-size: 17px;
+    }
+
+    .multi-select-box {
+        font-size: 14px;
+    }
+
+    .multi-select-box option {
+        font-size: 14px;
+        padding: 7px 10px;
+    }
+
+    .filter-submit-btn {
+        font-size: 14px;
+        padding: 10px 20px;
+    }
+
+    .item-content {
+        padding: 16px !important;
+    }
+
+    .item-img {
+        height: 190px !important;
+    }
+
+    .catalog-card:hover .item-img {
+        height: 280px !important;
+    }
+}
+
+/* =========================
+   MOBILE KECIL (≤576px)
+   ========================= */
+@media (max-width: 576px) {
+    .daftar-kuliner-page {
+        padding-top: 20px;
+        padding-bottom: 40px;
+    }
+
+    .page-title {
+        font-size: 20px;
+    }
+
+    .page-subtitle {
+        font-size: 12px;
+    }
+
+    .breadcrumb-list .breadcrumb-item {
+        font-size: 12px;
+    }
+
+    .filter-hint {
+        font-size: 12px;
+    }
+
+    .filter-label {
+        font-size: 13px;
+    }
+
+    .filter-label i {
+        font-size: 16px;
+    }
+
+    .multi-select-box {
+        font-size: 13px;
+        padding: 5px 8px;
+    }
+
+    .multi-select-box option {
+        font-size: 13px;
+        padding: 6px 10px;
+    }
+
+    .filter-submit-btn {
+        font-size: 13px;
+        padding: 9px 18px;
+    }
+
+    .item-img {
+        height: 180px !important;
+    }
+
+    .catalog-card:hover .item-img {
+        height: 260px !important;
+    }
+
+    .item-content {
+        padding: 14px !important;
+    }
+
+    .item-title {
+        font-size: 16px !important;
+    }
+
+    .item-badge {
+        font-size: 10px !important;
+        padding: 4px 10px !important;
+    }
+
+    .btn-toggle-detail {
+        font-size: 12px;
+        padding: 8px 14px;
+    }
+
+    .detail-info-box {
+        padding: 12px 14px !important;
+    }
+
+    .detail-info-box p {
+        font-size: 12px;
+    }
+}
