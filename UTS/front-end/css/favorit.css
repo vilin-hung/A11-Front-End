@@ -1,0 +1,336 @@
+:root {
+    --red-heart: #ef2b2b;
+    --red-soft: #f0acac;
+}
+    
+/* =========================
+   MAIN CONTENT
+   ========================= */
+.favorit-page {
+    background-color: var(--deep-green-shadow);
+    padding-top: 32px;
+    padding-bottom: 64px;
+}
+
+.favorit-container {
+    max-width: 1200px;
+}
+
+/* =========================
+   PAGE HEADER
+   ========================= */
+.fav-header-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding-bottom: 20px;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+}
+
+.fav-header-text {
+    flex: 1;
+    min-width: 200px;
+}
+
+.fav-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--deep-green);
+    margin-top: 0;
+    margin-bottom: 6px;
+    letter-spacing: -0.5px;
+}
+
+.fav-subtitle {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin: 0;
+    line-height: 1.6;
+}
+
+.fav-header-badge {
+    flex-shrink: 0;
+}
+
+.fav-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background-color: var(--deep-green);
+    color: var(--bg-white);
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 600;
+    box-shadow: 0 2px 6px var(--deep-green-shadow);
+}
+
+.fav-badge-icon {
+    font-size: 16px;
+    color: var(--red-heart);
+}
+
+/* =========================
+   EMPTY STATE
+   ========================= */
+.empty-favorite {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 64px 24px;
+    background-color: var(--bg-white);
+    border-radius: 20px;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+}
+
+.empty-favorite-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    background-color: var(--red-soft);
+    color: var(--red-heart);
+    font-size: 44px;
+    margin-bottom: 20px;
+}
+
+.empty-favorite-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-top: 0;
+    margin-bottom: 8px;
+}
+
+.empty-favorite-text {
+    font-size: 14px;
+    color: var(--text-muted);
+    max-width: 420px;
+    margin: 0 0 24px 0;
+    line-height: 1.6;
+}
+
+.btn-jelajahi {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 28px;
+    background-color: var(--deep-green);
+    color: var(--bg-white);
+    border: 1.5px solid var(--deep-green);
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 600;
+    transition: var(--transition);
+    box-shadow: 0 2px 6px var(--deep-green-shadow);
+}
+
+.btn-jelajahi:hover {
+    transform: translateY(-2px);
+}
+
+/* =========================
+   GRID CARD FAVORIT
+   ========================= */
+.favorit-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 32px;
+    align-items: start;
+}
+
+.favorit-item {
+    /* Struktur kartu kuliner */
+    background-color: var(--bg-white);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
+    transition: var(--transition);
+    position: relative;
+}
+
+.favorit-item:hover {
+    box-shadow: var(--shadow-md);
+    border-color: var(--sage-green);
+}
+
+/* Tombol hapus favorit */
+.favorit-item .btn-remove-favorit {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    background-color: var(--white-soft-95);
+    color: var(--label-makanan);
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition);
+    box-shadow: var(--shadow-sm);
+    z-index: 2;
+}
+
+.favorit-item .btn-remove-favorit:hover {
+    background-color: var(--label-makanan);
+    color: var(--bg-white);
+    transform: scale(1.1);
+}
+
+/* =========================
+   TABLET (≤992px)
+   ========================= */
+@media (max-width: 992px) {
+    .fav-title {
+        font-size: 24px;
+    }
+
+    .favorit-grid {
+        gap: 24px;
+    }
+
+    .empty-favorite {
+        padding: 56px 24px;
+    }
+}
+
+/* =========================
+   MOBILE (≤768px)
+   ========================= */
+@media (max-width: 768px) {
+    .favorit-page {
+        padding-top: 24px;
+        padding-bottom: 48px;
+    }
+
+    .fav-header-container {
+        padding-bottom: 16px;
+        margin-bottom: 24px;
+    }
+
+    .fav-title {
+        font-size: 22px;
+    }
+
+    .fav-subtitle {
+        font-size: 13px;
+    }
+
+    .fav-badge {
+        padding: 6px 14px;
+        font-size: 12px;
+    }
+
+    .empty-favorite {
+        padding: 48px 20px;
+        border-radius: 16px;
+    }
+
+    .empty-favorite-icon {
+        width: 80px;
+        height: 80px;
+        font-size: 36px;
+        margin-bottom: 16px;
+    }
+
+    .empty-favorite-title {
+        font-size: 18px;
+    }
+
+    .empty-favorite-text {
+        font-size: 13px;
+        margin-bottom: 20px;
+    }
+
+    .btn-jelajahi {
+        padding: 11px 24px;
+        font-size: 13px;
+    }
+
+    .favorit-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+}
+
+/* =========================
+   MOBILE KECIL (≤576px)
+   ========================= */
+@media (max-width: 576px) {
+    .favorit-page {
+        padding-top: 20px;
+        padding-bottom: 40px;
+    }
+
+    .fav-title {
+        font-size: 20px;
+    }
+
+    .fav-subtitle {
+        font-size: 12px;
+    }
+
+    .fav-header-container {
+        gap: 12px;
+    }
+
+    .fav-badge {
+        padding: 6px 12px;
+        font-size: 11px;
+    }
+
+    .fav-badge-icon {
+        font-size: 14px;
+    }
+
+    .breadcrumb-list .breadcrumb-item {
+        font-size: 12px;
+    }
+
+    .empty-favorite {
+        padding: 40px 16px;
+        border-radius: 14px;
+    }
+
+    .empty-favorite-icon {
+        width: 72px;
+        height: 72px;
+        font-size: 32px;
+        margin-bottom: 14px;
+    }
+
+    .empty-favorite-title {
+        font-size: 17px;
+        margin-bottom: 6px;
+    }
+
+    .empty-favorite-text {
+        font-size: 12px;
+        margin-bottom: 18px;
+    }
+
+    .btn-jelajahi {
+        padding: 10px 22px;
+        font-size: 12px;
+    }
+
+    .favorit-item .btn-remove-favorit {
+        width: 32px;
+        height: 32px;
+        font-size: 16px;
+        top: 10px;
+        right: 10px;
+    }
+}

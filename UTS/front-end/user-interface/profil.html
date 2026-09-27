@@ -7,6 +7,9 @@
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/profil.css">
 </head>
 <body>
     <!-- Header -->
@@ -36,10 +39,19 @@
                 </form>
             </div>
 
+            <!-- Navigasi Desktop -->
+            <ul id="header-nav-list" class="header-nav-list">
+                <li><a href="index.html" class="header-nav-link">Beranda</a></li>
+                <li><a href="daftar-kuliner.html" class="header-nav-link">Daftar Kuliner</a></li>
+                <li><a href="tambah-kuliner.html" class="header-nav-link">Tambah Kuliner</a></li>
+                <li><a href="favorit.html" class="header-nav-link">Favorit</a></li>
+                <li><a href="faq.html" class="header-nav-link">FAQ</a></li>
+            </ul>
+
             <!-- Kanan: Profil -->
             <div id="header-right" class="header-profile-container">
                 <!-- Default Profil, berubah ketika sudah login (read name dari login) -->
-                <img id="user-avatar-desktop" class="user-avatar" src="images/default-avatar.png" alt="Foto Profil">
+                <img id="user-avatar-desktop" class="user-avatar" src="../images/homepage/default-avatar.png" alt="Foto Profil">
                 <div class="user-info-wrapper">
                     <span id="user-name-desktop" class="user-name">Pengunjung</span>
                     <a id="user-link-desktop" class="user-profile-link" href="login.html">Masuk / Daftar</a>
@@ -63,7 +75,7 @@
             <div id="sidebar-profile-section" class="sidebar-profile-container">
                 <div class="profile-card-mobile">
                     <!-- Default Profil Mobile, berubah ketika sudah login -->
-                    <img id="user-avatar-mobile" class="user-avatar" src="images/default-avatar.png" alt="Foto Profil">
+                    <img id="user-avatar-mobile" class="user-avatar" src="../images/homepage/default-avatar.png" alt="Foto Profil">
                     <div class="user-info-mobile">
                         <h6 id="user-name-mobile" class="user-name">Pengunjung</h6>
                         <a id="user-link-mobile" class="user-profile-link" href="login.html">Masuk / Daftar</a>
@@ -94,7 +106,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="faq.html" data-bs-dismiss="offcanvas">
+                    <a class="nav-link" href="faq.html">
                         <i class='bx bx-help-circle'></i>FAQ
                     </a>
                 </li>
@@ -103,94 +115,96 @@
     </div>
 
     <main id="main-content" class="profile-page">
-        <div class="container">
+        <div class="container profile-container">
             
             <!-- Breadcrumb Navigation -->
             <nav id="breadcrumb-nav" class="mb-3">
-                <ol class="breadcrumb breadcrumb-list small">
-                    <li class="breadcrumb-item"><a href="index.html" class="text-success text-decoration-none nav-home-link"><i class='bx bx-home-alt me-1'></i>Beranda</a></li>
-                    <li class="breadcrumb-item active text-dark">Profil Saya</li>
+                <ol class="breadcrumb breadcrumb-list">
+                    <li class="breadcrumb-item">
+                        <a href="index.html" class="nav-home-link"><i class='bx bx-home-alt me-1'></i>Beranda</a>
+                    </li>
+                    <li class="breadcrumb-item active">Profil Saya</li>
                 </ol>
             </nav>
 
             <div class="row g-4">
                 <!-- Kolom Kiri: Informasi Profil Pengguna -->
                 <div class="col-lg-4">
-                    <div class="card border-0 shadow-sm rounded-4 text-center p-4">
+                    <div class="profile-card-main">
                         <div class="position-relative d-inline-block mx-auto mb-3">
-                            <img src="images/default-avatar.png" id="user-avatar-profile" alt="Foto Profil" class="profil-avatar-large border border-3 border-success shadow-sm rounded-circle">
-                            <label for="input-upload-avatar" class="position-absolute bottom-0 end-0 bg-success text-white rounded-circle p-2 shadow cursor-pointer" title="Ubah Foto">
+                            <img src="../images/homepage/default-avatar.png" id="user-avatar-profile" alt="Foto Profil" class="profil-avatar-large">
+                            <label for="input-upload-avatar" class="avatar-upload-btn" title="Ubah Foto">
                                 <i class='bx bx-camera fs-6'></i>
                                 <input type="file" id="input-upload-avatar" class="d-none" accept="image/*">
                             </label>
                         </div>
                         
                         <!-- Wadah Nama & Peran Pengguna -->
-                        <h5 class="fw-bold text-dark mb-1" id="profile-display-name">-</h5>
-                        <p class="text-muted small mb-3" id="profile-display-role">Tukang Kuliner</p>
+                        <h5 class="profile-display-name" id="profile-display-name">-</h5>
+                        <p class="profile-display-role" id="profile-display-role">Tukang Kuliner</p>
                         
                         <!-- Statistik User -->
-                        <div class="d-flex justify-content-center gap-3 py-2 bg-light rounded-3 mb-3 border">
-                            <div>
-                                <h6 class="fw-bold text-success mb-0" id="total-added-count">0</h6>
-                                <small class="text-muted">Kuliner Ditambahkan</small>
+                        <div class="profile-stats-wrapper">
+                            <div class="profile-stat-item">
+                                <h6 class="profile-stat-number text-success" id="total-added-count">0</h6>
+                                <small class="profile-stat-label">Kuliner Ditambahkan</small>
                             </div>
-                            <div class="border-end"></div>
-                            <div>
-                                <a href="favorit.html" id="link-to-favorite" class="text-decoration-none d-block">
-                                    <h6 class="fw-bold text-danger mb-0" id="total-favorite-count">0</h6>
-                                    <small class="text-muted">Favorit</small>
+                            <div class="profile-stat-divider"></div>
+                            <div class="profile-stat-item">
+                                <a href="favorit.html" id="link-to-favorite" class="profile-stat-link">
+                                    <h6 class="profile-stat-number text-danger" id="total-favorite-count">0</h6>
+                                    <small class="profile-stat-label">Favorit</small>
                                 </a>
                             </div>
                         </div>
 
-                        <button type="button" id="btn-logout" class="btn btn-outline-danger w-100 rounded-pill btn-sm d-flex align-items-center justify-content-center gap-2">
+                        <button type="button" id="btn-logout" class="btn-logout-profile">
                             <i class='bx bx-log-out'></i> Keluar Akun
                         </button>
                     </div>
 
                     <!-- Form Pengaturan Informasi User -->
-                    <div class="card border-0 shadow-sm rounded-4 p-4 mt-4">
-                        <h6 class="fw-bold text-dark mb-3"><i class='bx bx-user-pin me-2 text-success'></i>Informasi Personal</h6>
+                    <div class="profile-card-form">
+                        <h6 class="profile-form-title"><i class='bx bx-user-pin'></i>Informasi Personal</h6>
                         <form id="form-edit-profile">
-                            <div class="mb-3">
-                                <label for="input-profile-name" class="form-label small text-muted">Nama Lengkap</label>
-                                <input type="text" class="form-control form-control-sm" id="input-profile-name" placeholder="Nama Anda" required>
+                            <div class="profile-form-group">
+                                <label for="input-profile-name" class="profile-form-label">Nama Lengkap</label>
+                                <input type="text" class="profile-form-input" id="input-profile-name" placeholder="Nama Anda" required>
                             </div>
-                            <div class="mb-3">
-                                <label for="input-profile-email" class="form-label small text-muted">Email</label>
-                                <input type="email" class="form-control form-control-sm" id="input-profile-email" placeholder="Email Anda" disabled>
+                            <div class="profile-form-group">
+                                <label for="input-profile-email" class="profile-form-label">Email</label>
+                                <input type="email" class="profile-form-input" id="input-profile-email" placeholder="Email Anda" disabled>
                             </div>
-                            <div class="mb-3">
-                                <label for="input-profile-city" class="form-label small text-muted">Kota/Kabupaten</label>
-                                <input type="text" class="form-control form-control-sm" id="input-profile-city" placeholder="Domisili Anda (Contoh: Kota Bandung / Kab. Bandung)">
+                            <div class="profile-form-group">
+                                <label for="input-profile-city" class="profile-form-label">Kota/Kabupaten</label>
+                                <input type="text" class="profile-form-input" id="input-profile-city" placeholder="Domisili Anda (Contoh: Kota Bandung / Kab. Bandung)">
                             </div>
-                            <button type="submit" id="btn-save-profile" class="btn btn-success btn-sm rounded-pill w-100">Simpan Perubahan</button>
+                            <button type="submit" id="btn-save-profile" class="btn-save-profile">Simpan Perubahan</button>
                         </form>
                     </div>
                 </div>
 
                 <!-- Kolom Kanan: Histori Kuliner -->
                 <div class="col-lg-8">
-                    <div class="card border-0 shadow-sm rounded-4 p-4">
-                        <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
+                    <div class="profile-card-history">
+                        <div class="history-header-wrapper">
                             <div>
-                                <h5 class="fw-bold text-dark mb-1">Histori Kuliner Ditambahkan</h5>
-                                <p class="text-muted small mb-0">Kelola informasi kuliner yang pernah Anda kontribusikan ke JelajahRasa.</p>
+                                <h5 class="history-title">Histori Kuliner Ditambahkan</h5>
+                                <p class="history-subtitle">Kelola informasi kuliner yang pernah Anda kontribusikan ke JelajahRasa.</p>
                             </div>
                         </div>
 
                         <!-- Wadah untuk Item Histori via JavaScript -->
-                        <div class="d-flex flex-column gap-3" id="history-list-container">
+                        <div class="history-list-container" id="history-list-container">
                             <!-- Card Histori dimasukkan lewat JS -->
                         </div>
 
                         <!-- Tampilan Jika Histori Kosong (Default) -->
-                        <div id="empty-history-state" class="text-center py-5">
-                            <i class='bx bx-folder-open text-muted display-4 mb-3'></i>
-                            <h6 class="fw-bold text-dark">Belum ada kuliner yang ditambahkan</h6>
-                            <p class="text-muted small mb-3">Bagikan kuliner khas Jawa Barat favoritmu ke komunitas kami.</p>
-                            <a href="tambah-kuliner.html" class="btn btn-success btn-sm rounded-pill px-4">Tambah Kuliner Sekarang</a>
+                        <div id="empty-history-state" class="empty-history-state">
+                            <i class='bx bx-folder-open empty-history-icon'></i>
+                            <h6 class="empty-history-title">Belum ada kuliner yang ditambahkan</h6>
+                            <p class="empty-history-text">Bagikan kuliner khas Jawa Barat favoritmu ke komunitas kami.</p>
+                            <a href="tambah-kuliner.html" class="btn-empty-history">Tambah Kuliner Sekarang</a>
                         </div>
                     </div>
                 </div>
@@ -273,6 +287,6 @@
             </div>
         </div>
     </footer>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

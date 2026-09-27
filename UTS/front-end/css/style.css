@@ -1,0 +1,1212 @@
+/* =========================
+   SECTION HEADER
+   ========================= */
+.section-header {
+    margin-bottom: 40px;
+}
+
+.section-header.center-text {
+    text-align: center;
+}
+
+.section-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--deep-green);
+    margin-top: 0;
+    margin-bottom: 8px;
+}
+
+.section-subtitle {
+    color: var(--text-muted);
+    font-size: 16px;
+    margin: 0;
+}
+
+/* =========================
+   HERO SECTION
+   ========================= */
+.hero-section {
+    padding: 72px 24px;
+    background: linear-gradient(135deg, var(--sage-soft-20) 0%, var(--warm-cream) 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.hero-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    align-items: center;
+}
+
+.hero-quote {
+    color: var(--warm-amber);
+    font-weight: 600;
+    font-size: 15px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: inline-block;
+    margin-bottom: 12px;
+    background-color: var(--bg-white);
+    padding: 6px 14px;
+    border-radius: 8px;
+}
+
+.hero-title {
+    font-size: 44px;
+    font-weight: 800;
+    color: var(--deep-green);
+    line-height: 1.2;
+    margin-top: 0;
+    margin-bottom: 16px;
+}
+
+.hero-description {
+    font-size: 18px;
+    color: var(--text-muted);
+    margin-top: 0;
+    margin-bottom: 32px;
+    line-height: 1.6;
+    max-width: 480px;
+}
+
+.hero-action-buttons {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.btn-hero {
+    padding: 13px 28px;
+    border-radius: 50px;
+    font-size: 15px;
+    font-weight: 600;
+    transition: var(--transition);
+    display: inline-block;
+    text-align: center;
+    background-color: var(--deep-green);
+    color: var(--bg-white);
+    border: 1.5px solid var(--deep-green);
+    box-shadow: 0 2px 6px var(--deep-green-shadow);
+}
+
+.btn-hero:hover {
+    background-color: var(--warm-cream);
+    color: var(--deep-green);
+    border-color: var(--deep-green);
+    transform: translateY(-2px);
+    box-shadow: none;
+}
+
+.hero-carousel-wrapper {
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    background-color: var(--bg-placeholder);
+}
+
+.carousel-image {
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    height: auto;
+    object-fit: cover;
+    display: block;
+}
+
+.carousel-caption-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 24px;
+    background: linear-gradient(to top, var(--black-overlay-80) 0%, transparent 100%);
+    color: var(--bg-white);
+}
+
+.carousel-caption-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0;
+}
+
+/* Motif Mega Mendung di Hero */
+.hero-section::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('../images/homepage/batik.jpg');
+    background-size: 800px 800px;
+    background-repeat: repeat;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.05;
+}
+
+.hero-section > * {
+    position: relative;
+    z-index: 1;
+}
+
+/* =========================
+   STATISTIK
+   ========================= */
+.stats-section {
+    padding: 56px 24px;
+    background-color: var(--deep-green);
+    color: var(--bg-white);
+}
+
+.stats-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 32px;
+    text-align: center;
+}
+
+.stat-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px 16px;
+}
+
+.stat-number {
+    font-size: 44px;
+    font-weight: 800;
+    color: var(--sage-green);
+    line-height: 1;
+    letter-spacing: -1px;
+    margin: 0;
+}
+
+.stat-label {
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    opacity: 0.85;
+    margin: 0;
+}
+
+/* =========================
+   KATEGORI UTAMA
+   ========================= */
+.kategori-section {
+    padding: 64px 24px;
+    background: linear-gradient(135deg, var(--sage-soft-20) 0%, var(--warm-cream) 100%);
+}
+
+.kategori-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.kategori-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 24px;
+}
+
+.kategori-card {
+    background-color: var(--bg-white);
+    border-radius: 16px;
+    padding: 36px 24px;
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
+    transition: var(--transition);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.kategori-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-md);
+}
+
+.kategori-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    font-size: 36px;
+    line-height: 1;
+    margin-bottom: 20px;
+    transition: var(--transition);
+}
+
+.kategori-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.kategori-link {
+    font-size: 14px;
+    font-weight: 600;
+    transition: var(--transition);
+}
+
+.kategori-link:hover {
+    text-decoration: underline;
+}
+
+.kategori-card:hover .kategori-icon {
+    transform: scale(1.08);
+}
+
+/* Kategori 1: Makanan */
+.kategori-grid > .kategori-card-wrapper:nth-child(1) .kategori-card:hover {
+    border-color: var(--label-makanan);
+}
+.kategori-grid > .kategori-card-wrapper:nth-child(1) .kategori-icon {
+    background-color: var(--label-makanan-soft);
+    color: var(--label-makanan);
+}
+.kategori-grid > .kategori-card-wrapper:nth-child(1) .kategori-link {
+    color: var(--label-makanan);
+}
+
+/* Kategori 2: Jajanan */
+.kategori-grid > .kategori-card-wrapper:nth-child(2) .kategori-card:hover {
+    border-color: var(--label-jajanan);
+}
+.kategori-grid > .kategori-card-wrapper:nth-child(2) .kategori-icon {
+    background-color: var(--label-jajanan-soft);
+    color: var(--label-jajanan);
+}
+.kategori-grid > .kategori-card-wrapper:nth-child(2) .kategori-link {
+    color: var(--label-jajanan);
+}
+
+/* Kategori 3: Minuman */
+.kategori-grid > .kategori-card-wrapper:nth-child(3) .kategori-card:hover {
+    border-color: var(--label-minuman);
+}
+.kategori-grid > .kategori-card-wrapper:nth-child(3) .kategori-icon {
+    background-color: var(--label-minuman-soft);
+    color: var(--label-minuman);
+}
+.kategori-grid > .kategori-card-wrapper:nth-child(3) .kategori-link {
+    color: var(--label-minuman);
+}
+
+/* Kategori 4: Oleh-Oleh */
+.kategori-grid > .kategori-card-wrapper:nth-child(4) .kategori-card:hover {
+    border-color: var(--label-oleh);
+}
+.kategori-grid > .kategori-card-wrapper:nth-child(4) .kategori-icon {
+    background-color: var(--label-oleh-soft);
+    color: var(--label-oleh);
+}
+.kategori-grid > .kategori-card-wrapper:nth-child(4) .kategori-link {
+    color: var(--label-oleh);
+}
+
+/* =========================
+   PETA RASA
+   ========================= */
+.peta-section {
+    padding: 64px 24px;
+    background-color: var(--deep-green);
+    color: var(--bg-white);
+}
+
+.peta-container-main {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.peta-section .section-title {
+    color: var(--sage-green);
+}
+
+.peta-section .section-subtitle {
+    color: var(--bg-white);
+}
+
+.peta-wrapper {
+    position: relative;
+    background-color: var(--warm-cream);
+    border-radius: 20px;
+    padding: 24px;
+    border: 1px solid var(--white-soft-15);
+    overflow: hidden;
+}
+
+.peta-instruction {
+    margin-bottom: 16px;
+    color: var(--deep-green);
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.zoom-controls-wrapper {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 10;
+}
+
+.btn-zoom {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    border: 1px solid var(--deep-green-shadow);
+    background-color: var(--bg-white);
+    color: var(--deep-green);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition);
+    font-size: 20px;
+}
+
+.btn-zoom:hover {
+    background-color: var(--deep-green);
+    color: var(--bg-white);
+    border-color: var(--deep-green);
+}
+
+.btn-zoom:active {
+    transform: scale(0.95);
+}
+
+.peta-viewport {
+    overflow: auto;
+    width: 100%;
+    max-height: 420px;
+    position: relative;
+    border-radius: 12px;
+    background-color: var(--bg-white);
+    border: 1px solid var(--sage-soft-20);
+}
+
+.peta-inner-container {
+    position: relative;
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    transform-origin: top left;
+    transition: transform 0.3s ease-in-out;
+}
+
+.peta-image {
+    width: 95%;
+    height: auto;
+    display: block;
+    filter: brightness(1.05) sepia(0.08);
+}
+
+.peta-pin-item {
+    position: absolute;
+    transform: translate(-50%, -100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.btn-pin {
+    background-color: var(--deep-green);
+    color: var(--bg-white);
+    border: 2px solid var(--bg-white);
+    border-radius: 50%;
+    width: 26px;
+    height: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 14px;
+    box-shadow: 0 2px 6px var(--deep-green-shadow);
+    transition: var(--transition);
+}
+
+.peta-pin-item[class*="pin-kota-"] .btn-pin {
+    background-color: var(--warm-amber);
+    box-shadow: 0 2px 6px var(--amber-shadow);
+}
+
+.btn-pin:hover {
+    transform: scale(1.2);
+    background-color: var(--sage-green);
+    border-color: var(--bg-white);
+}
+
+.pin-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--deep-green);
+    background-color: var(--white-soft-95);
+    padding: 2px 8px;
+    border-radius: 50px;
+    margin-top: 4px;
+    white-space: nowrap;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--deep-green-shadow);
+}
+
+.pin-kota-bandung { top: 55%; left: 48%; }
+.pin-kota-bogor { top: 40%; left: 25%; }
+.pin-kota-cirebon { top: 35%; left: 82%; }
+.pin-kab-garut { top: 68%; left: 58%; }
+
+/* =========================
+   REKOMENDASI KULINER
+   ========================= */
+.rekomendasi-section {
+    padding: 64px 24px;
+    background: linear-gradient(135deg, var(--sage-soft-20) 0%, var(--warm-cream) 100%);
+}
+
+.rekomendasi-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.rekomendasi-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 32px;
+    align-items: start;
+}
+
+.makanan-card {
+    background-color: var(--bg-white);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
+    transition: box-shadow 0.4s ease-in-out, border-color 0.4s ease-in-out;
+}
+
+.makanan-card:hover {
+    box-shadow: var(--shadow-md);
+    border-color: var(--sage-green);
+}
+
+.food-card-img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    display: block;
+    transition: height 0.4s ease-in-out;
+}
+
+.makanan-card:hover .food-card-img {
+    height: 340px;
+}
+
+.makanan-card-body {
+    padding: 24px;
+}
+
+.food-badge {
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 50px;
+    text-transform: uppercase;
+}
+
+.food-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin-top: 12px;
+    margin-bottom: 4px;
+    color: var(--text-dark);
+}
+
+.food-location {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.rekomendasi-grid > .rekomendasi-card-item:nth-child(1) .food-badge {
+    background-color: var(--label-makanan-soft);
+    color: var(--label-makanan);
+}
+
+.rekomendasi-grid > .rekomendasi-card-item:nth-child(2) .food-badge {
+    background-color: var(--label-jajanan-soft);
+    color: var(--label-jajanan);
+}
+
+.rekomendasi-grid > .rekomendasi-card-item:nth-child(3) .food-badge {
+    background-color: var(--label-minuman-soft);
+    color: var(--label-minuman);
+}
+
+.rekomendasi-grid > .rekomendasi-card-item:nth-child(4) .food-badge {
+    background-color: var(--label-oleh-soft);
+    color: var(--label-oleh);
+}
+
+.btn-collapse-toggle {
+    width: 100%;
+    background-color: var(--bg-light);
+    border: 1px solid var(--border-color);
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--deep-green);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn-collapse-toggle:hover {
+    background-color: var(--deep-green);
+    color: var(--bg-white);
+}
+
+.detail-info {
+    padding-top: 16px;
+    margin-top: 16px;
+    font-size: 14px;
+}
+
+.detail-info .deskripsi {
+    color: var(--text-dark);
+    margin-bottom: 12px;
+}
+
+.detail-info .detail-item {
+    margin-bottom: 6px;
+    color: var(--text-muted);
+}
+
+.detail-info .harga-range {
+    color: var(--deep-green);
+    font-weight: 600;
+    margin-top: 8px;
+}
+
+.more-button-wrapper {
+    margin-top: 56px;
+    text-align: center;
+}
+
+.btn-see-more {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 13px 32px;
+    background-color: var(--deep-green);
+    color: var(--bg-white);
+    border: 1.5px solid var(--deep-green);
+    border-radius: 50px;
+    font-size: 15px;
+    font-weight: 600;
+    transition: var(--transition);
+    box-shadow: 0 2px 6px var(--deep-green-shadow);
+}
+
+.btn-see-more:hover {
+    background-color: var(--warm-cream);
+    color: var(--deep-green);
+    transform: translateY(-2px);
+    box-shadow: none;
+}
+
+.icon-arrow-right {
+    font-size: 18px;
+}
+
+/* =========================
+   TESTIMONI
+   ========================= */
+.section-testimoni {
+    padding: 64px 24px;
+    background-color: var(--deep-green);
+    color: var(--bg-white);
+}
+
+.testimoni-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.testimoni-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.testimoni-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--sage-green);
+    margin-top: 0;
+    margin-bottom: 8px;
+}
+
+.testimoni-subtitle {
+    color: var(--bg-white);
+    font-size: 16px;
+    margin: 0;
+}
+
+.testimoni-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+}
+
+.testimoni-card-item {
+    display: flex;
+}
+
+.testimoni-card {
+    background-color: var(--warm-cream);
+    border-radius: 16px;
+    padding: 28px 24px;
+    border: 1px solid var(--border-color);
+    transition: var(--transition);
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.testimoni-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--sage-green);
+}
+
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.user-profile .user-avatar {
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
+}
+
+.user-info .user-name {
+    font-size: 15px;
+    font-weight: 600;
+    margin: 0 0 2px 0;
+    color: var(--text-dark);
+}
+
+.user-origin {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.star-rating {
+    display: flex;
+    gap: 2px;
+    margin-bottom: 14px;
+    color: var(--warm-amber);
+    font-size: 18px;
+}
+
+.user-review {
+    color: var(--text-dark);
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 0;
+    font-style: italic;
+}
+
+.testimoni-action {
+    text-align: center;
+    margin-top: 40px;
+}
+
+.btn-tulis-ulasan {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 13px 32px;
+    background-color: var(--warm-cream);
+    color: var(--deep-green);
+    border: 1.5px solid var(--warm-cream);
+    border-radius: 50px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    font-family: inherit;
+    box-shadow: 0 2px 6px var(--black-shadow-15);
+}
+
+.btn-tulis-ulasan:hover {
+    background-color: var(--deep-green-hover);
+    color: var(--bg-white);
+    border-color: var(--deep-green-hover);
+    transform: translateY(-2px);
+    box-shadow: none;
+}
+
+.icon-edit {
+    font-size: 18px;
+}
+
+/* =========================
+   FAVORIT
+   ========================= */
+.section-favorit-wrapper {
+    padding: 40px 24px;
+    background-color: var(--deep-green);
+}
+
+.favorit-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.favorit-card-box {
+    background-color: var(--warm-cream);
+    border-radius: 20px;
+    padding: 48px 32px;
+    text-align: center;
+    color: var(--deep-green);
+    position: relative;
+    overflow: hidden;
+}
+
+.icon-favorit {
+    font-size: 48px;
+    color: var(--label-makanan);
+    margin-bottom: 16px;
+    display: inline-block;
+}
+
+.favorit-title {
+    font-size: 24px;
+    font-weight: 700;
+    margin-top: 0;
+    margin-bottom: 10px;
+    color: var(--deep-green);
+}
+
+.favorit-desc {
+    font-size: 15px;
+    opacity: 0.9;
+    max-width: 480px;
+    margin: 0 auto 24px auto;
+    line-height: 1.6;
+    color: var(--text-dark);
+}
+
+.btn-favorit-link {
+    display: inline-block;
+    padding: 12px 32px;
+    background-color: var(--deep-green);
+    color: var(--bg-white);
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 600;
+    transition: var(--transition);
+}
+
+.btn-favorit-link:hover {
+    background-color: var(--bg-white);
+    color: var(--deep-green-hover);
+    transform: translateY(-2px);
+}
+
+/* =========================
+   TAMBAH KULINER
+   ========================= */
+.section-tambah-wrapper {
+    padding: 64px 24px;
+    background: linear-gradient(135deg, var(--sage-soft-20) 0%, var(--warm-cream) 100%);
+    text-align: center;
+}
+
+.tambah-kuliner-container {
+    max-width: 720px;
+    margin: 0 auto;
+}
+
+.tambah-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--deep-green);
+    margin-top: 0;
+    margin-bottom: 8px;
+}
+
+.tambah-subtitle {
+    font-size: 16px;
+    color: var(--text-muted);
+    margin-top: 0;
+    margin-bottom: 28px;
+}
+
+.btn-tambah-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 32px;
+    background-color: var(--deep-green);
+    color: var(--bg-white);
+    border-radius: 50px;
+    font-size: 15px;
+    font-weight: 600;
+    transition: var(--transition);
+}
+
+.btn-tambah-link:hover {
+    background-color: var(--bg-white);
+    color: var(--deep-green-hover);
+    transform: translateY(-2px);
+}
+
+.icon-plus {
+    font-size: 20px;
+}
+
+/* =========================
+   TABLET (≤992px)
+   ========================= */
+@media (max-width: 992px) {
+    .hero-section {
+        padding: 56px 24px;
+    }
+
+    .hero-wrapper {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    .hero-text-content {
+        display: contents;
+    }
+
+    .hero-quote {
+        order: 1;
+        margin-bottom: 12px;
+    }
+
+    .hero-title {
+        order: 2;
+        font-size: 34px;
+        margin-bottom: 16px;
+    }
+
+    .hero-description {
+        order: 3;
+        max-width: 100%;
+        margin-bottom: 28px;
+    }
+
+    .hero-carousel-wrapper {
+        order: 4;
+        max-width: 640px;
+        margin: 0 auto 28px auto;
+        width: 100%;
+    }
+
+    .hero-action-buttons {
+        order: 5;
+        justify-content: center;
+    }
+
+    .carousel-image {
+        aspect-ratio: 16/9;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .kategori-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .peta-viewport {
+        max-height: 380px;
+    }
+}
+
+/* =========================
+   MOBILE (≤768px)
+   ========================= */
+@media (max-width: 768px) {
+    .hero-section {
+        padding: 40px 20px;
+    }
+
+    .stats-section,
+    .kategori-section,
+    .peta-section,
+    .rekomendasi-section,
+    .section-testimoni,
+    .section-tambah-wrapper {
+        padding: 48px 16px;
+    }
+
+    .section-title,
+    .testimoni-title {
+        font-size: 24px;
+    }
+
+    .peta-viewport {
+        max-height: 340px;
+    }
+}
+
+/* =========================
+   MOBILE KECIL (≤576px)
+   ========================= */
+@media (max-width: 576px) {
+    .hero-section {
+        padding: 32px 16px;
+    }
+
+    .hero-quote {
+        font-size: 12px;
+        letter-spacing: 0.5px;
+        margin-bottom: 8px;
+        padding: 4px 10px;
+        border-radius: 6px;
+    }
+
+    .hero-title {
+        font-size: 26px;
+        margin-bottom: 12px;
+    }
+
+    .hero-description {
+        font-size: 14px;
+        margin-bottom: 20px;
+    }
+
+    .hero-carousel-wrapper {
+        margin: 0 auto 20px auto;
+    }
+
+    .hero-action-buttons {
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .btn-hero {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 12px 20px;
+        font-size: 14px;
+    }
+
+    .carousel-image {
+        aspect-ratio: 3 / 2;
+    }
+
+    .carousel-caption-overlay {
+        padding: 16px;
+    }
+
+    .carousel-caption-title {
+        font-size: 15px;
+    }
+
+    .stats-section {
+        padding: 40px 16px;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px 12px;
+        align-items: start;
+    }
+
+    .stat-card {
+        padding: 0;
+        gap: 6px;
+    }
+
+    .stat-number {
+        font-size: 32px;
+        letter-spacing: -0.5px;
+    }
+
+    .stat-label {
+        font-size: 11px;
+        letter-spacing: 1px;
+    }
+
+    .section-header {
+        margin-bottom: 28px;
+    }
+
+    .kategori-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+
+    .kategori-card {
+        padding: 20px 12px;
+        border-radius: 12px;
+    }
+
+    .kategori-icon {
+        width: 52px;
+        height: 52px;
+        font-size: 26px;
+        margin-bottom: 12px;
+    }
+
+    .kategori-title {
+        font-size: 14px;
+        margin-bottom: 6px;
+    }
+
+    .kategori-link {
+        font-size: 12px;
+    }
+
+    .peta-wrapper {
+        padding: 16px;
+        border-radius: 16px;
+    }
+
+    .peta-viewport {
+        max-height: 280px;
+    }
+
+    .zoom-controls-wrapper {
+        top: 16px;
+        right: 16px;
+        gap: 6px;
+    }
+
+    .btn-zoom {
+        width: 34px;
+        height: 34px;
+        font-size: 18px;
+    }
+
+    .btn-pin {
+        width: 22px;
+        height: 22px;
+        font-size: 12px;
+    }
+
+    .pin-label {
+        font-size: 9px;
+        padding: 2px 6px;
+    }
+
+    .rekomendasi-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .food-card-img {
+        height: 200px;
+    }
+
+    .makanan-card:hover .food-card-img {
+        height: 260px;
+    }
+
+    .more-button-wrapper {
+        margin-top: 36px;
+    }
+
+    .btn-see-more {
+        padding: 12px 26px;
+        font-size: 14px;
+    }
+
+    .testimoni-header {
+        margin-bottom: 28px;
+    }
+
+    .testimoni-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .testimoni-card {
+        padding: 24px 20px;
+    }
+
+    .btn-tulis-ulasan {
+        padding: 12px 24px;
+        font-size: 14px;
+    }
+
+    .favorit-card-box {
+        padding: 36px 20px;
+        border-radius: 16px;
+    }
+
+    .icon-favorit {
+        font-size: 40px;
+        margin-bottom: 12px;
+    }
+
+    .favorit-title {
+        font-size: 20px;
+    }
+
+    .favorit-desc {
+        font-size: 14px;
+        margin-bottom: 20px;
+    }
+
+    .btn-favorit-link {
+        padding: 11px 26px;
+        font-size: 13px;
+    }
+
+    .tambah-title {
+        font-size: 22px;
+    }
+
+    .tambah-subtitle {
+        font-size: 14px;
+        margin-bottom: 22px;
+    }
+
+    .btn-tambah-link {
+        padding: 12px 26px;
+        font-size: 14px;
+    }
+}

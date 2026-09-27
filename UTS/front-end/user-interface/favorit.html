@@ -7,6 +7,9 @@
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/favorit.css">
 </head>
 <body>
     <!-- Header -->
@@ -36,10 +39,19 @@
                 </form>
             </div>
 
+            <!-- Navigasi Desktop -->
+            <ul id="header-nav-list" class="header-nav-list">
+                <li><a href="index.html" class="header-nav-link">Beranda</a></li>
+                <li><a href="daftar-kuliner.html" class="header-nav-link">Daftar Kuliner</a></li>
+                <li><a href="tambah-kuliner.html" class="header-nav-link">Tambah Kuliner</a></li>
+                <li><a href="favorit.html" class="header-nav-link">Favorit</a></li>
+                <li><a href="faq.html" class="header-nav-link">FAQ</a></li>
+            </ul>
+
             <!-- Kanan: Profil -->
             <div id="header-right" class="header-profile-container">
                 <!-- Default Profil, berubah ketika sudah login (read name dari login) -->
-                <img id="user-avatar-desktop" class="user-avatar" src="images/default-avatar.png" alt="Foto Profil">
+                <img id="user-avatar-desktop" class="user-avatar" src="../images/homepage/default-avatar.png" alt="Foto Profil">
                 <div class="user-info-wrapper">
                     <span id="user-name-desktop" class="user-name">Pengunjung</span>
                     <a id="user-link-desktop" class="user-profile-link" href="login.html">Masuk / Daftar</a>
@@ -63,7 +75,7 @@
             <div id="sidebar-profile-section" class="sidebar-profile-container">
                 <div class="profile-card-mobile">
                     <!-- Default Profil Mobile, berubah ketika sudah login -->
-                    <img id="user-avatar-mobile" class="user-avatar" src="images/default-avatar.png" alt="Foto Profil">
+                    <img id="user-avatar-mobile" class="user-avatar" src="../images/homepage/default-avatar.png" alt="Foto Profil">
                     <div class="user-info-mobile">
                         <h6 id="user-name-mobile" class="user-name">Pengunjung</h6>
                         <a id="user-link-mobile" class="user-profile-link" href="login.html">Masuk / Daftar</a>
@@ -94,7 +106,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#faq" data-bs-dismiss="offcanvas">
+                    <a class="nav-link" href="faq.html">
                         <i class='bx bx-help-circle'></i>FAQ
                     </a>
                 </li>
@@ -103,12 +115,15 @@
     </div>
 
     <main id="main-content" class="favorit-page">
-        <div class="container">
+        <div class="container favorit-container">
+
             <!-- Breadcrumb Navigation -->
             <nav id="breadcrumb-nav" class="mb-3">
-                <ol class="breadcrumb breadcrumb-list small">
-                    <li class="breadcrumb-item"><a href="index.html" class="text-success text-decoration-none nav-home-link"><i class='bx bx-home-alt me-1'></i>Beranda</a></li>
-                    <li class="breadcrumb-item active text-dark">Favorit</li>
+                <ol class="breadcrumb breadcrumb-list">
+                    <li class="breadcrumb-item">
+                        <a href="index.html" class="nav-home-link"><i class='bx bx-home-alt me-1'></i>Beranda</a>
+                    </li>
+                    <li class="breadcrumb-item active">Favorit</li>
                 </ol>
             </nav>
 
@@ -127,59 +142,64 @@
                     </span>
                 </div>
             </header>
-        </div>
 
-        <!-- Tampilan Saat Favorit Kosong (Default) -->
-        <div id="empty-favorite" class="text-center py-5">
-            <div class="mb-3">
-                <i class="bi bi-heartbreak text-muted"></i>
+            <!-- Tampilan Saat Favorit Kosong (Default) -->
+            <div id="empty-favorite" class="empty-favorite">
+                <div class="empty-favorite-icon">
+                    <i class='bx bx-heart'></i>
+                </div>
+                <h4 class="empty-favorite-title">Belum ada kuliner favorit</h4>
+                <p class="empty-favorite-text">Anda belum menambahkan kuliner Jawa Barat ke dalam daftar favorit Anda.</p>
+                <a href="daftar-kuliner.html" class="btn-jelajahi">
+                    <i class='bx bx-restaurant'></i> Jelajahi Kuliner
+                </a>
             </div>
-            <h4 class="fw-bold text-secondary">Belum ada kuliner favorit</h4>
-            <p class="text-muted mb-4">Anda belum menambahkan kuliner Jawa Barat ke dalam daftar favorit Anda.</p>
-            <a href="daftar-kuliner.html" class="btn btn-primary rounded-pill px-4 py-2">
-                Jelajahi Kuliner
-            </a>
-        </div>
 
-        <!-- Container Card Favorit (Awalnya Disembunyikan) -->
-        <div id="favorite-container" class="row g-4 d-none">
-            <!-- Card kuliner favorit akan dimasukkan di sini lewat JavaScript -->
+            <!-- Container Card Favorit (Awalnya Disembunyikan) -->
+            <div id="favorite-container" class="favorit-grid d-none">
+                <!-- Card kuliner favorit akan dimasukkan di sini lewat JavaScript -->
+            </div>
+
         </div>
     </main>
 
     <!-- Footer -->
-    <footer class="bg-dark text-white pt-5 pb-3 mt-5">
-        <div class="container">
-            <div class="row g-4 mb-4">
-                <div class="col-md-4">
-                    <h5 class="fw-bold text-success d-flex align-items-center mb-3">
-                        <i class='bx bx-map-pin me-1 fs-4'></i> JelajahRasa
+    <footer id="main-footer" class="site-footer">
+        <div class="footer-container">
+            <div class="footer-grid">
+                <div id="footer-col-about" class="footer-col">
+                    <h5 id="footer-brand-title" class="footer-brand">
+                        <i class='bx bx-map-pin icon-brand'></i> JelajahRasa
                     </h5>
-                    <p class="small text-secondary">Platform direktori kuliner khas Jawa Barat yang merangkum kekayaan rasa dari 27 Kota & Kabupaten Parahyangan.</p>
+                    <p class="footer-desc">Platform direktori kuliner yang merangkum kekayaan rasa dari berbagai kota dan kabupaten di Jawa Barat.</p>
                 </div>
-                <div class="col-md-4">
-                    <h6 class="fw-bold mb-3">Navigasi Cepat</h6>
-                    <ul class="list-unstyled small">
-                        <li class="mb-2"><a href="index.html" class="text-secondary text-decoration-none">Beranda</a></li>
-                        <li class="mb-2"><a href="daftar-kuliner.html" class="text-secondary text-decoration-none">Daftar Kuliner</a></li>
-                        <li class="mb-2"><a href="favorit.html" class="text-secondary text-decoration-none">Kuliner Favorit</a></li>
-                        <li class="mb-2"><a href="tambah-kuliner.html" class="text-secondary text-decoration-none">Tambah Kuliner Baru</a></li>
+                <!-- Kolom Navigasi -->
+                <div id="footer-col-nav" class="footer-col">
+                    <h6 class="footer-heading">Navigasi Halaman</h6>
+                    <ul class="footer-nav-list">
+                        <li class="footer-nav-item"><a href="index.html" class="footer-nav-link">Beranda</a></li>
+                        <li class="footer-nav-item"><a href="daftar-kuliner.html" class="footer-nav-link">Daftar Kuliner</a></li>
+                        <li class="footer-nav-item"><a href="tambah-kuliner.html" class="footer-nav-link">Tambah Kuliner</a></li>
+                        <li class="footer-nav-item"><a href="favorit.html" class="footer-nav-link">Favorit</a></li>
+                        <li class="footer-nav-item"><a href="faq.html" class="footer-nav-link">FAQ</a></li>
                     </ul>
                 </div>
-                <div class="col-md-4">
-                    <h6 class="fw-bold mb-3">Hubungi Kami</h6>
-                    <p class="small text-secondary mb-1"><i class='bx bx-envelope me-2'></i> info@jelajahrasajabar.id</p>
-                    <p class="small text-secondary mb-3"><i class='bx bx-phone me-2'></i> +62 812-3456-7890</p>
-                    <div class="d-flex gap-2 fs-5">
-                        <a href="#" class="text-secondary"><i class='bx bxl-instagram'></i></a>
-                        <a href="#" class="text-secondary"><i class='bx bxl-facebook'></i></a>
-                        <a href="#" class="text-secondary"><i class='bx bxl-youtube'></i></a>
+                <!-- Kolom Kontak -->
+                <div id="footer-col-contact" class="footer-col">
+                    <h6 class="footer-heading">Hubungi Kami</h6>
+                    <p class="contact-item"><i class='bx bx-envelope icon-contact'></i> halo@jelajahrasajabar.id</p>
+                    <p class="contact-item"><i class='bx bx-phone icon-contact'></i> +62 812-1326-3927</p>
+                    <div class="social-links-wrapper">
+                        <a href="#" id="link-instagram" class="social-link"><i class='bx bxl-instagram'></i></a>
+                        <a href="#" id="link-facebook" class="social-link"><i class='bx bxl-facebook'></i></a>
+                        <a href="#" id="link-youtube" class="social-link"><i class='bx bxl-youtube'></i></a>
                     </div>
                 </div>
             </div>
-            <hr class="border-secondary">
-            <div class="text-center small text-secondary">
-                <p class="mb-0">&copy; 2026 Jelajah Rasa Jawa Barat. All Rights Reserved.</p>
+            <hr class="footer-divider">
+            <!-- Copyright -->
+            <div class="footer-copyright">
+                <p id="copyright-text" class="copyright-text">&copy; 2026 Jelajah Rasa Jawa Barat. All Rights Reserved.</p>
             </div>
         </div>
     </footer>
@@ -197,10 +217,11 @@
             const remainingItems = document.querySelectorAll('.favorit-item').length;
             document.getElementById('favCount').textContent = remainingItems;
 
+
             // Jika item habis, tampilkan ucapan/halaman kosong
             if (remainingItems === 0) {
-                document.getElementById('favoritContainer').classList.add('d-none');
-                document.getElementById('emptyFavorit').classList.remove('d-none');
+                document.getElementById('favorite-container').classList.add('d-none');
+                document.getElementById('empty-favorite').classList.remove('d-none');
             }
         }
     </script>
