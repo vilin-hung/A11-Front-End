@@ -39,6 +39,8 @@ let ulasan = ambilUlasan();
 
 const $ = (id) => document.getElementById(id);
 
+let chartDaerah = null;
+
 // ambil usulan dari localStorage
 function ambilUsulan() {
   try {
@@ -138,6 +140,69 @@ function renderStatistik() {
   $("hitung-minuman").textContent = hitung["Minuman"];
   $("hitung-jajanan").textContent = hitung["Jajanan"];
   $("hitung-oleholeh").textContent = hitung["Oleh-Oleh Khas"];
+  renderChartDaerah();
+}
+
+// samakan nama daerah: "Kabupaten X" -> "Kab. X" biar ga kepecah 2 bar
+function rapikanDaerah(nama) {
+  return String(nama || "").replace(/^Kabupaten /, "Kab. ");
+}
+
+// grafik batang jumlah kuliner per daerah
+function renderChartDaerah() {
+  const canvas = $("chart-daerah");
+
+  // lewati kalau canvas ga ada / ga ke load
+  if (!canvas || typeof Chart === "undefined") {
+    return;
+  }
+
+  const hitungDaerah = {};
+
+  daftarGabungan().forEach(function (item) {
+    // cuma hitung yang statusnya Aktif (Menunggu/Nonaktif ga masuk grafik)
+    if (item.status !== "Aktif") {
+      return;
+    }
+
+    const daerah = rapikanDaerah(item.daerah);
+    hitungDaerah[daerah] = (hitungDaerah[daerah] || 0) + 1;
+  });
+
+  const urut = Object.keys(hitungDaerah).sort(function (a, b) {
+    return hitungDaerah[b] - hitungDaerah[a];
+  });
+
+  const dataBaru = {
+    labels: urut,
+    datasets: [{
+      label: "Jumlah Kuliner",
+      data: urut.map(function (daerah) { return hitungDaerah[daerah]; }),
+      backgroundColor: "#8CA978",
+      borderRadius: 4
+    }]
+  };
+
+  // update data
+  if (!chartDaerah) {
+    chartDaerah = new Chart(canvas, {
+      type: "bar",
+      data: dataBaru,
+      options: {
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          // sumbu x = nama daerah
+          x: { ticks: { autoSkip: false, maxRotation: 90, minRotation: 0 } },
+          y: { beginAtZero: true, ticks: { precision: 0 } }
+        }
+      }
+    });
+    return;
+  }
+
+  chartDaerah.data = dataBaru;
+  chartDaerah.update();
 }
 
 // tampilkan tabel pengajuan rekomendasi
