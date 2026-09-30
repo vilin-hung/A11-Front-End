@@ -1,15 +1,73 @@
+const ULASAN_KEY = "jelajahRasaUlasan";
+
 const reviewForm = document.getElementById("form-tulis-ulasan");
 const reviewGrid = document.querySelector(".testimoni-grid");
+
+// amankan teks dari input pengguna
+function escHtml(teks) {
+  return String(teks == null ? "" : teks)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function ambilUlasan() {
+  try {
+    return JSON.parse(localStorage.getItem(ULASAN_KEY)) || [];
+  } catch (error) {
+    return [];
+  }
+}
+
+function buatKartu(ulasan) {
+  return '<div class="testimoni-card-item ulasan-dinamis">' +
+    '<div class="testimoni-card">' +
+      '<div class="user-profile">' +
+        '<img src="../images/homepage/default-avatar.png" alt="' + escHtml(ulasan.nama) + '" class="user-avatar">' +
+        '<div class="user-info">' +
+          '<h6 class="user-name">' + escHtml(ulasan.nama) + '</h6>' +
+          '<span class="user-origin">' + escHtml(ulasan.kota) + '</span>' +
+        '</div>' +
+      '</div>' +
+      '<div class="star-rating">' +
+        '<i class="bx bxs-star"></i><i class="bx bxs-star"></i><i class="bx bxs-star"></i><i class="bx bxs-star"></i><i class="bx bxs-star"></i>' +
+      '</div>' +
+      '<p class="user-review">"' + escHtml(ulasan.pesan) + '"</p>' +
+    '</div>' +
+  '</div>';
+}
+
+function renderUlasan() {
+  if (!reviewGrid) {
+    return;
+  }
+
+  // hapus kartu dinamis lama dulu biar ga dobel
+  reviewGrid.querySelectorAll(".ulasan-dinamis").forEach(function (kartu) {
+    kartu.remove();
+  });
+
+  // cuma tampilkan ulasan yang statusnya "Tampil" (disembunyikan lewat admin)
+  ambilUlasan().forEach(function (ulasan) {
+    if (ulasan.status !== "Tampil") {
+      return;
+    }
+
+    reviewGrid.insertAdjacentHTML("beforeend", buatKartu(ulasan));
+  });
+}
+
+renderUlasan();
 
 if (reviewForm && reviewGrid) {
   reviewForm.addEventListener("submit", function (event) {
     event.preventDefault();
 
-    const currentUser = JSON.parse(
-      localStorage.getItem(CURRENT_USER_KEY)
-    );
-
     // cek apakah user sudah login
+    const currentUser = JSON.parse(localStorage.getItem(CURRENT_USER_KEY));
+
     if (!currentUser) {
       alert("Silakan login terlebih dahulu untuk menulis ulasan.");
       window.location.href = "login.html";
@@ -23,37 +81,19 @@ if (reviewForm && reviewGrid) {
       return;
     }
 
-    const newReview = document.createElement("div");
-    newReview.className = "testimoni-card-item";
+    const daftar = ambilUlasan();
 
-    newReview.innerHTML = `
-      <div class="testimoni-card">
-        <div class="user-profile">
-          <img
-            src="../images/homepage/default-avatar.png"
-            alt="${currentUser.name}"
-            class="user-avatar"
-          >
+    daftar.push({
+      id: Date.now(),
+      nama: currentUser.name,
+      kota: currentUser.city,
+      pesan: review,
+      status: "Tampil",
+      tanggal: new Date().toISOString().slice(0, 10)
+    });
 
-          <div class="user-info">
-            <h6 class="user-name">${currentUser.name}</h6>
-            <span class="user-origin">${currentUser.city}</span>
-          </div>
-        </div>
-
-        <div class="star-rating">
-          <i class='bx bxs-star'></i>
-          <i class='bx bxs-star'></i>
-          <i class='bx bxs-star'></i>
-          <i class='bx bxs-star'></i>
-          <i class='bx bxs-star'></i>
-        </div>
-
-        <p class="user-review">"${review}"</p>
-      </div>
-    `;
-
-    reviewGrid.appendChild(newReview);
+    localStorage.setItem(ULASAN_KEY, JSON.stringify(daftar));
+    renderUlasan();
 
     alert("Ulasan berhasil dikirim!");
 

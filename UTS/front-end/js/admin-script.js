@@ -1,5 +1,6 @@
 // key localStorage
 const USULAN_KEY = "jelajahRasaUsulan";
+const ULASAN_KEY = "jelajahRasaUlasan";
 const FAVORITE_KEY = "jelajahRasaFavorites";
 
 // daftar 27 kota/kabupaten
@@ -34,6 +35,7 @@ let dataKuliner = DATA_AWAL.map(function (item) { return Object.assign({}, item)
 
 // usulan dari pengguna
 let usulan = ambilUsulan();
+let ulasan = ambilUlasan();
 
 const $ = (id) => document.getElementById(id);
 
@@ -49,6 +51,18 @@ function ambilUsulan() {
 // simpan usulan ke localStorage
 function simpanUsulan() {
   localStorage.setItem(USULAN_KEY, JSON.stringify(usulan));
+}
+
+function ambilUlasan() {
+  try {
+    return JSON.parse(localStorage.getItem(ULASAN_KEY)) || [];
+  } catch (error) {
+    return [];
+  }
+}
+
+function simpanUlasan() {
+  localStorage.setItem(ULASAN_KEY, JSON.stringify(ulasan));
 }
 
 // ambil favorit dari localStorage
@@ -72,7 +86,7 @@ function escHtml(teks) {
 
 // badge status (Aktif / Menunggu / Nonaktif)
 function badgeStatus(status) {
-  const warna = { "Aktif": "bg-primary", "Menunggu": "bg-warning text-dark", "Nonaktif": "bg-secondary" };
+  const warna = { "Aktif": "bg-primary", "Menunggu": "bg-warning text-dark", "Nonaktif": "bg-secondary", "Tampil": "bg-success", "Sembunyi": "bg-secondary" };
   return '<span class="badge ' + (warna[status] || "bg-secondary") + '">' + escHtml(status) + '</span>';
 }
 
@@ -92,17 +106,28 @@ function cariUsulan(id) {
   return usulan.find(function (item) { return String(item.id) === String(id); });
 }
 
+// cari item di data manual + usulan
+function cariItem(id) {
+  return cariKuliner(id) || cariUsulan(id);
+}
+
+// gabungan kuliner manual + usulan pengguna
+function daftarGabungan() {
+  return dataKuliner.concat(usulan);
+}
+
 // tampilkan statistik
 function renderStatistik() {
   const hitung = { "Makanan": 0, "Jajanan": 0, "Minuman": 0, "Oleh-Oleh Khas": 0 };
+  const semua = daftarGabungan();
 
-  dataKuliner.forEach(function (item) {
+  semua.forEach(function (item) {
     if (hitung[item.kategori] !== undefined) {
       hitung[item.kategori]++;
     }
   });
 
-  $("stat-total-kuliner").textContent = dataKuliner.length;
+  $("stat-total-kuliner").textContent = semua.length;
   $("stat-perlu-menunggu").textContent = usulan.filter(function (item) {
     return item.status === "Menunggu";
   }).length;
@@ -153,13 +178,14 @@ function renderUsulan() {
 // tampilkan tabel daftar kuliner
 function renderKelola() {
   const wadah = $("tabel-daftar-kuliner");
+  const semua = daftarGabungan();
 
-  if (dataKuliner.length === 0) {
+  if (semua.length === 0) {
     wadah.innerHTML = barisKosong(5, "bx-folder-open", "Dataset kuliner belum tersedia. Silakan tambah data baru.");
     return;
   }
 
-  wadah.innerHTML = dataKuliner.map(function (item) {
+  wadah.innerHTML = semua.map(function (item) {
     return '<tr>' +
       '<td>' + escHtml(item.nama) + '</td>' +
       '<td>' + escHtml(item.kategori) + '</td>' +
@@ -169,6 +195,32 @@ function renderKelola() {
         '<button type="button" class="btn btn-warning btn-sm btn-edit" data-id="' + escHtml(item.id) + '">Edit</button> ' +
         '<button type="button" class="btn btn-outline-danger btn-sm btn-hapus" data-id="' + escHtml(item.id) + '">Hapus</button>' +
       '</td>' +
+    '</tr>';
+  }).join("");
+}
+
+// tampilkan tabel ulasan pengguna
+function renderUlasan() {
+  const wadah = $("tabel-daftar-ulasan");
+
+  if (ulasan.length === 0) {
+    wadah.innerHTML = barisKosong(5, "bx-chat", "Belum ada ulasan dari pengguna.");
+    return;
+  }
+
+  wadah.innerHTML = ulasan.slice().sort(function (a, b) {
+    return (Number(b.id) || 0) - (Number(a.id) || 0);
+  }).map(function (item) {
+    const aksi = item.status === "Tampil"
+      ? '<button type="button" class="btn btn-outline-secondary btn-sm btn-toggle-ulasan" data-id="' + escHtml(item.id) + '">Sembunyikan</button>'
+      : '<button type="button" class="btn btn-success btn-sm btn-toggle-ulasan" data-id="' + escHtml(item.id) + '">Tampilkan</button>';
+
+    return '<tr>' +
+      '<td>' + escHtml(item.nama) + '</td>' +
+      '<td>' + escHtml(item.pesan) + '</td>' +
+      '<td>' + escHtml(item.tanggal) + '</td>' +
+      '<td>' + badgeStatus(item.status) + '</td>' +
+      '<td class="text-center">' + aksi + '</td>' +
     '</tr>';
   }).join("");
 }
@@ -211,6 +263,7 @@ function renderSemua() {
   renderUsulan();
   renderKelola();
   renderTop5();
+  renderUlasan();
 }
 
 // isi dropdown kota/kabupaten
@@ -256,7 +309,7 @@ $("tabel-daftar-kuliner").addEventListener("click", function (event) {
   const tombolHapus = event.target.closest(".btn-hapus");
 
   if (tombolEdit) {
-    const item = cariKuliner(tombolEdit.dataset.id);
+    const item = cariItem(tombolEdit.dataset.id);
 
     if (!item) {
       return;
@@ -274,18 +327,49 @@ $("tabel-daftar-kuliner").addEventListener("click", function (event) {
   }
 
   if (tombolHapus) {
-    const item = cariKuliner(tombolHapus.dataset.id);
+    const item = cariItem(tombolHapus.dataset.id);
 
     if (!item) {
       return;
     }
 
     if (confirm('Hapus "' + item.nama + '" dari daftar kuliner?')) {
-      dataKuliner = dataKuliner.filter(function (kuliner) {
-        return String(kuliner.id) !== String(item.id);
-      });
+      const itemUsulan = cariUsulan(item.id);
+
+      if (itemUsulan) {
+        usulan = usulan.filter(function (usulanItem) {
+          return String(usulanItem.id) !== String(item.id);
+        });
+        simpanUsulan();
+      } else {
+        dataKuliner = dataKuliner.filter(function (kuliner) {
+          return String(kuliner.id) !== String(item.id);
+        });
+      }
+
       renderSemua();
     }
+  }
+});
+
+// tampilkan / sembunyikan ulasan
+$("tabel-daftar-ulasan").addEventListener("click", function (event) {
+  const tombolToggle = event.target.closest(".btn-toggle-ulasan");
+
+  if (!tombolToggle) {
+    return;
+  }
+
+  // cari ulasan yang sesuai id tombol
+  const item = ulasan.find(function (u) {
+    return String(u.id) === String(tombolToggle.dataset.id);
+  });
+
+  if (item) {
+    // balik statusnya lalu simpan
+    item.status = item.status === "Tampil" ? "Sembunyi" : "Tampil";
+    simpanUlasan();
+    renderSemua();
   }
 });
 
@@ -312,7 +396,7 @@ $("form-tambah-kuliner").addEventListener("submit", function (event) {
 $("form-edit-kuliner").addEventListener("submit", function (event) {
   event.preventDefault();
 
-  const item = cariKuliner($("edit-id").value);
+  const item = cariItem($("edit-id").value);
 
   if (item) {
     item.nama = $("edit-nama").value.trim();
@@ -321,6 +405,10 @@ $("form-edit-kuliner").addEventListener("submit", function (event) {
     item.status = $("edit-status").value;
     item.bahan = $("edit-bahan").value.trim();
     item.deskripsi = $("edit-deskripsi").value.trim();
+
+    if (cariUsulan(item.id)) {
+      simpanUsulan();
+    }
   }
 
   bootstrap.Modal.getOrCreateInstance($("modal-edit-kuliner")).hide();

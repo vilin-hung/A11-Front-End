@@ -51,6 +51,24 @@ likeButtons.forEach(function (button) {
   });
 });
 
+// samakan tampilan hati dengan isi favorit saat halaman dibuka
+const daftarFavorit = getFavorites();
+
+likeButtons.forEach(function (button) {
+  const card = button.closest(".catalog-card");
+
+  if (!card) {
+    return;
+  }
+
+  const sudahFavorit = daftarFavorit.some(function (item) {
+    return item.id === card.id;
+  });
+
+  button.classList.toggle("active", sudahFavorit);
+  button.querySelector("i").className = sudahFavorit ? "bx bxs-heart fs-6" : "bx bx-heart fs-6";
+});
+
 // halaman favorit
 const favoriteContainer = document.getElementById("favorite-container");
 const emptyFavorite = document.getElementById("empty-favorite");
@@ -114,7 +132,7 @@ if (favoriteContainer) {
 
         saveFavorites(updatedFavorites);
         button.closest(".favorit-item").remove();
-        favoritCount.textContent = updatedFavorites.lengthl
+        favoritCount.textContent = updatedFavorites.length;
 
         if (updatedFavorites.length === 0) {
           favoriteContainer.classList.add("d-none");

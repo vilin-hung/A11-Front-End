@@ -34,10 +34,17 @@ if (formKuliner) {
     previewWrapper.classList.add("d-none");
   }
 
-  // simpan usulan ke localStorage (status Menunggu)
+  // simpan usulan ke localStorage
   function simpanUsulan(kategori) {
     const user = JSON.parse(localStorage.getItem("jelajahRasaCurrentUser"));
     const usulan = JSON.parse(localStorage.getItem("jelajahRasaUsulan")) || [];
+
+    // ambil semua checkbox karakter rasa yang dicentang
+    const karakterRasa = Array.from(
+      formKuliner.querySelectorAll('input[name="karakter-rasa"]:checked')
+    ).map(function (checkbox) {
+      return checkbox.value;
+    });
 
     usulan.push({
       id: Date.now(),
@@ -45,6 +52,10 @@ if (formKuliner) {
       kategori: kategori,
       daerah: document.getElementById("asal-daerah").value,
       status: "Menunggu",
+      bahan: document.getElementById("bahan-utama").value.trim(),
+      deskripsi: document.getElementById("deskripsi").value.trim(),
+      rasa: karakterRasa.join(", "),
+      harga: document.getElementById("estimasi-harga").value.trim(),
       pengirim: user ? user.name : "Pengunjung",
       tanggal: new Date().toISOString().slice(0, 10)
     });
