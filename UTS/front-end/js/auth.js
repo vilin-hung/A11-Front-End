@@ -93,6 +93,17 @@ if (currentUser) {
   const userNameMobile = document.getElementById("user-name-mobile");
   const userLinkMobile = document.getElementById("user-link-mobile");
 
+  const userAvatarDesktop = document.getElementById("user-avatar-desktop");
+  const userAvatarMobile = document.getElementById("user-avatar-mobile");
+
+  if (userAvatarDesktop) {
+    userAvatarDesktop.src = currentUser.avatar || "../images/homepage/default-avatar.png";
+  }
+
+  if (userAvatarMobile) {
+    userAvatarMobile.src = currentUser.avatar || "../images/homepage/default-avatar.png";
+  }
+
   if (userNameDekstop) {
     userNameDekstop.textContent = currentUser.name;
   }

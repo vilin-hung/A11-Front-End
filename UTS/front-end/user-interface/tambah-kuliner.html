@@ -292,12 +292,12 @@
                         <div class="card-body p-4">
                             
                             <div class="upload-zone" id="upload-zone">
-                                <input type="file" id="foto-kuliner" name="foto-kuliner" accept="image/*" class="d-none">
+                                <input type="file" id="foto-kuliner" name="foto-kuliner" accept="image/*" class="d-none" required>
                                 
                                 <div id="upload-placeholder">
                                     <i class='bx bx-cloud-upload text-success display-4 mb-2'></i>
                                     <h6 class="fw-bold mb-1 text-dark">Klik atau Seret Foto ke Sini</h6>
-                                    <p class="text-muted small mb-0">Format: png, PNG, atau WEBP (Maks. 5MB)</p>
+                                    <p class="text-muted small mb-0">Format: JPG, PNG, atau WEBP (Maks. 5MB)</p>
                                 </div>
                                 
                                 <div id="preview-wrapper" class="d-none">
@@ -311,6 +311,7 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="invalid-feedback feedback-kategori" id="feedback-foto">Mohon unggah foto kuliner.</div>
                         </div>
                     </div>
 

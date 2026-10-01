@@ -153,9 +153,6 @@
                 <div class="tab-pane fade" id="tab-kelola-kuliner" role="tabpanel">
                     <div class="d-flex justify-content-between align-items-center">
                         <h4>Daftar Semua Kuliner</h4>
-                        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modal-tambah-kuliner">
-                            <i class='bx bx-plus me-1'></i>Tambah Kuliner
-                        </button>
                     </div>
 
                     <div class="box-tabel border rounded bg-white">
@@ -174,7 +171,7 @@
                                     <tr class="baris-kosong">
                                         <td colspan="5" class="text-center text-muted">
                                             <i class='bx bx-folder-open d-block'></i>
-                                            <span>Dataset kuliner belum tersedia. Silakan tambah data baru.</span>
+                                            <span>Belum ada data kuliner.</span>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -211,70 +208,6 @@
                     </div>
                 </div>
             </main>
-        </div>
-    </div>
-
-    <!-- Popup: Tambah Kuliner -->
-    <div class="modal fade" id="modal-tambah-kuliner" tabindex="-1">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title"><i class='bx bx-plus-circle me-1'></i> Tambah Kuliner Baru</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="form-tambah-kuliner">
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label for="tambah-nama" class="form-label">Nama Kuliner *</label>
-                                <input type="text" class="form-control" id="tambah-nama" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="tambah-kategori" class="form-label">Kategori *</label>
-                                <select class="form-select" id="tambah-kategori" required>
-                                    <option value="" selected disabled>-- Pilih Kategori --</option>
-                                    <option value="Makanan">Makanan</option>
-                                    <option value="Jajanan">Jajanan</option>
-                                    <option value="Minuman">Minuman</option>
-                                    <option value="Oleh-Oleh Khas">Oleh-Oleh Khas</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="tambah-daerah" class="form-label">Asal Daerah *</label>
-                                <select class="form-select" id="tambah-daerah" required>
-                                    <option value="" selected disabled>-- Pilih Kota/Kabupaten --</option>
-                                    <!-- Penyesuaian kota/kab belum fix -->
-                                    <option value="Kota Bandung">Kota Bandung</option>
-                                    <option value="Kota Tasikmalaya">Kota Tasikmalaya</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="tambah-status" class="form-label">Status Publikasi</label>
-                                <select class="form-select" id="tambah-status">
-                                    <option value="Aktif" selected>Aktif</option>
-                                    <option value="Nonaktif">Nonaktif</option>
-                                </select>
-                            </div>
-                            <div class="col-12">
-                                <label for="tambah-bahan" class="form-label">Bahan Utama</label>
-                                <input type="text" class="form-control" id="tambah-bahan">
-                            </div>
-                            <div class="col-12">
-                                <label for="tambah-deskripsi" class="form-label">Deskripsi</label>
-                                <textarea class="form-control" id="tambah-deskripsi" rows="3"></textarea>
-                            </div>
-                            <div class="col-12">
-                                <label for="tambah-gambar" class="form-label">Unggah Gambar</label>
-                                <input type="file" class="form-control" id="tambah-gambar" accept="image/*">
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" form="form-tambah-kuliner" class="btn btn-success">Simpan Data</button>
-                </div>
-            </div>
         </div>
     </div>
 
@@ -324,10 +257,6 @@
                             <div class="col-12">
                                 <label for="edit-deskripsi" class="form-label">Deskripsi</label>
                                 <textarea class="form-control" id="edit-deskripsi" rows="3"></textarea>
-                            </div>
-                            <div class="col-12">
-                                <label for="edit-gambar" class="form-label">Ganti Gambar (Opsional)</label>
-                                <input type="file" class="form-control" id="edit-gambar" accept="image/*">
                             </div>
                         </div>
                     </form>
@@ -398,6 +327,21 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lihat Gambar Ukuran Penuh -->
+    <div class="modal fade" id="modal-lihat-gambar" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 rounded-4">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title" id="judul-gambar"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center pt-0">
+                    <img id="gambar-ukuran-penuh" src="" alt="Foto Kuliner" class="img-fluid rounded-3">
                 </div>
             </div>
         </div>

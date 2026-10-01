@@ -8,6 +8,9 @@ if (formKuliner) {
   const imagePreview = document.getElementById("image-preview");
   const btnGantiFoto = document.getElementById("btn-hapus-foto");
   const feedbackKategori = formKuliner.querySelector(".feedback-kategori");
+  const feedbackFoto = document.getElementById("feedback-foto");
+
+  let fotoDataUrl = "";
 
   // tampilkan preview foto
   function tampilkanPreview(file) {
@@ -19,8 +22,10 @@ if (formKuliner) {
 
     reader.onload = function (event) {
       imagePreview.src = event.target.result;
+      fotoDataUrl = event.target.result;
       uploadPlaceholder.classList.add("d-none");
       previewWrapper.classList.remove("d-none");
+      feedbackFoto.classList.remove("show");
     };
 
     reader.readAsDataURL(file);
@@ -30,8 +35,17 @@ if (formKuliner) {
   function resetPreview() {
     fileInput.value = "";
     imagePreview.src = "#";
+    fotoDataUrl = "";
     uploadPlaceholder.classList.remove("d-none");
     previewWrapper.classList.add("d-none");
+  }
+
+  // ambil tulisan option yang dipilih, fallback ke value kalau tidak ada
+  function ambilLabelDaerah() {
+    const select = document.getElementById("asal-daerah");
+    const terpilih = select.selectedOptions && select.selectedOptions[0];
+
+    return terpilih ? terpilih.textContent.trim() : select.value;
   }
 
   // simpan usulan ke localStorage
@@ -50,17 +64,25 @@ if (formKuliner) {
       id: Date.now(),
       nama: document.getElementById("nama-kuliner").value.trim(),
       kategori: kategori,
-      daerah: document.getElementById("asal-daerah").value,
+      daerah: ambilLabelDaerah(),
       status: "Menunggu",
       bahan: document.getElementById("bahan-utama").value.trim(),
       deskripsi: document.getElementById("deskripsi").value.trim(),
       rasa: karakterRasa.join(", "),
       harga: document.getElementById("estimasi-harga").value.trim(),
       pengirim: user ? user.name : "Pengunjung",
-      tanggal: new Date().toISOString().slice(0, 10)
+      tanggal: new Date().toISOString().slice(0, 10),
+      img: fotoDataUrl || ""
     });
 
-    localStorage.setItem("jelajahRasaUsulan", JSON.stringify(usulan));
+    try {
+      localStorage.setItem("jelajahRasaUsulan", JSON.stringify(usulan));
+    } catch (error) {
+      alert("Gagal menyimpan: gambar terlalu besar. Coba pilih foto yang lebih kecil.");
+      return false;
+    }
+
+    return true;
   }
 
   // buka file picker
@@ -115,26 +137,29 @@ if (formKuliner) {
   formKuliner.addEventListener("submit", function (event) {
     event.preventDefault();
 
-    const currentUser = JSON.parse(
-      localStorage.getItem("jelajahRasaCurrentUser")
-    );
+    // cek apakah user sudah login
+    const user = JSON.parse(localStorage.getItem(CURRENT_USER_KEY));
 
-    if(!currentUser) {
-      alert("Silakan login terlebih dahulu.");
+    if (!user) {
+      alert("Silakan login terlebih dahulu untuk mengirim rekomendasi kuliner.");
       window.location.href = "login.html";
       return;
     }
-    
+
     const kategoriTerpilih = formKuliner.querySelector('input[name="kategori-kuliner"]:checked');
 
     feedbackKategori.classList.toggle("show", !kategoriTerpilih);
+    feedbackFoto.classList.toggle("show", !fotoDataUrl);
 
-    if (!formKuliner.checkValidity() || !kategoriTerpilih) {
+    if (!formKuliner.checkValidity() || !kategoriTerpilih || !fotoDataUrl) {
       formKuliner.classList.add("was-validated");
       return;
     }
 
-    simpanUsulan(kategoriTerpilih.value);
+    // kalo gagal simpan
+    if (!simpanUsulan(kategoriTerpilih.value)) {
+      return;
+    }
 
     formKuliner.classList.remove("was-validated");
     formKuliner.reset();
