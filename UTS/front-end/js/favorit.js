@@ -13,6 +13,16 @@ const likeButtons = document.querySelectorAll(".btn-like");
 
 likeButtons.forEach(function (button) {
   button.addEventListener("click", function () {
+    const currentUser = JSON.parse(
+      localStorage.getItem("jelajahRasaCurrentUser")
+    );
+
+    if(!currentUser) {
+      alert("Silakan login terlebih dahulu.");
+      window.location.href = "login.html";
+      return;
+    }
+    
     const card = button.closest(".catalog-card");
 
     if (!card) {

@@ -112,3 +112,19 @@ if (currentUser) {
   }
 }
 
+// proteksi fitur yang membutuhkan login
+const loginRequiredLinks = document.querySelectorAll(".link-requires-login");
+
+loginRequiredLinks.forEach(function (link) {
+  link.addEventListener("click", function (event) {
+    const currentUser = JSON.parse(
+      localStorage.getItem(CURRENT_USER_KEY)
+    );
+
+    if (!currentUser) {
+      event.preventDefault();
+      alert("Silakan login terlebih dahulu.");
+      window.location.href = "login.html";
+    }
+  });
+})

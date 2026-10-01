@@ -115,6 +115,16 @@ if (formKuliner) {
   formKuliner.addEventListener("submit", function (event) {
     event.preventDefault();
 
+    const currentUser = JSON.parse(
+      localStorage.getItem("jelajahRasaCurrentUser")
+    );
+
+    if(!currentUser) {
+      alert("Silakan login terlebih dahulu.");
+      window.location.href = "login.html";
+      return;
+    }
+    
     const kategoriTerpilih = formKuliner.querySelector('input[name="kategori-kuliner"]:checked');
 
     feedbackKategori.classList.toggle("show", !kategoriTerpilih);
