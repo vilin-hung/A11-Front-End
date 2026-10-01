@@ -421,7 +421,7 @@
 }
 
 .peta-image {
-    width: 95%;
+    width: 100%;
     height: auto;
     display: block;
     filter: brightness(1.05) sepia(0.08);
@@ -429,7 +429,7 @@
 
 .peta-pin-item {
     position: absolute;
-    transform: translate(-50%, -100%);
+    transform: translate(-50%, -50%);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -449,11 +449,28 @@
     font-size: 14px;
     box-shadow: 0 2px 6px var(--deep-green-shadow);
     transition: var(--transition);
+    position: relative;
 }
 
 .peta-pin-item[class*="pin-kota-"] .btn-pin {
     background-color: var(--warm-amber);
     box-shadow: 0 2px 6px var(--amber-shadow);
+}
+
+.peta-pin-item:not(
+    .pin-kota-bandung,
+    .pin-kota-bogor,
+    .pin-kota-cirebon,
+    .pin-kota-tasikmalaya,
+    .pin-kab-bekasi,
+    .pin-kab-karawang,
+    .pin-kab-subang,
+    .pin-kab-sumedang,
+    .pin-kab-garut,
+    .pin-kab-cirebon,
+    .pin-kab-pangandaran
+) {
+    display: none;
 }
 
 .btn-pin:hover {
@@ -473,12 +490,24 @@
     white-space: nowrap;
     box-shadow: var(--shadow-sm);
     border: 1px solid var(--deep-green-shadow);
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
-.pin-kota-bandung { top: 55%; left: 48%; }
-.pin-kota-bogor { top: 40%; left: 25%; }
-.pin-kota-cirebon { top: 35%; left: 82%; }
-.pin-kab-garut { top: 68%; left: 58%; }
+.pin-kota-bogor { top: 42%; left: 24%; }
+.pin-kota-bandung { top: 61%; left: 47%; }
+.pin-kota-cirebon { top: 48%; left: 88%; }
+.pin-kota-tasikmalaya { top: 70%; left: 65%; }
+
+.pin-kab-bekasi { top: 31%; left: 33%; }
+.pin-kab-karawang { top: 36%; left: 44%; }
+.pin-kab-subang { top: 43%; left: 54%; }
+.pin-kab-sumedang { top: 53%; left: 60%; }
+.pin-kab-garut { top: 68%; left: 53%; }
+.pin-kab-cirebon { top: 48%; left: 83%; }
+.pin-kab-pangandaran { top: 79%; left: 85%; }
 
 /* =========================
    REKOMENDASI KULINER

@@ -43,9 +43,10 @@ if (registerForm) {
 
     localStorage.setItem(USERS_KEY, JSON.stringify(users));
 
-    alert("Pendaftaran berhasil!");
+    alert("Pendaftaran berhasil! Selamat datang, " + newUser.name + "!");
 
     registerForm.reset();
+    window.location.href = "index.html"
   });
 }
 

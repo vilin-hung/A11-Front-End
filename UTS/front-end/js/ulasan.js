@@ -61,8 +61,11 @@ function renderUlasan() {
 
 renderUlasan();
 
-if (reviewForm && reviewGrid) {
-  reviewForm.addEventListener("submit", function (event) {
+const btnWriteReview = document.getElementById("btn-write-review");
+const modalUlasan = document.getElementById("modalUlasan");
+
+if (btnWriteReview && modalUlasan) {
+  btnWriteReview.addEventListener("click", function (event) {
     event.preventDefault();
 
     // cek apakah user sudah login

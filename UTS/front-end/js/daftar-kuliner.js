@@ -227,6 +227,24 @@ if (gridKatalog) {
       terapkanFilter();
     });
 
+    const btnClearFilter = document.getElementById("btn-clear-filter");
+
+    if (btnClearFilter) {
+      btnClearFilter.addEventListener("click", function () {
+        document.querySelectorAll("#culinary-search-form select").forEach(function (select) {
+          Array.from(select.options).forEach(function (option) {
+            option.selected = false;
+          });
+        });
+
+        if (inputCari) {
+          inputCari.value = "";
+        }
+
+        terapkanFilter();
+      });
+    }
+
     // search bar header
     if (inputCari) {
       const kataDariUrl = new URLSearchParams(window.location.search).get("search");
