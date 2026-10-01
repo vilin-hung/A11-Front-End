@@ -3,32 +3,26 @@ const USULAN_KEY = "jelajahRasaUsulan";
 const ULASAN_KEY = "jelajahRasaUlasan";
 const FAVORITE_KEY = "jelajahRasaFavorites";
 
-// daftar 27 kota/kabupaten
+// daftar 11 kota/kabupaten
 const DAFTAR_DAERAH = [
-  "Kota Bandung", "Kota Banjar", "Kota Bekasi", "Kota Bogor", "Kota Cimahi",
-  "Kota Cirebon", "Kota Depok", "Kota Sukabumi", "Kota Tasikmalaya",
-  "Kabupaten Bandung", "Kabupaten Bandung Barat", "Kabupaten Bekasi",
-  "Kabupaten Bogor", "Kabupaten Ciamis", "Kabupaten Cianjur",
-  "Kabupaten Cirebon", "Kabupaten Garut", "Kabupaten Indramayu",
-  "Kabupaten Karawang", "Kabupaten Kuningan", "Kabupaten Majalengka",
-  "Kabupaten Pangandaran", "Kabupaten Purwakarta", "Kabupaten Subang",
-  "Kabupaten Sukabumi", "Kabupaten Sumedang", "Kabupaten Tasikmalaya"
+  "Kota Bandung", "Kota Cirebon", "Kota Tasikmalaya", "Kota Bogor", "Kota Garut", "Kota Sumedang",
+  "Kab. Cirebon", "Kab. Garut", "Kab. Karawang", "Kab. Subang", "Kab. Sumedang"
 ];
 
 // data manual 12 kuliner
 const DATA_AWAL = [
-  { id: "item-empal-gentong", nama: "Empal Gentong", kategori: "Makanan", daerah: "Kab. Cirebon", status: "Aktif", bahan: "Daging Sapi, Jeroan, Santan, Bumbu Rempah Kuning, Daun Kucai.", deskripsi: "Gulai daging sapi dimasak dalam gentong tanah liat berkuah santan gurih." },
-  { id: "item-mie-kocok-bandung", nama: "Mie Kocok Bandung", kategori: "Makanan", daerah: "Kota Bandung", status: "Aktif", bahan: "Mie kuning, Kaldu Sapi, Kikil, Tauge, Bakso.", deskripsi: "Mie kuah kaldu sapi khas Bandung dengan isian kikil melimpah dan tekstur mie lembut." },
-  { id: "item-karedok", nama: "Karedok", kategori: "Makanan", daerah: "Kab. Sumedang", status: "Aktif", bahan: "Kacang Panjang, Timun, Tauge, Kol, Daun Kemangi, Terong Bulat, Bumbu Kacang, Kencur.", deskripsi: "Makanan tradisional khas Sunda dari campuran sayuran mentah segar dengan bumbu kacang gurih." },
-  { id: "item-burayot", nama: "Burayot", kategori: "Jajanan", daerah: "Kab. Garut", status: "Aktif", bahan: "Tepung Beras, Gula Merah, Minyak Kelapa.", deskripsi: "Jajanan pasar khas Garut dengan bentuk unik dan cita rasa manis legit." },
-  { id: "item-colenak", nama: "Colenak", kategori: "Jajanan", daerah: "Kota Bandung", status: "Aktif", bahan: "Tape Singkong, Gula Merah, Kelapa.", deskripsi: "Tape bakar yang disantap dengan lelehan gula merah dan parutan kelapa." },
-  { id: "item-jalabia", nama: "Jalabia", kategori: "Jajanan", daerah: "Kab. Bekasi", status: "Aktif", bahan: "Tepung Ketan, Kelapa Parut, Santan, Garam.", deskripsi: "Kue berbentuk mirip donat kecil dengan tekstur dan rasa khas tradisional." },
-  { id: "item-bandrek", nama: "Bandrek", kategori: "Minuman", daerah: "Priangan", status: "Aktif", bahan: "Jahe Bakar, Gula Aren, Rempah Alami.", deskripsi: "Minuman hangat dari perpaduan jahe bakar, gula aren, dan rempah alami." },
-  { id: "item-es-cuing", nama: "Es Cuing", kategori: "Minuman", daerah: "Kota Cirebon", status: "Aktif", bahan: "Jeli Cuing, Kuah Santan, Pemanis.", deskripsi: "Minuman segar khas Cirebon yang mirip dengan es cincau." },
-  { id: "item-bir-kotjok", nama: "Bir Kotjok", kategori: "Minuman", daerah: "Kota Bogor", status: "Aktif", bahan: "Jahe Merah, Kayu Manis, Cengkeh, Gula Aren, Kapulaga.", deskripsi: "Minuman tradisional khas Bogor dari rempah-rempah alami, tanpa alkohol." },
-  { id: "item-wajit-cililin", nama: "Wajit Cililin", kategori: "Oleh-Oleh Khas", daerah: "Kota Bandung", status: "Aktif", bahan: "Beras Ketan, Kelapa Tua, Gula Merah, Gula Pasir.", deskripsi: "Kudapan legendaris bercita rasa manis, legit, dan bertekstur kenyal." },
-  { id: "item-ali-agrem", nama: "Ali Agrem", kategori: "Oleh-Oleh Khas", daerah: "Kab. Karawang", status: "Aktif", bahan: "Tepung Beras, Gula Merah, Gula Pasir, Minyak Goreng, Air.", deskripsi: "Kue cincin tradisional dengan tekstur padat dan rasa manis legit." },
-  { id: "item-papais", nama: "Papais", kategori: "Oleh-Oleh Khas", daerah: "Kab. Subang", status: "Aktif", bahan: "Tepung Beras, Tepung Ketan, Santan, Pisang.", deskripsi: "Kue basah bertekstur lembut dan kenyal dengan rasa manis legit atau gurih." }
+  { id: "item-empal-gentong", nama: "Empal Gentong", kategori: "Makanan", daerah: "Kab. Cirebon", status: "Aktif", bahan: "Daging Sapi, Jeroan, Santan, Bumbu Rempah Kuning, Daun Kucai.", deskripsi: "Gulai daging sapi dimasak dalam gentong tanah liat berkuah santan gurih.", img: "../images/menu/makanan/empal gentong.jpg" },
+  { id: "item-mie-kocok-bandung", nama: "Mie Kocok Bandung", kategori: "Makanan", daerah: "Kota Bandung", status: "Aktif", bahan: "Mie kuning, Kaldu Sapi, Kikil, Tauge, Bakso.", deskripsi: "Mie kuah kaldu sapi khas Bandung dengan isian kikil melimpah dan tekstur mie lembut.", img: "../images/menu/makanan/mie kocok bandung.jpg" },
+  { id: "item-karedok", nama: "Karedok", kategori: "Makanan", daerah: "Kab. Sumedang", status: "Aktif", bahan: "Kacang Panjang, Timun, Tauge, Kol, Daun Kemangi, Terong Bulat, Bumbu Kacang, Kencur.", deskripsi: "Makanan tradisional khas Sunda dari campuran sayuran mentah segar dengan bumbu kacang gurih.", img: "../images/menu/makanan/karedok.jpg" },
+  { id: "item-burayot", nama: "Burayot", kategori: "Jajanan", daerah: "Kab. Garut", status: "Aktif", bahan: "Tepung Beras, Gula Merah, Minyak Kelapa.", deskripsi: "Jajanan pasar khas Garut dengan bentuk unik dan cita rasa manis legit.", img: "../images/menu/jajanan/burayot.jpg" },
+  { id: "item-colenak", nama: "Colenak", kategori: "Jajanan", daerah: "Kota Bandung", status: "Aktif", bahan: "Tape Singkong, Gula Merah, Kelapa.", deskripsi: "Tape bakar yang disantap dengan lelehan gula merah dan parutan kelapa.", img: "../images/menu/jajanan/colenak.jpg" },
+  { id: "item-jalabia", nama: "Jalabia", kategori: "Jajanan", daerah: "Kab. Bekasi", status: "Aktif", bahan: "Tepung Ketan, Kelapa Parut, Santan, Garam.", deskripsi: "Kue berbentuk mirip donat kecil dengan tekstur dan rasa khas tradisional.", img: "../images/menu/jajanan/jalabia.jpg" },
+  { id: "item-bandrek", nama: "Bandrek", kategori: "Minuman", daerah: "Priangan", status: "Aktif", bahan: "Jahe Bakar, Gula Aren, Rempah Alami.", deskripsi: "Minuman hangat dari perpaduan jahe bakar, gula aren, dan rempah alami.", img: "../images/menu/minuman/bandrek.jpg" },
+  { id: "item-es-cuing", nama: "Es Cuing", kategori: "Minuman", daerah: "Kota Cirebon", status: "Aktif", bahan: "Jeli Cuing, Kuah Santan, Pemanis.", deskripsi: "Minuman segar khas Cirebon yang mirip dengan es cincau.", img: "../images/menu/minuman/es cuing.jpg" },
+  { id: "item-bir-kotjok", nama: "Bir Kotjok", kategori: "Minuman", daerah: "Kota Bogor", status: "Aktif", bahan: "Jahe Merah, Kayu Manis, Cengkeh, Gula Aren, Kapulaga.", deskripsi: "Minuman tradisional khas Bogor dari rempah-rempah alami, tanpa alkohol.", img: "../images/menu/minuman/bir kotjok.jpg" },
+  { id: "item-wajit-cililin", nama: "Wajit Cililin", kategori: "Oleh-Oleh Khas", daerah: "Kota Bandung", status: "Aktif", bahan: "Beras Ketan, Kelapa Tua, Gula Merah, Gula Pasir.", deskripsi: "Kudapan legendaris bercita rasa manis, legit, dan bertekstur kenyal.", img: "../images/menu/oleh-oleh khas/wajit cililin.jpg" },
+  { id: "item-ali-agrem", nama: "Ali Agrem", kategori: "Oleh-Oleh Khas", daerah: "Kab. Karawang", status: "Aktif", bahan: "Tepung Beras, Gula Merah, Gula Pasir, Minyak Goreng, Air.", deskripsi: "Kue cincin tradisional dengan tekstur padat dan rasa manis legit.", img: "../images/menu/oleh-oleh khas/ali agrem.jpg" },
+  { id: "item-papais", nama: "Papais", kategori: "Oleh-Oleh Khas", daerah: "Kab. Subang", status: "Aktif", bahan: "Tepung Beras, Tepung Ketan, Santan, Pisang.", deskripsi: "Kue basah bertekstur lembut dan kenyal dengan rasa manis legit atau gurih.", img: "../images/menu/oleh-oleh khas/papais.jpg" }
 ];
 
 let dataKuliner = DATA_AWAL.map(function (item) { return Object.assign({}, item); });
@@ -96,6 +90,18 @@ function badgeStatus(status) {
 function barisKosong(colspan, ikon, pesan) {
   return '<tr class="baris-kosong"><td colspan="' + colspan + '" class="text-center text-muted">' +
     '<i class="bx ' + ikon + ' d-block"></i><span>' + pesan + '</span></td></tr>';
+}
+
+// foto kecil buat kolom nama di tabel admin
+function fotoMini(item) {
+  if (!item.img) {
+    // data lama tanpa foto pake ikon placeholder
+    return '<i class="bx bx-image text-muted me-2" style="font-size:26px"></i>';
+  }
+
+  return '<img src="' + escHtml(item.img) + '" alt="" class="rounded me-2 foto-klik"' +
+    ' data-nama="' + escHtml(item.nama) + '" data-img="' + escHtml(item.img) + '"' +
+    ' style="width:40px;height:40px;object-fit:cover;cursor:zoom-in">';
 }
 
 // cari kuliner berdasarkan id
@@ -231,7 +237,7 @@ function renderUsulan() {
       : '<span class="text-muted small">-</span>';
 
     return '<tr>' +
-      '<td>' + escHtml(item.nama) + '</td>' +
+      '<td><div class="d-flex align-items-center">' + fotoMini(item) + escHtml(item.nama) + '</div></td>' +
       '<td>' + escHtml(item.pengirim) + '</td>' +
       '<td>' + escHtml(item.tanggal) + '</td>' +
       '<td>' + badgeStatus(item.status) + '</td>' +
@@ -246,13 +252,13 @@ function renderKelola() {
   const semua = daftarGabungan();
 
   if (semua.length === 0) {
-    wadah.innerHTML = barisKosong(5, "bx-folder-open", "Dataset kuliner belum tersedia. Silakan tambah data baru.");
+    wadah.innerHTML = barisKosong(5, "bx-folder-open", "Belum ada data kuliner.");
     return;
   }
 
   wadah.innerHTML = semua.map(function (item) {
     return '<tr>' +
-      '<td>' + escHtml(item.nama) + '</td>' +
+      '<td><div class="d-flex align-items-center">' + fotoMini(item) + escHtml(item.nama) + '</div></td>' +
       '<td>' + escHtml(item.kategori) + '</td>' +
       '<td>' + escHtml(item.daerah) + '</td>' +
       '<td>' + badgeStatus(item.status) + '</td>' +
@@ -349,6 +355,13 @@ function isiPilihanDaerah(select, nilaiTerpilih) {
 
 // terima / tolak usulan
 $("tabel-usulan-terbaru").addEventListener("click", function (event) {
+  const gambar = event.target.closest(".foto-klik");
+
+  if (gambar) {
+    bukaGambar(gambar);
+    return;
+  }
+
   const tombolTerima = event.target.closest(".btn-terima");
   const tombolTolak = event.target.closest(".btn-tolak");
 
@@ -370,6 +383,13 @@ $("tabel-usulan-terbaru").addEventListener("click", function (event) {
 
 // edit / hapus kuliner
 $("tabel-daftar-kuliner").addEventListener("click", function (event) {
+  const gambar = event.target.closest(".foto-klik");
+
+  if (gambar) {
+    bukaGambar(gambar);
+    return;
+  }
+
   const tombolEdit = event.target.closest(".btn-edit");
   const tombolHapus = event.target.closest(".btn-hapus");
 
@@ -417,6 +437,17 @@ $("tabel-daftar-kuliner").addEventListener("click", function (event) {
   }
 });
 
+// buka gambar ukuran penuh di modal
+function bukaGambar(gambar) {
+  if (!gambar) {
+    return;
+  }
+
+  $("judul-gambar").textContent = gambar.dataset.nama;
+  $("gambar-ukuran-penuh").src = gambar.dataset.img;
+  bootstrap.Modal.getOrCreateInstance($("modal-lihat-gambar")).show();
+}
+
 // tampilkan / sembunyikan ulasan
 $("tabel-daftar-ulasan").addEventListener("click", function (event) {
   const tombolToggle = event.target.closest(".btn-toggle-ulasan");
@@ -436,25 +467,6 @@ $("tabel-daftar-ulasan").addEventListener("click", function (event) {
     simpanUlasan();
     renderSemua();
   }
-});
-
-// form tambah kuliner
-$("form-tambah-kuliner").addEventListener("submit", function (event) {
-  event.preventDefault();
-
-  dataKuliner.push({
-    id: "item-" + Date.now(),
-    nama: $("tambah-nama").value.trim(),
-    kategori: $("tambah-kategori").value,
-    daerah: $("tambah-daerah").value,
-    status: $("tambah-status").value,
-    bahan: $("tambah-bahan").value.trim(),
-    deskripsi: $("tambah-deskripsi").value.trim()
-  });
-
-  event.target.reset();
-  bootstrap.Modal.getOrCreateInstance($("modal-tambah-kuliner")).hide();
-  renderSemua();
 });
 
 // form edit kuliner
@@ -496,6 +508,5 @@ $("form-tolak-usulan").addEventListener("submit", function (event) {
   renderSemua();
 });
 
-// isi dropdown + render awal
-isiPilihanDaerah($("tambah-daerah"), "");
+// render awal
 renderSemua();
