@@ -227,8 +227,6 @@ if (gridKatalog) {
       terapkanFilter();
     });
 
-    filterForm.addEventListener("change", terapkanFilter);
-
     // search bar header
     if (inputCari) {
       const kataDariUrl = new URLSearchParams(window.location.search).get("search");
