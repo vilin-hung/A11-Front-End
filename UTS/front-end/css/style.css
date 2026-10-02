@@ -496,18 +496,18 @@
     transform: translateX(-50%);
 }
 
-.pin-kota-bogor { top: 42%; left: 24%; }
-.pin-kota-bandung { top: 61%; left: 47%; }
-.pin-kota-cirebon { top: 48%; left: 88%; }
-.pin-kota-tasikmalaya { top: 70%; left: 65%; }
+.pin-kota-bogor { top: 42%; left: 16%; }
+.pin-kota-bandung { top: 61%; left: 49%; }
+.pin-kota-cirebon { top: 51%; left: 88%; }
+.pin-kota-tasikmalaya { top: 78%; left: 69%; }
 
-.pin-kab-bekasi { top: 31%; left: 33%; }
-.pin-kab-karawang { top: 36%; left: 44%; }
-.pin-kab-subang { top: 43%; left: 54%; }
-.pin-kab-sumedang { top: 53%; left: 60%; }
-.pin-kab-garut { top: 68%; left: 53%; }
-.pin-kab-cirebon { top: 48%; left: 83%; }
-.pin-kab-pangandaran { top: 79%; left: 85%; }
+.pin-kab-bekasi { top: 30%; left: 34%; }
+.pin-kab-karawang { top: 32%; left: 43%; }
+.pin-kab-subang { top: 38%; left: 55%; }
+.pin-kab-sumedang { top: 51%; left: 64%; }
+.pin-kab-garut { top: 73%; left: 55%; }
+.pin-kab-cirebon { top: 45%; left: 89%; }
+.pin-kab-pangandaran { top: 80%; left: 84%; }
 
 /* =========================
    REKOMENDASI KULINER
