@@ -64,3 +64,33 @@ Sebuah website Kopi Nusantara dengan penerapan **Bootstrap** untuk **membangun l
 
 **Teknologi:** HTML, CSS, JavaScript, jQuery<br>
 Diberikan pada: Teori Pertemuan 6 - Senin, 21 September 2026
+
+---
+
+### 📂 UTS: JelajahRasa - Website Kuliner Jawa Barat
+
+Sebuah website informasi dan eksplorasi kuliner khas Jawa Barat. Pengguna dapat menjelajai daftar kuliner berdasarkan daerah, kategori, rentang harga, dan karakter rasa.
+
+**Fitur yang diimplementasikan: ✨**
+- Login dan Register Pengguna
+- Search dan Filter Kuliner berdasarkan Kota/Daerah, Kategori, Harga, dan Rasa
+- Daftar dan Detail Kuliner
+- Favorit Kuliner
+- Pengajuan Kuliner Baru bagi Pengguna yang sudah Login
+- Penambahan Ulasan Kuliner maupun Website bagi Pengguna yang sudah Login
+- Peta dan Informasi Kuliner Jawa Barat
+- Admin Dashboard untuk Mengelola Kuliner dan Ulasan, serta Melihat Statistik
+
+**Cara Kerja Aplikasi: 🔎**
+1. Pengguna dapat menjelajahi kuliner melalui halaman Beranda atau Daftar Kuliner
+2. Kuliner dapat dicari dan difilter berdasarkan beberapa kriteria
+3. Pengguna harus login untuk menggunakan fitur Favorit, Tambah Kuliner, dan Ulasan
+4. Pengajuan kuliner dari pengguna akan masuk ke halaman Admin untuk disetujui atau ditolak
+5. Admin juga dapat mengelola data kuliner dan menampilkan/menyembunyikan ulasan
+
+- **[Download ZIP](./A11_UTS_JelajahRasa.zip)**
+- **[Lihat Laporan](./UTS/A11_UTS_JelajahRasa.pdf)**
+- **[Lihat Kode](./UTS/)**
+
+**Teknologi:** HTML, CSS, JavaScript, Boostrap<br>
+
