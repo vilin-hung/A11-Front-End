@@ -162,6 +162,44 @@ if (gridKatalog) {
       });
     }
 
+    // cocokan filter harga berdasarkan rentang harga
+    function cocokHarga(kartu, pilihan) {
+     const elemenHarga = kartu.querySelector(".price-range");
+
+      if (!elemenHarga) {
+        return false;
+      }
+
+      const angka = elemenHarga.textContent.match(/\d[\d.]*/g);
+
+      if (!angka || angka.length === 0) {
+        return false;
+      }
+
+      const harga = angka.map(function (nilai) {
+        return parseInt(nilai.replace(/\./g, ""), 10);
+      });
+
+      const minHarga = harga[0];
+      const maxHarga = harga.length > 1 ? harga[1] : harga[0];
+
+      return pilihan.some(function (nilai) {
+        if (nilai === "murah") {
+          return minHarga < 15000;
+        }
+
+        if (nilai === "sedang") {
+          return minHarga <= 30000 && maxHarga >= 15000;
+        }
+
+        if (nilai === "tinggi") {
+          return maxHarga > 30000;
+        }
+
+        return false;
+      });
+    }
+
     // cocokkan kata kunci search bar header dengan judul / asal kartu
     function cocokCari(kartu, kata) {
       if (!kata) {
@@ -188,7 +226,7 @@ if (gridKatalog) {
           cocokCari(kartu, kataCari) &&
           cocok(kartu.dataset.city, kota) &&
           cocok(kartu.dataset.category, kategori) &&
-          cocok(kartu.dataset.price, harga) &&
+          cocokHarga(kartu, harga) &&
           cocok(kartu.dataset.taste, rasa);
 
         kartu.closest(".catalog-col").classList.toggle("d-none", !tampil);
