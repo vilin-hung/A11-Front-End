@@ -1,6 +1,7 @@
 import "./globals.css";
 import "./home.css";
 import Link from "next/link";
+import PetaRasa from "./components/PetaRasa";
 
 export default function HomePage() {
   return (
@@ -11,7 +12,7 @@ export default function HomePage() {
           <div className="hero-wrapper">
             <div className="hero-text-content">
               <span className="hero-quote">
-                "Satu Tampah Rasa, Sejuta Cerita Parahyangan"
+                &quot;Satu Tampah Rasa, Sejuta Cerita Parahyangan&quot;
               </span>
               <h1 className="hero-title">Jelajah Rasa Jawa Barat</h1>
               <p className="hero-description">
@@ -182,210 +183,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Peta Rasa Jawa Barat */}
-      <section id="peta-rasa" className="peta-section">
-        <div className="peta-container-main">
-          <div className="section-header center-text">
-            <h3 className="section-title">Peta Rasa Jawa Barat</h3>
-            <p className="section-subtitle">
-              Peta interaktif sebaran kuliner khas di seluruh wilayah Jawa
-              Barat.
-            </p>
-          </div>
-
-          <div className="peta-wrapper">
-            <div className="peta-instruction">
-              <small className="instruction-text">
-                <i className="bx bx-info-circle"></i> Arahkan kursor pada
-                titik lokasi
-              </small>
-            </div>
-
-            <div
-              id="peta-zoom-controls"
-              className="zoom-controls-wrapper"
-            >
-              <button
-                className="btn-zoom"
-                id="btnZoomIn"
-                title="Zoom In"
-              >
-                <i className="bx bx-plus"></i>
-              </button>
-              <button
-                className="btn-zoom"
-                id="btnZoomOut"
-                title="Zoom Out"
-              >
-                <i className="bx bx-minus"></i>
-              </button>
-              <button
-                className="btn-zoom"
-                id="btnResetZoom"
-                title="Reset Ukuran"
-              >
-                <i className="bx bx-reset"></i>
-              </button>
-            </div>
-
-            <div className="peta-viewport" id="petaViewport">
-              <div id="petaContainer" className="peta-inner-container">
-                <img
-                  id="img-peta-jabar"
-                  className="peta-image"
-                  src="../images/homepage/peta-jabar.jpg"
-                  alt="Peta Jawa Barat"
-                />
-
-                {/* 4 Kota */}
-                <div className="peta-pin-item pin-kota-bandung">
-                  <button
-                    className="btn-pin"
-                    data-bs-toggle="popover"
-                    data-bs-trigger="hover"
-                    title="Kota Bandung"
-                    data-bs-content="Dominan Gurih, Olahan Tapioka, Herbal & Dingin Segar."
-                  >
-                    <i className="bx bx-map-pin"></i>
-                  </button>
-                  <span className="pin-label">Kota Bandung</span>
-                </div>
-
-                <div className="peta-pin-item pin-kota-bogor">
-                  <button
-                    className="btn-pin"
-                    data-bs-toggle="popover"
-                    data-bs-trigger="hover"
-                    title="Kota Bogor"
-                    data-bs-content="Segar Asam-Manis, Olahan Fermentasi (Asinan/Toge Goreng)."
-                  >
-                    <i className="bx bx-map-pin"></i>
-                  </button>
-                  <span className="pin-label">Kota Bogor</span>
-                </div>
-
-                <div className="peta-pin-item pin-kota-cirebon">
-                  <button
-                    className="btn-pin"
-                    data-bs-toggle="popover"
-                    data-bs-trigger="hover"
-                    title="Kota Cirebon"
-                    data-bs-content="Gurih Asin, Kuah Rempah Daging, & Olahan Hasil Laut."
-                  >
-                    <i className="bx bx-map-pin"></i>
-                  </button>
-                  <span className="pin-label">Kota Cirebon</span>
-                </div>
-
-                <div className="peta-pin-item pin-kota-tasikmalaya">
-                  <button
-                    className="btn-pin"
-                    data-bs-toggle="popover"
-                    data-bs-trigger="hover"
-                    title="Kota Tasikmalaya"
-                    data-bs-content="Gurih Pedas, Oncom Fermentasi, & Olahan Bakso."
-                  >
-                    <i className="bx bx-map-pin"></i>
-                  </button>
-                  <span className="pin-label">Kota Tasikmalaya</span>
-                </div>
-
-                {/* 7 Kabupaten */}
-                <div className="peta-pin-item pin-kab-sumedang">
-                  <button
-                    className="btn-pin"
-                    data-bs-toggle="popover"
-                    data-bs-trigger="hover"
-                    title="Kab. Sumedang"
-                    data-bs-content="Gurih Renyah (Tahu) & Manis Alami (Ubi Cilembu)."
-                  >
-                    <i className="bx bx-map-pin"></i>
-                  </button>
-                  <span className="pin-label">Kab. Sumedang</span>
-                </div>
-
-                <div className="peta-pin-item pin-kab-garut">
-                  <button
-                    className="btn-pin"
-                    data-bs-toggle="popover"
-                    data-bs-trigger="hover"
-                    title="Kab. Garut"
-                    data-bs-content="Manis Legit (Dodol), Gurih Pedas, & Es Goyobod."
-                  >
-                    <i className="bx bx-map-pin"></i>
-                  </button>
-                  <span className="pin-label">Kab. Garut</span>
-                </div>
-
-                <div className="peta-pin-item pin-kab-subang">
-                  <button
-                    className="btn-pin"
-                    data-bs-toggle="popover"
-                    data-bs-trigger="hover"
-                    title="Kab. Subang"
-                    data-bs-content="Manis Asam Segar (Nanas Madu Subang)."
-                  >
-                    <i className="bx bx-map-pin"></i>
-                  </button>
-                  <span className="pin-label">Kab. Subang</span>
-                </div>
-
-                <div className="peta-pin-item pin-kab-karawang">
-                  <button
-                    className="btn-pin"
-                    data-bs-toggle="popover"
-                    data-bs-trigger="hover"
-                    title="Kab. Karawang"
-                    data-bs-content="Manis Pandan (Sorabi Hijau) & Opak Ketan."
-                  >
-                    <i className="bx bx-map-pin"></i>
-                  </button>
-                  <span className="pin-label">Kab. Karawang</span>
-                </div>
-
-                <div className="peta-pin-item pin-kab-pangandaran">
-                  <button
-                    className="btn-pin"
-                    data-bs-toggle="popover"
-                    data-bs-trigger="hover"
-                    title="Kab. Pangandaran"
-                    data-bs-content="Asam Gurih Pindang Gunung & Seafood Segar."
-                  >
-                    <i className="bx bx-map-pin"></i>
-                  </button>
-                  <span className="pin-label">Kab. Pangandaran</span>
-                </div>
-
-                <div className="peta-pin-item pin-kab-bekasi">
-                  <button
-                    className="btn-pin"
-                    data-bs-toggle="popover"
-                    data-bs-trigger="hover"
-                    title="Kab. Bekasi"
-                    data-bs-content="Gurih Gabus Pucung & Sayur Asem Khas."
-                  >
-                    <i className="bx bx-map-pin"></i>
-                  </button>
-                  <span className="pin-label">Kab. Bekasi</span>
-                </div>
-
-                <div className="peta-pin-item pin-kab-cirebon">
-                  <button
-                    className="btn-pin"
-                    data-bs-toggle="popover"
-                    data-bs-trigger="hover"
-                    title="Kab. Cirebon"
-                    data-bs-content="Asam Manis Gurih (Tahu Gejrot) & Es Doger."
-                  >
-                    <i className="bx bx-map-pin"></i>
-                  </button>
-                  <span className="pin-label">Kab. Cirebon</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <PetaRasa />
 
       {/* Rekomendasi Kuliner */}
       <section id="rekomendasi" className="rekomendasi-section">
@@ -671,8 +469,8 @@ export default function HomePage() {
                   <i className="bx bxs-star"></i>
                 </div>
                 <p className="user-review">
-                  "Sangat membantu pas mau road trip kuliner ke Garut &amp;
-                  Tasikmalaya. Pilihan makanannya mantapp!"
+                  &quot;Sangat membantu pas mau road trip kuliner ke Garut &amp;
+                  Tasikmalaya. Pilihan makanannya mantapp!&quot;
                 </p>
               </div>
             </div>
@@ -701,8 +499,8 @@ export default function HomePage() {
                   <i className="bx bxs-star-half"></i>
                 </div>
                 <p className="user-review">
-                  "Tampilannya simpel dan langsung kelihatan makanan khas
-                  tiap kabupaten. Sangat informatif!"
+                  &quot;Tampilannya simpel dan langsung kelihatan makanan khas
+                  tiap kabupaten. Sangat informatif!&quot;
                 </p>
               </div>
             </div>
@@ -731,8 +529,8 @@ export default function HomePage() {
                   <i className="bx bxs-star"></i>
                 </div>
                 <p className="user-review">
-                  "Bisa nemu resep dan rekomendasi oleh-oleh khas Sumedang
-                  &amp; Ciamis yang langka!"
+                  &quot;Bisa nemu resep dan rekomendasi oleh-oleh khas Sumedang
+                  &amp; Ciamis yang langka!&quot;
                 </p>
               </div>
             </div>
