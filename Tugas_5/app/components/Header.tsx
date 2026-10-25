@@ -1,6 +1,36 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+
+type User = {
+  name: string;
+  email: string;
+  city: string;
+  avatar?: string;
+};
 
 export default function Header() {
+  const pathname = usePathname();
+  const [user, setUser] = useState<User | null>(null);
+
+  /* Header dipasang di layout, jadi tidak ikut dipasang ulang tiap pindah
+     halaman. pathname dipakai supaya nama ikut berubah setelah login. */
+  useEffect(() => {
+    let aktif: User | null = null;
+
+    try {
+      const tersimpan = localStorage.getItem("jelajahRasaCurrentUser");
+      if (tersimpan) aktif = JSON.parse(tersimpan);
+    } catch {
+      aktif = null;
+    }
+
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setUser(aktif);
+  }, [pathname]);
+
   return (
     <header id="main-header" className="site-header">
       <div className="header-container">
@@ -91,21 +121,21 @@ export default function Header() {
           <img
             id="user-avatar-desktop"
             className="user-avatar"
-            src="/images/homepage/default-avatar.png"
+            src={user?.avatar || "/images/homepage/default-avatar.png"}
             alt="Foto Profil"
           />
 
           <div className="user-info-wrapper">
             <span id="user-name-desktop" className="user-name">
-              Pengunjung
+              {user?.name || "Pengunjung"}
             </span>
 
             <Link
               id="user-link-desktop"
               className="user-profile-link"
-              href="/login"
+              href={user ? "/profil" : "/login"}
             >
-              Masuk / Daftar
+              {user ? "Profil" : "Masuk / Daftar"}
             </Link>
           </div>
         </div>
