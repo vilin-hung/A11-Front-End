@@ -402,9 +402,9 @@
 }
 
 .peta-viewport {
-    overflow: auto;
+    overflow:scroll;
     width: 100%;
-    max-height: 420px;
+    height: clamp(280px, 48vw, 420px);
     position: relative;
     border-radius: 12px;
     background-color: var(--bg-white);
@@ -414,7 +414,6 @@
 .peta-inner-container {
     position: relative;
     width: 100%;
-    max-width: 900px;
     margin: 0 auto;
     transform-origin: top left;
     transition: transform 0.3s ease-in-out;
@@ -429,6 +428,7 @@
 
 .peta-pin-item {
     position: absolute;
+    z-index: 1;
     transform: translate(-50%, -50%);
     display: flex;
     flex-direction: column;
@@ -455,6 +455,16 @@
 .peta-pin-item[class*="pin-kota-"] .btn-pin {
     background-color: var(--warm-amber);
     box-shadow: 0 2px 6px var(--amber-shadow);
+}
+
+.peta-pin-item {
+    position: absolute;
+    z-index: 1;
+}
+
+.peta-pin-item:hover,
+.peta-pin-item:focus-within {
+    z-index: 999;
 }
 
 .peta-pin-item:not(
@@ -496,6 +506,43 @@
     transform: translateX(-50%);
 }
 
+/* POPUP PETA RASA */
+.peta-tooltip {
+    position: absolute;
+    z-index: 9999;
+    bottom: calc(100% + 12px);
+    left: 50%;
+    transform: translateX(-50%);
+
+    width: 260px;
+    max-width: min(280px, 75vw);
+    white-space: normal;
+
+    background: var(--warm-cream);
+    color: var(--deep-green);
+    border: 1px solid var(--deep-green-shadow);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px var(--shadow-sm);
+    overflow: hidden;
+
+    font-size: 12px;
+    line-height: 1.5;
+    text-align: center;
+}
+
+.peta-tooltip-header {
+    padding: 8px 10px;
+    background: var(--white-soft-15);
+    border-bottom: 1px solid var(--deep-green-shadow);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.peta-tooltip-body {
+    padding: 8px 12px;
+    overflow-wrap: break-word;
+}
+
 .pin-kota-bogor { top: 42%; left: 16%; }
 .pin-kota-bandung { top: 61%; left: 49%; }
 .pin-kota-cirebon { top: 51%; left: 88%; }
@@ -506,7 +553,7 @@
 .pin-kab-subang { top: 38%; left: 55%; }
 .pin-kab-sumedang { top: 51%; left: 64%; }
 .pin-kab-garut { top: 73%; left: 55%; }
-.pin-kab-cirebon { top: 45%; left: 89%; }
+.pin-kab-cirebon { top: 45%; left: 80%; }
 .pin-kab-pangandaran { top: 80%; left: 84%; }
 
 /* =========================

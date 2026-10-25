@@ -188,6 +188,13 @@
     transform: scale(1.1);
 }
 
+.favorit-item-image {
+    display: block;
+    width: 100%;
+    heigth: 220px;
+    object-fit: cover;
+}
+
 /* =========================
    TABLET (≤992px)
    ========================= */
@@ -331,5 +338,9 @@
         font-size: 16px;
         top: 10px;
         right: 10px;
+    }
+
+    .favorit-item-image {
+        height: 190px;
     }
 }

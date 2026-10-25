@@ -4,25 +4,8 @@ import { Suspense, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import "./daftar-kuliner.css";
-
-/* =========================
-   TIPE DATA
-   ========================= */
-type Kuliner = {
-  id: string;
-  nama: string;
-  kota: string;
-  kategori: "makanan" | "jajanan" | "minuman" | "oleh-oleh";
-  kategoriLabel: string;
-  harga: "murah" | "sedang" | "tinggi"; 
-  rasa: string;
-  asal: string;
-  gambar: string;
-  deskripsi: string;
-  bahan: string;
-  karakterRasa: string;
-  estimasiHarga: string;
-};
+import FavoriteButton from "../components/FavoriteButton";
+import { DATA_KULINER, type Kuliner } from "../data/kuliner";
 
 type FilterState = {
   kota: string[];
@@ -32,201 +15,6 @@ type FilterState = {
 };
 
 const FILTER_KOSONG: FilterState = { kota: [], kategori: [], harga: [], rasa: [] };
-
-/* =========================
-   DATA KULINER
-   ========================= */
-const DATA_KULINER: Kuliner[] = [
-  {
-    id: "empal-gentong",
-    nama: "Empal Gentong",
-    kota: "cirebon",
-    kategori: "makanan",
-    kategoriLabel: "Makanan Utama",
-    harga: "sedang",
-    rasa: "gurih",
-    asal: "Kab. Cirebon",
-    gambar: "/images/menu/makanan/empal gentong.jpg",
-    deskripsi: "Gulai daging sapi dimasak dalam gentong tanah liat berkuah santan gurih.",
-    bahan: "Daging Sapi, Jeroan, Santan, Bumbu Rempah Kuning, Daun Kucai.",
-    karakterRasa: "Gurih Santan, Rempah Harum, Daging Empuk.",
-    estimasiHarga: "Rp 25.000 - Rp 45.000 / porsi",
-  },
-  {
-    id: "nasi-tutug-oncom",
-    nama: "Nasi Tutug Oncom",
-    kota: "tasikmalaya",
-    kategori: "makanan",
-    kategoriLabel: "Makanan Utama",
-    harga: "murah",
-    rasa: "gurih",
-    asal: "Kota Tasikmalaya",
-    gambar: "/images/menu/makanan/nasi tutug oncom.jpg",
-    deskripsi: "Nasi hangat yang ditumbuk bersama oncom goreng gurih bumbu kencur dan bawang.",
-    bahan: "Nasi, Oncom, Bumbu kencur, Bawang Merah, Sambal.",
-    karakterRasa: "Gurih, Harum Kencur, Pedas.",
-    estimasiHarga: "Rp 15.000 - Rp 30.000 / porsi",
-  },
-  {
-    id: "karedok",
-    nama: "Karedok",
-    kota: "sumedang",
-    kategori: "makanan",
-    kategoriLabel: "Makanan Utama",
-    harga: "murah",
-    rasa: "gurih",
-    asal: "Kab. Sumedang",
-    gambar: "/images/menu/makanan/karedok.jpg",
-    deskripsi:
-      "Karedok adalah makanan tradisional khas Sunda, yang terbuat dari campuran sayuran mentah segar dan disiram dengan bumbu kacang gurih.",
-    bahan: "Kacang Panjang, Timun, Tauge, Kol, Daun Kemangi, Terong Bulat, Bumbu Kacang, Kencur.",
-    karakterRasa: "Segar, Gurih, Manis, Pedas.",
-    estimasiHarga: "Rp 12.000 - Rp 42.000 / porsi",
-  },
-  {
-    id: "burayot",
-    nama: "Burayot",
-    kota: "garut",
-    kategori: "jajanan",
-    kategoriLabel: "Jajanan",
-    harga: "sedang",
-    rasa: "manis",
-    asal: "Kab. Garut",
-    gambar: "/images/menu/jajanan/burayot.jpg",
-    deskripsi:
-      "Jajanan khas Sunda yang berasal dari Garut, jajanan pasar ini terkenal karena memiliki bentuk unik dan cita rasa manis legit yang khas.",
-    bahan: "Tepung Beras, Gula Merah, Minyak Kelapa.",
-    karakterRasa: "Manis Legit, Gurih.",
-    estimasiHarga: "Rp 15.000 - Rp 50.000 / porsi",
-  },
-  {
-    id: "batagor",
-    nama: "Batagor",
-    kota: "bandung",
-    kategori: "jajanan",
-    kategoriLabel: "Jajanan",
-    harga: "murah",
-    rasa: "gurih",
-    asal: "Kota Bandung",
-    gambar: "/images/menu/jajanan/batagor.jpg",
-    deskripsi:
-      "Bakso tahu goreng berbahan dasar adonan ikan tenggiri yang disiram kuah kacang gurih dan perasan jeruk purut.",
-    bahan: "Tahu, Ikan Tenggiri, Tepung Tapioka, Bumbu Kacang, Jeruk Purut.",
-    karakterRasa: "Gurih, Renyah, Manis Pedas Bumbu Kacang",
-    estimasiHarga: "Rp 10.000 - Rp 25.000 / porsi",
-  },
-  {
-    id: "jalabia",
-    nama: "Jalabia",
-    kota: "bekasi",
-    kategori: "jajanan",
-    kategoriLabel: "Jajanan",
-    harga: "murah",
-    rasa: "manis",
-    asal: "Kab. Bekasi",
-    gambar: "/images/menu/jajanan/jalabia.jpg",
-    deskripsi:
-      "Kue ini memiliki bentuk yang menyerupai donat kecil, namun memiliki karakteristik tekstur dan rasa yang sangat berbeda dengan donat modern.",
-    bahan: "Tepung Ketan, Kelapa Parut, Santan, Garam.",
-    karakterRasa: "Manis, Gurih, Legit.",
-    estimasiHarga: "Rp 2.000 - Rp 2.500 / buah",
-  },
-  {
-    id: "bandrek",
-    nama: "Bandrek",
-    kota: "bandung",
-    kategori: "minuman",
-    kategoriLabel: "Minuman",
-    harga: "sedang",
-    rasa: "manis pedas",
-    asal: "Kota Bandung",
-    gambar: "/images/menu/minuman/bandrek.jpg",
-    deskripsi:
-      "Minuman tradisional yang terbuat dari perpaduan jahe bakar, gula aren, dan berbagai rempah alami yang disajikan hangat.",
-    bahan: "Jahe Bakar, Gula Aren, Rempah Alami.",
-    karakterRasa: "Pedas & Hangat, Manis, Aroma Rempah.",
-    estimasiHarga: "Rp 5.000 - Rp 12.000 / gelas",
-  },
-  {
-    id: "es-cuing",
-    nama: "Es Cuing",
-    kota: "cirebon",
-    kategori: "minuman",
-    kategoriLabel: "Minuman",
-    harga: "murah",
-    rasa: "segar",
-    asal: "Kota Cirebon",
-    gambar: "/images/menu/minuman/es cuing.jpg",
-    deskripsi: "Es Cuing adalah minuman segar khas Cirebon yang mirip dengan es cincau.",
-    bahan: "Jeli Cuing, Kuah Santan, Pemanis.",
-    karakterRasa: "Gurih, Manis, Segar.",
-    estimasiHarga: "Rp 5.000 - Rp 9.000 / gelas",
-  },
-  {
-    id: "es-goyobod",
-    nama: "Es Goyobod",
-    kota: "garut",
-    kategori: "minuman",
-    kategoriLabel: "Minuman",
-    harga: "murah",
-    rasa: "manis",
-    asal: "Kota Garut",
-    gambar: "/images/menu/minuman/es goyobod.jpg",
-    deskripsi:
-      "Minuman es tradisional khas Sunda berbasis santan dengan potongan hunkwe (tepung arenga), alpukat, kelapa muda, dan roti tawar.",
-    bahan: "Tepung Hunkwe, Santan, Sirup Merah, Alpukat, Kelapa Muda, Roti Tawar.",
-    karakterRasa: "Manis, Gurih Santan, Segar.",
-    estimasiHarga: "Rp 8.000 - Rp 15.000 / gelas",
-  },
-  {
-    id: "tahu-sumedang",
-    nama: "Tahu Sumedang",
-    kota: "sumedang",
-    kategori: "oleh-oleh",
-    kategoriLabel: "Oleh-Oleh Khas",
-    harga: "sedang",
-    rasa: "asin gurih",
-    asal: "Kota Sumedang",
-    gambar: "/images/menu/jajanan/tahu sumedang.jpg",
-    deskripsi:
-      "Tahu goreng khas Sumedang yang renyah dan gurih di luar namun sangat lembut di dalam, nikmat disajikan hangat bersama cabai rawit.",
-    bahan: "Kedelai, Garam, Bumbu Tradisional, Cabai Rawit.",
-    karakterRasa: "Gurih, Renyah di Luar, Lembut di Dalam.",
-    estimasiHarga: "Rp 10.000 - Rp 20.000 / keranjang",
-  },
-  {
-    id: "ali-agrem",
-    nama: "Ali Agrem",
-    kota: "karawang",
-    kategori: "oleh-oleh",
-    kategoriLabel: "Oleh-Oleh Khas",
-    harga: "murah",
-    rasa: "manis",
-    asal: "Kab. Karawang",
-    gambar: "/images/menu/oleh-oleh khas/ali agrem.jpg",
-    deskripsi:
-      "Ali Agrem biasa dikenal juga sebagai kue cincin adalah makanan tradisional yang berbentuk seperti donat, namun teksturnya lebih padat.",
-    bahan: "Tepung Beras, Gula Merah, Gula Pasir, Minyak Goreng, Air",
-    karakterRasa: "Padat, Manis, Legit.",
-    estimasiHarga: "Rp 1.000 - Rp 1.500 / buah",
-  },
-  {
-    id: "papais",
-    nama: "Papais",
-    kota: "subang",
-    kategori: "oleh-oleh",
-    kategoriLabel: "Oleh-Oleh Khas",
-    harga: "murah",
-    rasa: "manis",
-    asal: "Kab. Subang",
-    gambar: "/images/menu/oleh-oleh khas/papais.jpg",
-    deskripsi:
-      "Kue basah tradisional yang bertekstur lembut dan kenyal, dengan cita rasa manis legit atau gurih.",
-    bahan: "Tepung Beras, Tepung Ketan, Santan, Pisang.",
-    karakterRasa: "Manis, Lembut, Kenyal.",
-    estimasiHarga: "Rp 25.000 - Rp 30.000 / porsi",
-  },
-];
 
 /* =========================
    FILTER KOTA & KABUPATEN
@@ -294,14 +82,10 @@ function KartuKuliner({ item, disukai, onLike, onShare }: KartuProps) {
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={item.gambar} alt={item.nama} className="card-img-top item-img" />
           <div className="item-actions position-absolute top-0 end-0 p-2 d-flex gap-2">
-            <button
-              type="button"
-              className={`btn btn-light btn-sm rounded-circle shadow-sm btn-icon btn-like ${disukai ? "active" : ""}`}
-              title="Tandai Suka"
-              onClick={() => onLike(item.id)}
-            >
-              <i className={`bx ${disukai ? "bxs-heart" : "bx-heart"} fs-6`}></i>
-            </button>
+            <FavoriteButton
+              isFavorite={disukai}
+              onToggle={() => onLike(item.id)}
+            />
             <button
               type="button"
               className="btn btn-light btn-sm rounded-circle shadow-sm btn-icon btn-share"
