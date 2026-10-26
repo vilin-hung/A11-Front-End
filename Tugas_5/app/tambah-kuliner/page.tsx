@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import "./tambah-kuliner.css";
 
 /* =========================
@@ -45,10 +46,31 @@ const OPSI_RASA = [
 const FORMAT_FOTO = ["image/jpeg", "image/png", "image/webp"];
 const MAKS_UKURAN_FOTO = 5 * 1024 * 1024;
 
+const USULAN_KEY = "jelajahRasaUsulan";
+const CURRENT_USER_KEY = "jelajahRasaCurrentUser";
+
+/* Foto disimpan sebagai dataURL supaya bisa ditampilkan di halaman
+   admin & profil tanpa server penyimpanan file. */
+function bacaFoto(file: File): Promise<string> {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result ?? ""));
+    reader.onerror = () => resolve("");
+    reader.readAsDataURL(file);
+  });
+}
+
+function labelDaerah(value: string) {
+  const semua = [...OPSI_KOTA, ...OPSI_KABUPATEN];
+  return semua.find((o) => o.value === value)?.label ?? value;
+}
+
 /* =========================
    HALAMAN
    ========================= */
 export default function TambahKulinerPage() {
+  const router = useRouter();
+
   const [nama, setNama] = useState("");
   const [daerah, setDaerah] = useState("");
   const [kategori, setKategori] = useState("");
@@ -65,12 +87,6 @@ export default function TambahKulinerPage() {
 
   const [sudahSubmit, setSudahSubmit] = useState(false);
   const [tampilModal, setTampilModal] = useState(false);
-
-  const handleFotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  const file = e.target.files?.[0] ?? null;
-  setFoto(file);
-  setPreviewUrl(file ? URL.createObjectURL(file) : "");
-  };
 
   useEffect(() => {
     return () => {
@@ -128,27 +144,43 @@ export default function TambahKulinerPage() {
   };
 
   /* Submit */
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSudahSubmit(true);
     if (!formValid) return;
 
+    const user = JSON.parse(
+      localStorage.getItem(CURRENT_USER_KEY) ?? "null"
+    ) as { name: string } | null;
+
+    if (!user) {
+      alert("Silakan login terlebih dahulu untuk mengirim rekomendasi kuliner.");
+      router.push("/login");
+      return;
+    }
+
+    const img = foto ? await bacaFoto(foto) : "";
+
     try {
-      const lama = JSON.parse(localStorage.getItem("kulinerBaru") ?? "[]");
+      const lama = JSON.parse(localStorage.getItem(USULAN_KEY) ?? "[]");
       lama.push({
-        nama,
-        daerah,
+        id: Date.now(),
+        nama: nama.trim(),
         kategori,
-        deskripsi,
-        bahan,
-        rasa,
-        harga,
-        foto: foto?.name ?? "",
-        waktu: new Date().toISOString(),
+        daerah: labelDaerah(daerah),
+        status: "Menunggu",
+        bahan: bahan.trim(),
+        deskripsi: deskripsi.trim(),
+        rasa: rasa.join(", "),
+        harga: harga.trim(),
+        pengirim: user.name,
+        tanggal: new Date().toISOString().slice(0, 10),
+        img,
       });
-      localStorage.setItem("kulinerBaru", JSON.stringify(lama));
+      localStorage.setItem(USULAN_KEY, JSON.stringify(lama));
     } catch {
-      /* abaikan jika storage penuh / tidak tersedia */
+      alert("Gagal menyimpan: gambar terlalu besar. Coba pilih foto yang lebih kecil.");
+      return;
     }
 
     setTampilModal(true);

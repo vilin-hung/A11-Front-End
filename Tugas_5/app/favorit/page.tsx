@@ -2,28 +2,36 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { DATA_KULINER } from "../data/kuliner";
+import { DATA_KULINER, type Kuliner } from "../data/kuliner";
+import { bacaKulinerBawaan, bacaUsulanAktif } from "../data/usulan";
 import "./favorit.css";
 
 export default function FavoritPage() {
-  const [favorit, setFavorit] = useState<string[]>(() => {
-    if (typeof window === "undefined") return [];
+  const [favorit, setFavorit] = useState<string[]>([]);
+  const [semuaKuliner, setSemuaKuliner] = useState<Kuliner[]>(DATA_KULINER);
 
+  /* localStorage baru bisa dibaca setelah komponen terpasang di browser,
+     supaya hasil render server dan browser tidak berbeda. */
+  useEffect(() => {
     try {
-      const tersimpan = localStorage.getItem("favorit");
-      if (!tersimpan) return [];
+      const tersimpan = localStorage.getItem("jelajahRasaFavorites");
 
-      const data: unknown = JSON.parse(tersimpan);
+      if (tersimpan) {
+        const data: unknown = JSON.parse(tersimpan);
 
-      return Array.isArray(data)
-        ? data.filter((id): id is string => typeof id === "string")
-        : [];
+        if (Array.isArray(data)) {
+          // eslint-disable-next-line react-hooks/set-state-in-effect
+          setFavorit(data.filter((id): id is string => typeof id === "string"));
+        }
+      }
     } catch {
-      return [];
+      /* abaikan */
     }
-  });
 
-  const kulinerFavorit = DATA_KULINER.filter((item) =>
+    setSemuaKuliner([...bacaKulinerBawaan(), ...bacaUsulanAktif()]);
+  }, []);
+
+  const kulinerFavorit = semuaKuliner.filter((item) =>
     favorit.includes(item.id)
   );
 
@@ -32,7 +40,7 @@ export default function FavoritPage() {
       const terbaru = sebelumnya.filter((itemId) => itemId !== id);
 
       try {
-        localStorage.setItem("favorit", JSON.stringify(terbaru));
+        localStorage.setItem("jelajahRasaFavorites", JSON.stringify(terbaru));
       } catch {
         // abaikan jika local storage tidak dapat ditulis
       }

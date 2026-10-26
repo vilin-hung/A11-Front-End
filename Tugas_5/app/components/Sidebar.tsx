@@ -1,6 +1,36 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+
+type User = {
+  name: string;
+  email: string;
+  city: string;
+  avatar?: string;
+};
 
 export default function Sidebar() {
+  const pathname = usePathname();
+  const [user, setUser] = useState<User | null>(null);
+
+  /* Sidebar juga dipasang di layout, jadi perlu dibaca ulang tiap pindah
+     halaman supaya nama pengguna ikut berubah setelah login. */
+  useEffect(() => {
+    let aktif: User | null = null;
+
+    try {
+      const tersimpan = localStorage.getItem("jelajahRasaCurrentUser");
+      if (tersimpan) aktif = JSON.parse(tersimpan);
+    } catch {
+      aktif = null;
+    }
+
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setUser(aktif);
+  }, [pathname]);
+
   return (
     <div
       className="offcanvas-sidebar"
@@ -29,19 +59,19 @@ export default function Sidebar() {
             <img
               id="user-avatar-mobile"
               className="user-avatar"
-              src="../images/homepage/default-avatar.png"
+              src={user?.avatar || "/images/homepage/default-avatar.png"}
               alt="Foto Profil"
             />
             <div className="user-info-mobile">
               <h6 id="user-name-mobile" className="user-name">
-                Pengunjung
+                {user?.name || "Pengunjung"}
               </h6>
               <Link
                 id="user-link-mobile"
                 className="user-profile-link"
-                href="/login"
+                href={user ? "/profil" : "/login"}
               >
-                Masuk / Daftar
+                {user ? "Profil" : "Masuk / Daftar"}
               </Link>
             </div>
           </div>

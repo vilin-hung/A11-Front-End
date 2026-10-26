@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 import "./daftar-kuliner.css";
 import FavoriteButton from "../components/FavoriteButton";
 import { DATA_KULINER, type Kuliner } from "../data/kuliner";
+import { bacaKulinerBawaan, bacaUsulanAktif } from "../data/usulan";
 
 type FilterState = {
   kota: string[];
@@ -155,6 +156,7 @@ function DaftarKulinerContent() {
   const [kataKunciUrlSebelumnya, setKataKunciUrlSebelumnya] = useState(kataKunciUrl);
   const [filter, setFilter] = useState<FilterState>(FILTER_KOSONG);
   const [favorit, setFavorit] = useState<string[]>([]);
+  const [semuaKuliner, setSemuaKuliner] = useState<Kuliner[]>(DATA_KULINER);
 
   const refKota = useRef<HTMLSelectElement>(null);
   const refKategori = useRef<HTMLSelectElement>(null);
@@ -168,12 +170,14 @@ function DaftarKulinerContent() {
 
   useEffect(() => {
     try {
-      const tersimpan = localStorage.getItem("favorit");
+      const tersimpan = localStorage.getItem("jelajahRasaFavorites");
       // eslint-disable-next-line react-hooks/set-state-in-effect
       if (tersimpan) setFavorit(JSON.parse(tersimpan));
     } catch {
       /* abaikan */
     }
+
+    setSemuaKuliner([...bacaKulinerBawaan(), ...bacaUsulanAktif()]);
   }, []);
 
   const ambilNilai = (el: HTMLSelectElement | null) =>
@@ -201,7 +205,7 @@ function DaftarKulinerContent() {
     setFavorit((lama) => {
       const baru = lama.includes(id) ? lama.filter((x) => x !== id) : [...lama, id];
       try {
-        localStorage.setItem("favorit", JSON.stringify(baru));
+        localStorage.setItem("jelajahRasaFavorites", JSON.stringify(baru));
       } catch {
         /* abaikan */
       }
@@ -224,7 +228,7 @@ function DaftarKulinerContent() {
   };
 
   const kataKunciKecil = kataKunci.trim().toLowerCase();
-  const hasil = DATA_KULINER.filter((item) => {
+  const hasil = semuaKuliner.filter((item) => {
     const cocokKota = filter.kota.length === 0 || filter.kota.includes(item.kota);
     const cocokKategori = filter.kategori.length === 0 || filter.kategori.includes(item.kategori);
     const cocokHarga = filter.harga.length === 0 || filter.harga.includes(item.harga);
@@ -363,7 +367,7 @@ function DaftarKulinerContent() {
 
         {/* Info hasil */}
         <p className="result-info">
-          Menampilkan <strong>{hasil.length}</strong> dari {DATA_KULINER.length} kuliner
+          Menampilkan <strong>{hasil.length}</strong> dari {semuaKuliner.length} kuliner
           {kataKunci && (
             <>
               {" "}
