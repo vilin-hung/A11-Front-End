@@ -1041,8 +1041,10 @@ export type ReviewScalarFieldEnum = (typeof ReviewScalarFieldEnum)[keyof typeof 
 
 export const FAQScalarFieldEnum = {
   id: 'id',
+  slug: 'slug',
   pertanyaan: 'pertanyaan',
   jawaban: 'jawaban',
+  iconClass: 'iconClass',
   urutan: 'urutan',
   isActive: 'isActive',
   createdAt: 'createdAt',

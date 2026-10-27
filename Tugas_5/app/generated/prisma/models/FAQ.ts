@@ -36,8 +36,10 @@ export type FAQSumAggregateOutputType = {
 
 export type FAQMinAggregateOutputType = {
   id: string | null
+  slug: string | null
   pertanyaan: string | null
   jawaban: string | null
+  iconClass: string | null
   urutan: number | null
   isActive: boolean | null
   createdAt: Date | null
@@ -46,8 +48,10 @@ export type FAQMinAggregateOutputType = {
 
 export type FAQMaxAggregateOutputType = {
   id: string | null
+  slug: string | null
   pertanyaan: string | null
   jawaban: string | null
+  iconClass: string | null
   urutan: number | null
   isActive: boolean | null
   createdAt: Date | null
@@ -56,8 +60,10 @@ export type FAQMaxAggregateOutputType = {
 
 export type FAQCountAggregateOutputType = {
   id: number
+  slug: number
   pertanyaan: number
   jawaban: number
+  iconClass: number
   urutan: number
   isActive: number
   createdAt: number
@@ -76,8 +82,10 @@ export type FAQSumAggregateInputType = {
 
 export type FAQMinAggregateInputType = {
   id?: true
+  slug?: true
   pertanyaan?: true
   jawaban?: true
+  iconClass?: true
   urutan?: true
   isActive?: true
   createdAt?: true
@@ -86,8 +94,10 @@ export type FAQMinAggregateInputType = {
 
 export type FAQMaxAggregateInputType = {
   id?: true
+  slug?: true
   pertanyaan?: true
   jawaban?: true
+  iconClass?: true
   urutan?: true
   isActive?: true
   createdAt?: true
@@ -96,8 +106,10 @@ export type FAQMaxAggregateInputType = {
 
 export type FAQCountAggregateInputType = {
   id?: true
+  slug?: true
   pertanyaan?: true
   jawaban?: true
+  iconClass?: true
   urutan?: true
   isActive?: true
   createdAt?: true
@@ -193,8 +205,10 @@ export type FAQGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs
 
 export type FAQGroupByOutputType = {
   id: string
+  slug: string
   pertanyaan: string
   jawaban: string
+  iconClass: string
   urutan: number
   isActive: boolean
   createdAt: Date
@@ -226,8 +240,10 @@ export type FAQWhereInput = {
   OR?: Prisma.FAQWhereInput[]
   NOT?: Prisma.FAQWhereInput | Prisma.FAQWhereInput[]
   id?: Prisma.StringFilter<"FAQ"> | string
+  slug?: Prisma.StringFilter<"FAQ"> | string
   pertanyaan?: Prisma.StringFilter<"FAQ"> | string
   jawaban?: Prisma.StringFilter<"FAQ"> | string
+  iconClass?: Prisma.StringFilter<"FAQ"> | string
   urutan?: Prisma.IntFilter<"FAQ"> | number
   isActive?: Prisma.BoolFilter<"FAQ"> | boolean
   createdAt?: Prisma.DateTimeFilter<"FAQ"> | Date | string
@@ -236,8 +252,10 @@ export type FAQWhereInput = {
 
 export type FAQOrderByWithRelationInput = {
   id?: Prisma.SortOrder
+  slug?: Prisma.SortOrder
   pertanyaan?: Prisma.SortOrder
   jawaban?: Prisma.SortOrder
+  iconClass?: Prisma.SortOrder
   urutan?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -246,21 +264,25 @@ export type FAQOrderByWithRelationInput = {
 
 export type FAQWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  slug?: string
   AND?: Prisma.FAQWhereInput | Prisma.FAQWhereInput[]
   OR?: Prisma.FAQWhereInput[]
   NOT?: Prisma.FAQWhereInput | Prisma.FAQWhereInput[]
   pertanyaan?: Prisma.StringFilter<"FAQ"> | string
   jawaban?: Prisma.StringFilter<"FAQ"> | string
+  iconClass?: Prisma.StringFilter<"FAQ"> | string
   urutan?: Prisma.IntFilter<"FAQ"> | number
   isActive?: Prisma.BoolFilter<"FAQ"> | boolean
   createdAt?: Prisma.DateTimeFilter<"FAQ"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"FAQ"> | Date | string
-}, "id">
+}, "id" | "slug">
 
 export type FAQOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
+  slug?: Prisma.SortOrder
   pertanyaan?: Prisma.SortOrder
   jawaban?: Prisma.SortOrder
+  iconClass?: Prisma.SortOrder
   urutan?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -277,8 +299,10 @@ export type FAQScalarWhereWithAggregatesInput = {
   OR?: Prisma.FAQScalarWhereWithAggregatesInput[]
   NOT?: Prisma.FAQScalarWhereWithAggregatesInput | Prisma.FAQScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"FAQ"> | string
+  slug?: Prisma.StringWithAggregatesFilter<"FAQ"> | string
   pertanyaan?: Prisma.StringWithAggregatesFilter<"FAQ"> | string
   jawaban?: Prisma.StringWithAggregatesFilter<"FAQ"> | string
+  iconClass?: Prisma.StringWithAggregatesFilter<"FAQ"> | string
   urutan?: Prisma.IntWithAggregatesFilter<"FAQ"> | number
   isActive?: Prisma.BoolWithAggregatesFilter<"FAQ"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"FAQ"> | Date | string
@@ -287,8 +311,10 @@ export type FAQScalarWhereWithAggregatesInput = {
 
 export type FAQCreateInput = {
   id?: string
+  slug: string
   pertanyaan: string
   jawaban: string
+  iconClass?: string
   urutan?: number
   isActive?: boolean
   createdAt?: Date | string
@@ -297,8 +323,10 @@ export type FAQCreateInput = {
 
 export type FAQUncheckedCreateInput = {
   id?: string
+  slug: string
   pertanyaan: string
   jawaban: string
+  iconClass?: string
   urutan?: number
   isActive?: boolean
   createdAt?: Date | string
@@ -307,8 +335,10 @@ export type FAQUncheckedCreateInput = {
 
 export type FAQUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
   pertanyaan?: Prisma.StringFieldUpdateOperationsInput | string
   jawaban?: Prisma.StringFieldUpdateOperationsInput | string
+  iconClass?: Prisma.StringFieldUpdateOperationsInput | string
   urutan?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -317,8 +347,10 @@ export type FAQUpdateInput = {
 
 export type FAQUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
   pertanyaan?: Prisma.StringFieldUpdateOperationsInput | string
   jawaban?: Prisma.StringFieldUpdateOperationsInput | string
+  iconClass?: Prisma.StringFieldUpdateOperationsInput | string
   urutan?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -327,8 +359,10 @@ export type FAQUncheckedUpdateInput = {
 
 export type FAQCreateManyInput = {
   id?: string
+  slug: string
   pertanyaan: string
   jawaban: string
+  iconClass?: string
   urutan?: number
   isActive?: boolean
   createdAt?: Date | string
@@ -337,8 +371,10 @@ export type FAQCreateManyInput = {
 
 export type FAQUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
   pertanyaan?: Prisma.StringFieldUpdateOperationsInput | string
   jawaban?: Prisma.StringFieldUpdateOperationsInput | string
+  iconClass?: Prisma.StringFieldUpdateOperationsInput | string
   urutan?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -347,8 +383,10 @@ export type FAQUpdateManyMutationInput = {
 
 export type FAQUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
   pertanyaan?: Prisma.StringFieldUpdateOperationsInput | string
   jawaban?: Prisma.StringFieldUpdateOperationsInput | string
+  iconClass?: Prisma.StringFieldUpdateOperationsInput | string
   urutan?: Prisma.IntFieldUpdateOperationsInput | number
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -357,8 +395,10 @@ export type FAQUncheckedUpdateManyInput = {
 
 export type FAQCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  slug?: Prisma.SortOrder
   pertanyaan?: Prisma.SortOrder
   jawaban?: Prisma.SortOrder
+  iconClass?: Prisma.SortOrder
   urutan?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -371,8 +411,10 @@ export type FAQAvgOrderByAggregateInput = {
 
 export type FAQMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  slug?: Prisma.SortOrder
   pertanyaan?: Prisma.SortOrder
   jawaban?: Prisma.SortOrder
+  iconClass?: Prisma.SortOrder
   urutan?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -381,8 +423,10 @@ export type FAQMaxOrderByAggregateInput = {
 
 export type FAQMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
+  slug?: Prisma.SortOrder
   pertanyaan?: Prisma.SortOrder
   jawaban?: Prisma.SortOrder
+  iconClass?: Prisma.SortOrder
   urutan?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -401,8 +445,10 @@ export type BoolFieldUpdateOperationsInput = {
 
 export type FAQSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  slug?: boolean
   pertanyaan?: boolean
   jawaban?: boolean
+  iconClass?: boolean
   urutan?: boolean
   isActive?: boolean
   createdAt?: boolean
@@ -411,8 +457,10 @@ export type FAQSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = ru
 
 export type FAQSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  slug?: boolean
   pertanyaan?: boolean
   jawaban?: boolean
+  iconClass?: boolean
   urutan?: boolean
   isActive?: boolean
   createdAt?: boolean
@@ -421,8 +469,10 @@ export type FAQSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extension
 
 export type FAQSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
+  slug?: boolean
   pertanyaan?: boolean
   jawaban?: boolean
+  iconClass?: boolean
   urutan?: boolean
   isActive?: boolean
   createdAt?: boolean
@@ -431,23 +481,27 @@ export type FAQSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extension
 
 export type FAQSelectScalar = {
   id?: boolean
+  slug?: boolean
   pertanyaan?: boolean
   jawaban?: boolean
+  iconClass?: boolean
   urutan?: boolean
   isActive?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type FAQOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "pertanyaan" | "jawaban" | "urutan" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["fAQ"]>
+export type FAQOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "slug" | "pertanyaan" | "jawaban" | "iconClass" | "urutan" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["fAQ"]>
 
 export type $FAQPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "FAQ"
   objects: {}
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
+    slug: string
     pertanyaan: string
     jawaban: string
+    iconClass: string
     urutan: number
     isActive: boolean
     createdAt: Date
@@ -876,8 +930,10 @@ export interface Prisma__FAQClient<T, Null = never, ExtArgs extends runtime.Type
  */
 export interface FAQFieldRefs {
   readonly id: Prisma.FieldRef<"FAQ", 'String'>
+  readonly slug: Prisma.FieldRef<"FAQ", 'String'>
   readonly pertanyaan: Prisma.FieldRef<"FAQ", 'String'>
   readonly jawaban: Prisma.FieldRef<"FAQ", 'String'>
+  readonly iconClass: Prisma.FieldRef<"FAQ", 'String'>
   readonly urutan: Prisma.FieldRef<"FAQ", 'Int'>
   readonly isActive: Prisma.FieldRef<"FAQ", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"FAQ", 'DateTime'>
