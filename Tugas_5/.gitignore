@@ -39,3 +39,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Prisma & AI assistant generated files
+.agents/
+.claude/
+.cursor/
+.devin/
+prisma.config.ts
