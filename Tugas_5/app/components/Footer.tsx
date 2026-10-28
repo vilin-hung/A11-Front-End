@@ -1,6 +1,26 @@
 import Link from "next/link";
 
-export default function Footer() {
+type FooterProps = {
+  variant?: "full" | "compact";
+};
+
+export default function Footer({ variant = "full" }: FooterProps) {
+  // Footer ringkas khusus halaman login
+  if (variant === "compact") {
+    return (
+      <footer id="auth-footer" className="site-footer auth-footer">
+        <div className="footer-container">
+          <div className="footer-copyright">
+            <p id="copyright-text" className="copyright-text">
+              &copy; 2026 Jelajah Rasa Jawa Barat. All Rights Reserved.
+            </p>
+          </div>
+        </div>
+      </footer>
+    );
+  }
+
+  // Footer lengkap untuk halaman utama dan halaman lain
   return (
     <footer id="main-footer" className="site-footer">
       <div className="footer-container">
@@ -53,7 +73,8 @@ export default function Footer() {
               halo@jelajahrasajabar.id
             </p>
             <p className="contact-item">
-              <i className="bx bx-phone icon-contact"></i> +62 812-1326-3927
+              <i className="bx bx-phone icon-contact"></i>{" "}
+              +62 812-1326-3927
             </p>
             <div className="social-links-wrapper">
               <a href="#" id="link-instagram" className="social-link">

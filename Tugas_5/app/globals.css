@@ -650,6 +650,34 @@ a:visited {
     z-index: 1;
 }
 
+
+/* =========================
+   FOOTER RINGKAS HALAMAN AUTH
+   ========================= */
+.auth-footer {
+    padding: 14px 24px;
+}
+
+.auth-footer .footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.auth-footer .footer-copyright {
+    text-align: center;
+    margin: 0;
+}
+
+.auth-footer .copyright-text {
+    font-size: 11px;
+    margin: 0;
+}
+
+.auth-footer::before {
+    background-image: none;
+}
+
+
 /* =========================
    TABLET (≤992px)
    ========================= */
