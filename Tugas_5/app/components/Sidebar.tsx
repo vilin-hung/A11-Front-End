@@ -18,17 +18,28 @@ export default function Sidebar() {
   /* Sidebar juga dipasang di layout, jadi perlu dibaca ulang tiap pindah
      halaman supaya nama pengguna ikut berubah setelah login. */
   useEffect(() => {
-    let aktif: User | null = null;
+    const sinkronkanUser = () => {
+      let aktif: User | null = null;
 
-    try {
-      const tersimpan = localStorage.getItem("jelajahRasaCurrentUser");
-      if (tersimpan) aktif = JSON.parse(tersimpan);
-    } catch {
-      aktif = null;
-    }
+      try {
+        const tersimpan = localStorage.getItem("jelajahRasaCurrentUser");
+        if (tersimpan) aktif = JSON.parse(tersimpan);
+      } catch {
+        aktif = null;
+      }
 
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setUser(aktif);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setUser(aktif);
+    };
+
+    sinkronkanUser();
+
+    // Memperbarui foto dan nama ketika profil berhasil diubah
+    window.addEventListener("jelajahRasaUserUpdated", sinkronkanUser);
+
+    return () => {
+      window.removeEventListener("jelajahRasaUserUpdated", sinkronkanUser);
+    };
   }, [pathname]);
 
   return (
