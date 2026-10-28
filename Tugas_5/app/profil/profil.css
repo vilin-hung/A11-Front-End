@@ -230,7 +230,7 @@
 
 /* Pesan validasi Informasi Personal */
 .profile-form-error {
-    color: #dc3545;
+    color: var(--red-notif);
     font-size: 12px;
     margin-top: 6px;
     margin-bottom: 0;
@@ -239,12 +239,12 @@
 
 /* Border input ketika data tidak valid */
 .profile-form-input-error {
-    border-color: #dc3545;
+    border-color: var(--red-notif);
 }
 
 .profile-form-input-error:focus {
-    border-color: #dc3545;
-    box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.12);
+    border-color: var(--red-notif);
+    box-shadow: 0 0 0 3px var(--white-soft-15);
 }
 
 .btn-save-profile {
