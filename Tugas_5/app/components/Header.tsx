@@ -2,13 +2,16 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 
 type User = {
-  name: string;
+  id: string;
+  nama: string;
   email: string;
-  city: string;
-  avatar?: string;
+  kota: string | null;
+  avatar: string | null;
+  role: string;
 };
 
 export default function Header() {
@@ -18,26 +21,46 @@ export default function Header() {
   /* Header dipasang di layout, jadi tidak ikut dipasang ulang tiap pindah
      halaman. pathname dipakai supaya nama ikut berubah setelah login. */
   useEffect(() => {
-    const sinkronkanUser = () => {
-      let aktif: User | null = null;
+    let masihAktif = true;
 
+    const sinkronkanUser = async () => {
       try {
-        const tersimpan = localStorage.getItem("jelajahRasaCurrentUser");
-        if (tersimpan) aktif = JSON.parse(tersimpan);
-      } catch {
-        aktif = null;
-      }
+        // Mengambil data pengguna dari API berdasarkan session login
+        const response = await fetch("/api/auth/me", {
+          cache: "no-store",
+        });
 
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setUser(aktif);
+        if (!response.ok) {
+          if (masihAktif) {
+            setUser(null);
+          }
+          return;
+        }
+
+        const data = (await response.json()) as {
+          user?: User | null;
+        };
+
+        if (masihAktif) {
+          setUser(data.user ?? null);
+        }
+      } catch (error) {
+        // Mengosongkan data pengguna jika sesi gagal diperiksa
+        console.error("Gagal memeriksa sesi pengguna:", error);
+
+        if (masihAktif) {
+          setUser(null);
+        }
+      }
     };
 
-    sinkronkanUser();
+    void sinkronkanUser();
 
     // Memperbarui foto dan nama ketika profil berhasil diubah
     window.addEventListener("jelajahRasaUserUpdated", sinkronkanUser);
 
     return () => {
+      masihAktif = false;
       window.removeEventListener("jelajahRasaUserUpdated", sinkronkanUser);
     };
   }, [pathname]);
@@ -129,16 +152,18 @@ export default function Header() {
 
         {/* Profil */}
         <div id="header-right" className="header-profile-container">
-          <img
+          <Image
             id="user-avatar-desktop"
             className="user-avatar"
             src={user?.avatar || "/images/homepage/default-avatar.png"}
             alt="Foto Profil"
+            width={48}
+            height={48}
           />
 
           <div className="user-info-wrapper">
             <span id="user-name-desktop" className="user-name">
-              {user?.name || "Pengunjung"}
+              {user?.nama || "Pengunjung"}
             </span>
 
             <Link
