@@ -27,7 +27,6 @@ import {
 /* =========================
    KEY LOCAL STORAGE
    ========================= */
-const CURRENT_USER_KEY = 'jelajahRasaCurrentUser';
 const USULAN_KEY = 'jelajahRasaUsulan';
 const ULASAN_KEY = 'jelajahRasaUlasan';
 const FAVORIT_KEY = 'jelajahRasaFavorites';
@@ -39,10 +38,12 @@ const CHART_URL =
 type TabType = 'ringkasan' | 'kuliner' | 'ulasan';
 
 type User = {
-  name: string;
+  id: string;
+  nama: string;
   email: string;
-  city: string;
-  avatar?: string;
+  kota: string | null;
+  avatar: string | null;
+  role: string;
 };
 
 /* =========================
@@ -146,22 +147,56 @@ export default function AdminDashboard() {
 
   /* Ambil data saat halaman dibuka */
   useEffect(() => {
-    const aktif = bacaJson(CURRENT_USER_KEY, null);
+    let masihAktif = true;
 
-    if (!aktif) {
-      router.replace('/login');
-      return;
+    async function periksaAksesAdmin() {
+      try {
+        // Memeriksa session pengguna melalui API
+        const response = await fetch('/api/auth/me', {
+          cache: 'no-store',
+        });
+
+        const data = (await response.json().catch(() => ({}))) as {
+          user?: User | null;
+        };
+
+        // Menghentikan proses jika komponen sudah tidak aktif
+        if (!masihAktif) return;
+
+        // Mengarahkan pengguna yang belum login ke halaman login
+        if (!response.ok || !data.user) {
+          router.replace('/login');
+          return;
+        }
+
+        // Memastikan hanya admin yang dapat membuka dashboard
+        if (data.user.role !== 'ADMIN') {
+          router.replace('/');
+          return;
+        }
+
+        /* localStorage baru bisa dibaca setelah komponen terpasang di browser */
+        setAdmin(data.user);
+        setKuliner(bacaJson(KULINER_KEY, null) ?? KULINER_AWAL);
+        setUsulan(rapikanUsulan(bacaJson(USULAN_KEY, [])));
+        setUlasan(bacaJson(ULASAN_KEY, []));
+        setFavorit(bacaJson(FAVORIT_KEY, []));
+        setSiap(true);
+      } catch (error) {
+        // Menangani kegagalan saat memeriksa session admin
+        console.error('Gagal memeriksa session admin:', error);
+
+        if (masihAktif) {
+          router.replace('/login');
+        }
+      }
     }
 
-    /* localStorage baru bisa dibaca setelah komponen terpasang di browser */
-    /* eslint-disable react-hooks/set-state-in-effect -- baca data awal dari localStorage */
-    setAdmin(aktif);
-    setKuliner(bacaJson(KULINER_KEY, null) ?? KULINER_AWAL);
-    setUsulan(rapikanUsulan(bacaJson(USULAN_KEY, [])));
-    setUlasan(bacaJson(ULASAN_KEY, []));
-    setFavorit(bacaJson(FAVORIT_KEY, []));
-    setSiap(true);
-    /* eslint-enable react-hooks/set-state-in-effect */
+    void periksaAksesAdmin();
+
+    return () => {
+      masihAktif = false;
+    };
   }, [router]);
 
   /* Gambar grafik sebaran daerah (Chart.js dari CDN) */
@@ -295,9 +330,24 @@ export default function AdminDashboard() {
     simpanJson(ULASAN_KEY, terbaru);
   };
 
-  const logout = () => {
-    localStorage.removeItem(CURRENT_USER_KEY);
-    router.push('/login');
+  /* Logout */
+  const logout = async () => {
+    try {
+      // Mengakhiri session pada server
+      const response = await fetch('/api/auth/logout', {
+        method: 'POST',
+      });
+
+      if (!response.ok) {
+        console.error('Gagal mengakhiri session admin.');
+        return;
+      }
+
+      router.replace('/login');
+      router.refresh();
+    } catch (error) {
+      console.error('Gagal menghubungi API logout:', error);
+    }
   };
 
   /* =========================
@@ -371,7 +421,7 @@ export default function AdminDashboard() {
             alt="Foto Admin"
             className="rounded-circle"
           />
-          <span>{admin.name || 'Admin'}</span>
+          <span>{admin.nama || 'Admin'}</span>
           <button
             type="button"
             className="btn btn-sm btn-outline-danger"
