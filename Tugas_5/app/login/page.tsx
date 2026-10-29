@@ -5,22 +5,12 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import "./login.css";
 
-const USERS_KEY = "jelajahRasaUsers";
-const CURRENT_USER_KEY = "jelajahRasaCurrentUser";
-
-interface User {
-    name: string;
-    email: string;
-    city: string;
-    password: string;
-    avatar?: string;
-}
-
 type Notifikasi = {
     tipe: "sukses" | "error";
     judul: string;
     pesan: string;
     redirect?: boolean;
+    tujuan?: string;
 };
 
 export default function LoginPage() {
@@ -49,28 +39,9 @@ export default function LoginPage() {
     const [notifikasi, setNotifikasi] = useState<Notifikasi | null>(null);
 
     // function handler
-    function getUsers(): User[] {
-        try {
-            const data = JSON.parse(
-                localStorage.getItem(USERS_KEY) || "[]"
-            );
-
-            return Array.isArray(data) ? (data as User[]) : [];
-        } catch {
-            return [];
-        }
-    }
-
     // Memeriksa format email
     function validasiEmail(email: string): boolean {
         return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-    }
-
-    // Memeriksa apakah email sudah terdaftar
-    function emailSudahTerdaftar(email: string): boolean {
-        return getUsers().some(
-            (user) => user.email.trim().toLowerCase() === email
-        );
     }
 
     // Menampilkan modal notifikasi
@@ -78,59 +49,33 @@ export default function LoginPage() {
         tipe: "sukses" | "error",
         judul: string,
         pesan: string,
-        redirect = false
+        redirect = false,
+        tujuan = "/"
     ) {
         setNotifikasi({
             tipe,
             judul,
             pesan,
             redirect,
+            tujuan,
         });
     }
 
     // Menutup modal notifikasi
     function tutupNotifikasi() {
         const perluRedirect = notifikasi?.redirect;
+        const tujuan = notifikasi?.tujuan ?? "/";
 
         setNotifikasi(null);
 
         if (perluRedirect) {
-            router.push("/");
+            router.push(tujuan);
             router.refresh();
         }
     }
 
-    // Memeriksa kecocokan email dan kata sandi saat login
-    function validasiKredensialLogin(
-        email: string,
-        password: string
-    ) {
-        const emailBersih = email.trim().toLowerCase();
-
-        if (!emailBersih || !password || !validasiEmail(emailBersih)) {
-            return;
-        }
-
-        const user = getUsers().find(
-            (item) =>
-                item.email.trim().toLowerCase() === emailBersih &&
-                item.password === password
-        );
-
-        if (!user) {
-            // Karena salah satu atau kedua data bisa salah, tandai kedua kolom.
-            const pesan = "Email atau kata sandi salah.";
-
-            setLoginEmailError(pesan);
-            setLoginPasswordError(pesan);
-        } else {
-            setLoginEmailError("");
-            setLoginPasswordError("");
-        }
-    }
-
     // handle register
-    function handleRegister(e: React.FormEvent<HTMLFormElement>) {
+    async function handleRegister(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
 
         const email = registerEmail.trim().toLowerCase();
@@ -164,11 +109,6 @@ export default function LoginPage() {
                 "Masukkan alamat email dengan format yang benar."
             );
             adaError = true;
-        } else if (emailSudahTerdaftar(email)) {
-            setRegisterEmailError(
-                "Email sudah terdaftar. Gunakan email lain."
-            );
-            adaError = true;
         }
 
         // Validasi kota atau kabupaten
@@ -195,50 +135,94 @@ export default function LoginPage() {
             adaError = true;
         }
 
+        // Menghentikan proses jika validasi form gagal
         if (adaError) {
             return;
         }
 
-        const newUser: User = {
-            name,
-            email,
-            city,
-            password: registerPassword,
-        };
-
-        const updatedUsers = [...getUsers(), newUser];
-
         try {
-            localStorage.setItem(
-                USERS_KEY,
-                JSON.stringify(updatedUsers)
-            );
+            // Mengirim data pendaftaran ke API register
+            const response = await fetch("/api/auth/register", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    nama: name,
+                    email,
+                    kota: city,
+                    password: registerPassword,
+                    confirmPassword,
+                }),
+            });
 
-            localStorage.setItem(
-                CURRENT_USER_KEY,
-                JSON.stringify(newUser)
+            // Membaca hasil respons dari API
+            const data = (await response.json().catch(() => ({}))) as {
+                message?: string;
+                errors?: Record<string, string>;
+                user?: {
+                    nama?: string;
+                };
+            };
+
+            // Menampilkan pesan validasi dari API
+            if (!response.ok) {
+                const errors = data.errors ?? {};
+
+                if (errors.nama) {
+                    setRegisterNameError(errors.nama);
+                }
+
+                if (errors.email) {
+                    setRegisterEmailError(errors.email);
+                }
+
+                if (errors.kota) {
+                    setRegisterCityError(errors.kota);
+                }
+
+                if (errors.password) {
+                    setPasswordError(errors.password);
+                }
+
+                if (errors.confirmPassword) {
+                    setConfirmPasswordError(errors.confirmPassword);
+                }
+
+                // Menampilkan modal jika error bukan kesalahan input
+                if (Object.keys(errors).length === 0) {
+                    tampilkanNotifikasi(
+                        "error",
+                        "Pendaftaran Gagal",
+                        data.message ||
+                            "Data akun tidak dapat disimpan. Silakan coba kembali."
+                    );
+                }
+
+                return;
+            }
+
+            // Menampilkan notifikasi setelah pendaftaran berhasil
+            tampilkanNotifikasi(
+                "sukses",
+                "Pendaftaran Berhasil",
+                `Selamat datang, ${data.user?.nama ?? name}! Akun kamu berhasil dibuat.`,
+                true
             );
-        } catch {
+        } catch (error) {
+            // Menangani kegagalan saat menghubungi API
+            console.error("Gagal menghubungi API register:", error);
+
             tampilkanNotifikasi(
                 "error",
                 "Pendaftaran Gagal",
                 "Data akun tidak dapat disimpan. Silakan coba kembali."
             );
-            return;
         }
-
-        window.dispatchEvent(new Event("jelajahRasaUserUpdated"));
-
-        tampilkanNotifikasi(
-            "sukses",
-            "Pendaftaran Berhasil",
-            `Selamat datang, ${newUser.name}! Akun kamu berhasil dibuat.`,
-            true
-        );
     }
 
     // handle login
-    function handleLogin(e: React.FormEvent<HTMLFormElement>) {
+    async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
 
         const email = loginEmail.trim().toLowerCase();
@@ -270,44 +254,113 @@ export default function LoginPage() {
             return;
         }
 
-        const user = getUsers().find(
-            (item) =>
-                item.email.trim().toLowerCase() === email &&
-                item.password === loginPassword
-        );
-
-        if (!user) {
-            // Tampilkan error pada kedua kolom karena email atau kata sandi mungkin salah.
-            const pesan = "Email atau kata sandi salah.";
-
-            setLoginEmailError(pesan);
-            setLoginPasswordError(pesan);
-
-            return;
-        }
-
         try {
-            localStorage.setItem(
-                CURRENT_USER_KEY,
-                JSON.stringify(user)
-            );
-        } catch {
+            // Mengirim data login ke API
+            const response = await fetch("/api/auth/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    email,
+                    password: loginPassword,
+                }),
+            });
+
+            // Membaca respons dari API
+            const data = (await response.json().catch(() => ({}))) as {
+                message?: string;
+                errors?: Record<string, string>;
+                user?: {
+                    nama?: string;
+                    email?: string;
+                };
+            };
+
+            // Menampilkan pesan jika login gagal
+            if (!response.ok) {
+                const errors = data.errors ?? {};
+
+                if (errors.email) {
+                    setLoginEmailError(errors.email);
+                }
+
+                if (errors.password) {
+                    setLoginPasswordError(errors.password);
+                }
+
+                // Menampilkan modal jika kegagalan bukan kesalahan input
+                if (Object.keys(errors).length === 0) {
+                    tampilkanNotifikasi(
+                        "error",
+                        "Login Gagal",
+                        data.message ||
+                            "Data akun tidak dapat disimpan. Silakan coba kembali."
+                    );
+                }
+
+                return;
+            }
+
+            // Membaca data pengguna dan role dari session
+            try {
+                const responseSesi = await fetch("/api/auth/me", {
+                    cache: "no-store",
+                });
+
+                const dataSesi = (await responseSesi
+                    .json()
+                    .catch(() => ({}))) as {
+                    user?: {
+                        nama?: string;
+                        role?: string;
+                    } | null;
+                };
+
+                // Memastikan data session berhasil dibaca
+                if (!responseSesi.ok || !dataSesi.user) {
+                    tampilkanNotifikasi(
+                        "error",
+                        "Sesi Belum Terbaca",
+                        "Login berhasil, tetapi data sesi belum dapat dibaca. Silakan coba kembali."
+                    );
+                    return;
+                }
+
+                // Menentukan halaman tujuan berdasarkan role pengguna
+                const tujuan =
+                    dataSesi.user.role === "ADMIN"
+                        ? "/admin-dashboard"
+                        : "/";
+
+                // Menampilkan notifikasi setelah login berhasil
+                tampilkanNotifikasi(
+                    "sukses",
+                    "Login Berhasil",
+                    `Selamat datang kembali, ${dataSesi.user.nama ?? data.user?.nama ?? email}!`,
+                    true,
+                    tujuan
+                );
+            } catch (error) {
+                // Menangani kegagalan saat membaca session pengguna
+                console.error("Gagal membaca session pengguna:", error);
+
+                tampilkanNotifikasi(
+                    "error",
+                    "Sesi Belum Terbaca",
+                    "Login berhasil, tetapi data sesi belum dapat dibaca. Silakan coba kembali."
+                );
+            }
+        } catch (error) {
+            // Menangani kegagalan saat menghubungi API login
+            console.error("Gagal menghubungi API login:", error);
+
             tampilkanNotifikasi(
                 "error",
                 "Login Gagal",
                 "Data akun tidak dapat disimpan. Silakan coba kembali."
             );
-            return;
         }
-
-        window.dispatchEvent(new Event("jelajahRasaUserUpdated"));
-
-        tampilkanNotifikasi(
-            "sukses",
-            "Login Berhasil",
-            `Selamat datang kembali, ${user.name}!`,
-            true
-        );
     }
 
     return (
@@ -381,14 +434,6 @@ export default function LoginPage() {
                                                     );
                                                 }
                                             }}
-                                            onBlur={() => {
-                                                if (loginEmail.trim() && loginPassword) {
-                                                    validasiKredensialLogin(
-                                                        loginEmail,
-                                                        loginPassword
-                                                    );
-                                                }
-                                            }}
                                             required
                                         />
 
@@ -420,11 +465,6 @@ export default function LoginPage() {
                                                 if (!loginPassword) {
                                                     setLoginPasswordError(
                                                         "Kata sandi wajib diisi."
-                                                    );
-                                                } else {
-                                                    validasiKredensialLogin(
-                                                        loginEmail,
-                                                        loginPassword
                                                     );
                                                 }
                                             }}
@@ -504,10 +544,6 @@ export default function LoginPage() {
                                                 } else if (!validasiEmail(email)) {
                                                     setRegisterEmailError(
                                                         "Masukkan alamat email dengan format yang benar."
-                                                    );
-                                                } else if (emailSudahTerdaftar(email)) {
-                                                    setRegisterEmailError(
-                                                        "Email sudah terdaftar. Gunakan email lain."
                                                     );
                                                 } else {
                                                     setRegisterEmailError("");
