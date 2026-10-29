@@ -228,6 +228,25 @@
     cursor: not-allowed;
 }
 
+/* Pesan validasi Informasi Personal */
+.profile-form-error {
+    color: var(--red-notif);
+    font-size: 12px;
+    margin-top: 6px;
+    margin-bottom: 0;
+    line-height: 1.4;
+}
+
+/* Border input ketika data tidak valid */
+.profile-form-input-error {
+    border-color: var(--red-notif);
+}
+
+.profile-form-input-error:focus {
+    border-color: var(--red-notif);
+    box-shadow: 0 0 0 3px var(--white-soft-15);
+}
+
 .btn-save-profile {
     display: block;
     width: 100%;
@@ -514,6 +533,82 @@
 }
 
 /* =========================
+   MODAL NOTIFIKASI DAN KONFIRMASI
+   Mengikuti modal sukses tambah kuliner
+   ========================= */
+#modal-notifikasi-profil .modal-content,
+#modal-konfirmasi-hapus-profil .modal-content {
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+}
+
+#modal-notifikasi-profil .modal-body,
+#modal-konfirmasi-hapus-profil .modal-body {
+    padding: 28px 24px;
+    background-color: var(--bg-white);
+}
+
+#modal-notifikasi-profil .modal-body h4,
+#modal-konfirmasi-hapus-profil .modal-body h4 {
+    color: var(--deep-green);
+    font-weight: 700;
+}
+
+#modal-notifikasi-profil .modal-body p,
+#modal-konfirmasi-hapus-profil .modal-body p {
+    color: var(--text-muted);
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+#modal-notifikasi-profil .modal-body p strong,
+#modal-konfirmasi-hapus-profil .modal-body p strong {
+    color: var(--deep-green);
+}
+
+/* Tombol utama mengikuti #btn-ke-daftar-kuliner */
+#btn-profile-notification-close,
+#btn-profile-confirm-delete {
+    background-color: var(--deep-green);
+    border: 1.5px solid var(--deep-green);
+    color: var(--bg-white);
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 10px 20px;
+    transition: var(--transition);
+}
+
+/* Tombol sekunder mengikuti #btn-tambah-lagi */
+#btn-profile-confirm-cancel {
+    background-color: transparent;
+    color: var(--text-muted);
+    border: 1.5px solid var(--border-color);
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 10px 20px;
+    transition: var(--transition);
+}
+
+#btn-profile-confirm-cancel:hover {
+    background-color: var(--deep-green-soft);
+    color: var(--deep-green);
+    border-color: var(--deep-green);
+}
+
+/* Lapisan belakang modal */
+.profile-popup-modal {
+    z-index: 1060;
+}
+
+.profile-popup-backdrop {
+    z-index: 1050;
+}
+
+/* =========================
    TABLET (≤992px)
    ========================= */
 @media (max-width: 992px) {
@@ -707,5 +802,107 @@
 
     .breadcrumb-list .breadcrumb-item {
         font-size: 12px;
+    }
+
+    /* Ukuran modal mengikuti tambah kuliner */
+    #modal-notifikasi-profil .modal-body,
+    #modal-konfirmasi-hapus-profil .modal-body {
+        padding: 22px 18px;
+    }
+
+    #modal-notifikasi-profil .modal-body h4,
+    #modal-konfirmasi-hapus-profil .modal-body h4 {
+        font-size: 18px;
+    }
+
+    #modal-notifikasi-profil .modal-body p,
+    #modal-konfirmasi-hapus-profil .modal-body p {
+        font-size: 12px;
+    }
+
+    #btn-profile-notification-close,
+    #btn-profile-confirm-cancel,
+    #btn-profile-confirm-delete {
+        font-size: 13px;
+        padding: 9px 16px;
+    }
+}
+
+/* =========================
+   Modal Hasil Upload Foto Profil
+   ========================= */
+#modal-upload-foto-profil .modal-content {
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+}
+
+#modal-upload-foto-profil .modal-body {
+    padding: 28px 24px;
+    background-color: var(--bg-white);
+}
+
+#modal-upload-foto-profil .modal-body h4 {
+    color: var(--deep-green);
+    font-weight: 700;
+}
+
+#modal-upload-foto-profil .modal-body p {
+    color: var(--text-muted);
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+#btn-profile-upload-close,
+#btn-profile-upload-retry {
+    background-color: var(--deep-green);
+    border: 1.5px solid var(--deep-green);
+    color: var(--bg-white);
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 10px 20px;
+    transition: var(--transition);
+}
+
+#btn-profile-upload-cancel {
+    background-color: transparent;
+    color: var(--text-muted);
+    border: 1.5px solid var(--border-color);
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 10px 20px;
+    transition: var(--transition);
+}
+
+/* Hover tombol notifikasi upload foto profil */
+#btn-profile-upload-close:hover,
+#btn-profile-upload-retry:hover {
+    background-color: var(--deep-green);
+    color: var(--bg-white);
+    border-color: var(--deep-green);
+    transform: translateY(-2px);
+}
+
+@media (max-width: 576px) {
+    #modal-upload-foto-profil .modal-body {
+        padding: 22px 18px;
+    }
+
+    #modal-upload-foto-profil .modal-body h4 {
+        font-size: 18px;
+    }
+
+    #modal-upload-foto-profil .modal-body p {
+        font-size: 12px;
+    }
+
+    #btn-profile-upload-close,
+    #btn-profile-upload-cancel,
+    #btn-profile-upload-retry {
+        font-size: 13px;
+        padding: 9px 16px;
     }
 }

@@ -26,6 +26,8 @@
     --text-dark: #2B2D42;
     --text-muted: #6C757D;
     --border-color: #E2E8F0;
+    --red-notif: #dc3545;
+    --green-notif: #198754;
 
     /* =========================
        WARNA OVERLAY
@@ -647,6 +649,34 @@ a:visited {
     position: relative;
     z-index: 1;
 }
+
+
+/* =========================
+   FOOTER RINGKAS HALAMAN AUTH
+   ========================= */
+.auth-footer {
+    padding: 14px 24px;
+}
+
+.auth-footer .footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.auth-footer .footer-copyright {
+    text-align: center;
+    margin: 0;
+}
+
+.auth-footer .copyright-text {
+    font-size: 11px;
+    margin: 0;
+}
+
+.auth-footer::before {
+    background-image: none;
+}
+
 
 /* =========================
    TABLET (≤992px)

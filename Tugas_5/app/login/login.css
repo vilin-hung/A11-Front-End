@@ -176,14 +176,7 @@
 }
 
 .login-submit-btn:hover {
-    background-color: var(--bg-white);
-    color: var(--deep-green);
     transform: translateY(-2px);
-    box-shadow: none;
-}
-
-.login-submit-btn:active {
-    transform: translateY(0);
 }
 
 /* =========================
@@ -311,5 +304,159 @@
 
     .login-back-link {
         font-size: 12px;
+    }
+}
+
+/* =========================
+   VALIDASI INPUT
+   ========================= */
+.login-input.is-invalid {
+    border-color: var(--red-notif);
+}
+
+.login-input.is-invalid:focus {
+    border-color: var(--red-notif);
+    box-shadow: 0 0 0 3px var(--white-soft-15);
+}
+
+.login-field-error {
+    display: block;
+    margin-top: 6px;
+    color: var(--red-notif);
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+/* =========================
+   MODAL NOTIFIKASI
+   ========================= */
+.auth-notification-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background-color: rgba(0, 0, 0, 0.5);
+    animation: auth-overlay-appear 0.2s ease;
+}
+
+.auth-notification-card {
+    position: relative;
+    z-index: 100000;
+    width: 100%;
+    max-width: 420px;
+    background-color: var(--bg-white);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+    animation: auth-modal-appear 0.25s ease;
+}
+
+.auth-notification-body {
+    padding: 32px 28px;
+    text-align: center;
+}
+
+.auth-notification-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 18px;
+}
+
+.auth-notification-icon i {
+    font-size: 76px;
+    line-height: 1;
+}
+
+.auth-notification-icon.success {
+    color: var(--green-notif);
+}
+
+.auth-notification-icon.error {
+    color: var(--red-notif);
+}
+
+.auth-notification-title {
+    margin-bottom: 10px;
+    color: var(--text-dark);
+    font-size: 21px;
+    font-weight: 700;
+}
+
+.auth-notification-message {
+    margin-bottom: 24px;
+    color: var(--text-muted);
+    font-size: 14px;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}
+
+.auth-notification-button {
+    min-width: 130px;
+    padding: 10px 24px;
+    background-color: var(--deep-green);
+    color: var(--bg-white);
+    border: 1.5px solid var(--deep-green);
+    border-radius: 50px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+@keyframes auth-overlay-appear {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes auth-modal-appear {
+    from {
+        opacity: 0;
+        transform: translateY(10px) scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* =========================
+   RESPONSIVE MODAL
+   ========================= */
+@media (max-width: 576px) {
+    .auth-notification-card {
+        max-width: 100%;
+        border-radius: 16px;
+    }
+
+    .auth-notification-body {
+        padding: 28px 22px;
+    }
+
+    .auth-notification-icon i {
+        font-size: 66px;
+    }
+
+    .auth-notification-title {
+        font-size: 19px;
+    }
+
+    .auth-notification-message {
+        font-size: 13px;
+    }
+
+    .auth-notification-button {
+        font-size: 13px;
     }
 }

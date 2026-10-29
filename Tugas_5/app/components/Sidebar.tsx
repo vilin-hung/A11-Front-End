@@ -2,13 +2,16 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 
 type User = {
-  name: string;
+  id: string;
+  nama: string;
   email: string;
-  city: string;
-  avatar?: string;
+  kota: string | null;
+  avatar: string | null;
+  role: string;
 };
 
 export default function Sidebar() {
@@ -18,17 +21,48 @@ export default function Sidebar() {
   /* Sidebar juga dipasang di layout, jadi perlu dibaca ulang tiap pindah
      halaman supaya nama pengguna ikut berubah setelah login. */
   useEffect(() => {
-    let aktif: User | null = null;
+    let masihAktif = true;
 
-    try {
-      const tersimpan = localStorage.getItem("jelajahRasaCurrentUser");
-      if (tersimpan) aktif = JSON.parse(tersimpan);
-    } catch {
-      aktif = null;
-    }
+    const sinkronkanUser = async () => {
+      try {
+        // Mengambil data pengguna dari API berdasarkan session login
+        const response = await fetch("/api/auth/me", {
+          cache: "no-store",
+        });
 
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setUser(aktif);
+        if (!response.ok) {
+          if (masihAktif) {
+            setUser(null);
+          }
+          return;
+        }
+
+        const data = (await response.json()) as {
+          user?: User | null;
+        };
+
+        if (masihAktif) {
+          setUser(data.user ?? null);
+        }
+      } catch (error) {
+        // Mengosongkan data pengguna jika sesi gagal diperiksa
+        console.error("Gagal memeriksa sesi pengguna:", error);
+
+        if (masihAktif) {
+          setUser(null);
+        }
+      }
+    };
+
+    void sinkronkanUser();
+
+    // Memperbarui foto dan nama ketika profil berhasil diubah
+    window.addEventListener("jelajahRasaUserUpdated", sinkronkanUser);
+
+    return () => {
+      masihAktif = false;
+      window.removeEventListener("jelajahRasaUserUpdated", sinkronkanUser);
+    };
   }, [pathname]);
 
   return (
@@ -56,15 +90,17 @@ export default function Sidebar() {
           className="sidebar-profile-container"
         >
           <div className="profile-card-mobile">
-            <img
-              id="user-avatar-mobile"
+            <Image
+              id="user-avatar-desktop"
               className="user-avatar"
               src={user?.avatar || "/images/homepage/default-avatar.png"}
               alt="Foto Profil"
+              width={48}
+              height={48}
             />
             <div className="user-info-mobile">
               <h6 id="user-name-mobile" className="user-name">
-                {user?.name || "Pengunjung"}
+                {user?.nama || "Pengunjung"}
               </h6>
               <Link
                 id="user-link-mobile"
@@ -88,7 +124,7 @@ export default function Sidebar() {
               <i className="bx bx-restaurant"></i>Daftar Kuliner
             </Link>
           </li>
-          <li className="nav-item">
+          <li className="nav-item link-requires-login">
             <Link
               className="nav-link link-requires-login"
               href="/tambah-kuliner"

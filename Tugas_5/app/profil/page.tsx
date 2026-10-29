@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import "./profil.css";
@@ -41,6 +41,19 @@ type Usulan = {
   img?: string;
 };
 
+type Notifikasi = {
+  tipe: "sukses" | "error";
+  judul: string;
+  pesan: string;
+  redirectLogin?: boolean;
+};
+
+type NotifikasiFoto = {
+  tipe: "sukses" | "error";
+  judul: string;
+  pesan: string;
+};
+
 /* =========================
    DATA OPSI
    ========================= */
@@ -79,6 +92,9 @@ const DAFTAR_KATEGORI = [
   "Minuman",
   "Oleh-Oleh Khas",
 ];
+
+const FORMAT_FOTO = ["image/jpeg", "image/png", "image/webp"];
+const MAKS_UKURAN_FOTO = 5 * 1024 * 1024;
 
 /* =========================
    BANTUAN STORAGE
@@ -134,10 +150,16 @@ export default function ProfilPage() {
   const [siap, setSiap] = useState(false);
   const [usulan, setUsulan] = useState<Usulan[]>([]);
   const [jumlahFavorit, setJumlahFavorit] = useState(0);
+  const [notifikasi, setNotifikasi] = useState<Notifikasi | null>(null);
+  const [notifikasiFoto, setNotifikasiFoto] = useState<NotifikasiFoto | null>(null);
+  const [konfirmasiHapus, setKonfirmasiHapus] = useState<Usulan | null>(null);
+  const inputAvatarRef = useRef<HTMLInputElement>(null);
 
   /* Form informasi personal */
   const [nama, setNama] = useState("");
   const [kota, setKota] = useState("");
+  const [errorNama, setErrorNama] = useState("");
+  const [errorKota, setErrorKota] = useState("");
 
   /* Modal edit kuliner */
   const [diedit, setDiedit] = useState<Usulan | null>(null);
@@ -147,6 +169,32 @@ export default function ProfilPage() {
   const [editHarga, setEditHarga] = useState("");
   const [editBahan, setEditBahan] = useState("");
   const [editDeskripsi, setEditDeskripsi] = useState("");
+
+  /* Tampilkan notifikasi dalam card */
+  const tampilkanNotifikasi = (
+    tipe: Notifikasi["tipe"],
+    judul: string,
+    pesan: string,
+    redirectLogin = false
+  ) => {
+    setNotifikasi({
+      tipe,
+      judul,
+      pesan,
+      redirectLogin,
+    });
+  };
+
+  /* Tutup notifikasi */
+  const tutupNotifikasi = () => {
+    const redirectLogin = notifikasi?.redirectLogin;
+
+    setNotifikasi(null);
+
+    if (redirectLogin) {
+      router.push("/login");
+    }
+  };
 
   /* Ambil data saat halaman dibuka */
   useEffect(() => {
@@ -186,31 +234,100 @@ export default function ProfilPage() {
   /* Upload foto profil */
   const handleAvatar = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (!file || !file.type.startsWith("image/") || !user) return;
+    if (!file || !user) return;
+
+    if (!FORMAT_FOTO.includes(file.type)) {
+      event.target.value = "";
+      setNotifikasiFoto({
+        tipe: "error",
+        judul: "Format Foto Tidak Didukung",
+        pesan: "Format foto harus JPG, PNG, atau WEBP.",
+      });
+      return;
+    }
+
+    if (file.size > MAKS_UKURAN_FOTO) {
+      event.target.value = "";
+      setNotifikasiFoto({
+        tipe: "error",
+        judul: "Ukuran Foto Terlalu Besar",
+        pesan: "Ukuran foto maksimal 5MB. Silakan pilih foto yang lebih kecil.",
+      });
+      return;
+    }
+
+    setNotifikasiFoto(null);
 
     const reader = new FileReader();
 
     reader.onload = (e) => {
-      const avatar = e.target?.result as string;
+      const avatar = e.target?.result;
+
+      if (typeof avatar !== "string" || !avatar) {
+        setNotifikasiFoto({
+          tipe: "error",
+          judul: "Foto Gagal Dibaca",
+          pesan: "Foto tidak dapat dibaca. Silakan coba pilih foto lain.",
+        });
+        return;
+      }
+
       const userBaru = { ...user, avatar };
 
       if (!simpanJson(CURRENT_USER_KEY, userBaru)) {
-        alert("Gagal menyimpan: foto terlalu besar. Coba pilih foto yang lebih kecil.");
+        setNotifikasiFoto({
+          tipe: "error",
+          judul: "Foto Gagal Disimpan",
+          pesan: "Penyimpanan foto gagal. Coba pilih foto yang lebih kecil.",
+        });
         return;
       }
 
       const users = bacaJson(USERS_KEY, []) as User[];
-      simpanJson(
-        USERS_KEY,
-        users.map((item) =>
-          item.email === user.email ? { ...item, avatar } : item
-        )
+      const usersBaru = users.map((item) =>
+        item.email === user.email ? { ...item, avatar } : item
       );
 
+      if (!simpanJson(USERS_KEY, usersBaru)) {
+        simpanJson(CURRENT_USER_KEY, user);
+        setNotifikasiFoto({
+          tipe: "error",
+          judul: "Foto Gagal Disimpan",
+          pesan: "Foto gagal diperbarui pada data pengguna. Silakan coba lagi.",
+        });
+        return;
+      }
+
       setUser(userBaru);
+      
+      window.dispatchEvent(new Event("jelajahRasaUserUpdated"));
+
+      setNotifikasiFoto({
+        tipe: "sukses",
+        judul: "Foto Profil Berhasil Diperbarui",
+        pesan: "Foto baru kini digunakan pada profil Anda.",
+      });
+    };
+
+    reader.onerror = () => {
+      setNotifikasiFoto({
+        tipe: "error",
+        judul: "Foto Gagal Dibaca",
+        pesan: "Foto tidak dapat dibaca. Silakan coba pilih foto lain.",
+      });
     };
 
     reader.readAsDataURL(file);
+  };
+
+  /* Tutup notifikasi foto dan buka kembali pemilih file */
+  const uploadUlangFoto = () => {
+    setNotifikasiFoto(null);
+
+    if (inputAvatarRef.current) {
+      inputAvatarRef.current.value = "";
+      inputAvatarRef.current.click();
+    }
   };
 
   /* Simpan perubahan profil */
@@ -221,11 +338,53 @@ export default function ProfilPage() {
     const namaBaru = nama.trim();
     const kotaBaru = kota.trim();
     const namaLama = user.name;
+    const namaAsli = user.name.trim();
+    const kotaAsli = user.city.trim();
 
-    const userBaru = { ...user, name: namaBaru, city: kotaBaru };
+    let valid = true;
+
+    /* Validasi nama */
+    if (!namaBaru) {
+      setErrorNama("Nama lengkap wajib diisi.");
+      valid = false;
+    } else if (namaBaru.length < 4) {
+      setErrorNama("Nama lengkap minimal 4 karakter.");
+      valid = false;
+    } else {
+      setErrorNama("");
+    }
+
+    /* Validasi kota/kabupaten */
+    if (!kotaBaru) {
+      setErrorKota("Asal kota/kabupaten wajib diisi.");
+      valid = false;
+    } else {
+      setErrorKota("");
+    }
+
+    /* Jangan simpan jika masih ada input yang tidak valid */
+    if (!valid) return;
+
+    /* Nama dan kota yang sama bukan perubahan */
+    const namaBerubah = namaBaru !== namaAsli;
+    const kotaBerubah = kotaBaru !== kotaAsli;
+
+    if (!namaBerubah && !kotaBerubah) {
+      return;
+    }
+
+    const userBaru = {
+      ...user,
+      name: namaBerubah ? namaBaru : user.name,
+      city: kotaBerubah ? kotaBaru : user.city,
+    };
 
     if (!simpanJson(CURRENT_USER_KEY, userBaru)) {
-      alert("Gagal menyimpan perubahan profil.");
+      tampilkanNotifikasi(
+        "error",
+        "Perubahan Gagal Disimpan",
+        "Profil belum berhasil disimpan. Silakan coba lagi."
+      );
       return;
     }
 
@@ -234,24 +393,35 @@ export default function ProfilPage() {
       USERS_KEY,
       users.map((item) =>
         item.email === user.email
-          ? { ...item, name: namaBaru, city: kotaBaru }
+          ? { ...item, name: userBaru.name, city: userBaru.city }
           : item
       )
     );
 
     /* Usulan lama tetap milik user ini walau nama berubah */
-    const semuaUsulan = bacaJson(USULAN_KEY, []) as Usulan[];
-    const usulanBaru = semuaUsulan.map((item) =>
-      item.pengirim === namaLama ? { ...item, pengirim: namaBaru } : item
-    );
+    if (namaBerubah) {
+      const semuaUsulan = bacaJson(USULAN_KEY, []) as Usulan[];
+      const usulanBaru = semuaUsulan.map((item) =>
+        item.pengirim === namaLama
+          ? { ...item, pengirim: namaBaru }
+          : item
+      );
 
-    simpanJson(USULAN_KEY, usulanBaru);
+      simpanJson(USULAN_KEY, usulanBaru);
+      setUsulan(
+        usulanBaru.filter((item) => item.pengirim === namaBaru)
+      );
+    }
+
     setUser(userBaru);
-    setUsulan(
-      usulanBaru.filter((item) => item.pengirim === namaBaru)
-    );
+    setNama(userBaru.name);
+    setKota(userBaru.city);
 
-    alert("Profil berhasil diperbarui.");
+    tampilkanNotifikasi(
+      "sukses",
+      "Profil Berhasil Diperbarui",
+      "Nama atau informasi domisili kamu berhasil diperbarui."
+    );
   };
 
   /* Buka modal edit */
@@ -272,6 +442,15 @@ export default function ProfilPage() {
     event.preventDefault();
     if (!diedit) return;
 
+    if (!editNama.trim()) {
+      tampilkanNotifikasi(
+        "error",
+        "Nama Kuliner Belum Diisi",
+        "Silakan isi nama kuliner sebelum menyimpan perubahan."
+      );
+      return;
+    }
+
     perbaruiUsulan(
       usulan.map((item) =>
         item.id === diedit.id
@@ -289,20 +468,48 @@ export default function ProfilPage() {
     );
 
     tutupEdit();
+
+    tampilkanNotifikasi(
+      "sukses",
+      "Kuliner Berhasil Diperbarui",
+      `Informasi kuliner "${editNama.trim()}" berhasil diperbarui.`
+    );
   };
 
   /* Hapus usulan */
   const hapusUsulan = (item: Usulan) => {
-    if (!confirm(`Hapus "${item.nama}" dari histori kuliner Anda?`)) return;
+    setKonfirmasiHapus(item);
+  };
 
-    perbaruiUsulan(usulan.filter((baris) => baris.id !== item.id));
+  /* Konfirmasi hapus kuliner */
+  const konfirmasiHapusUsulan = () => {
+    if (!konfirmasiHapus) return;
+
+    const item = konfirmasiHapus;
+
+    perbaruiUsulan(
+      usulan.filter((baris) => baris.id !== item.id)
+    );
+
+    setKonfirmasiHapus(null);
+
+    tampilkanNotifikasi(
+      "sukses",
+      "Kuliner Berhasil Dihapus",
+      `Kuliner "${item.nama}" berhasil dihapus dari histori kuliner kamu.`
+    );
   };
 
   /* Logout */
   const logout = () => {
     localStorage.removeItem(CURRENT_USER_KEY);
-    alert("Anda telah keluar.");
-    router.push("/login");
+
+    tampilkanNotifikasi(
+      "sukses",
+      "Anda Telah Keluar",
+      "Kamu telah keluar dari akun. Tekan Tutup untuk kembali ke halaman masuk.",
+      true
+    );
   };
 
   if (!siap || !user) {
@@ -353,7 +560,8 @@ export default function ProfilPage() {
                     type="file"
                     id="input-upload-avatar"
                     className="d-none"
-                    accept="image/*"
+                    accept="image/jpeg,image/png,image/webp"
+                    ref={inputAvatarRef}
                     onChange={handleAvatar}
                   />
                 </label>
@@ -416,7 +624,7 @@ export default function ProfilPage() {
                 Informasi Personal
               </h6>
 
-              <form id="form-edit-profile" onSubmit={simpanProfil}>
+              <form id="form-edit-profile" onSubmit={simpanProfil} noValidate>
                 <div className="profile-form-group">
                   <label
                     htmlFor="input-profile-name"
@@ -426,13 +634,26 @@ export default function ProfilPage() {
                   </label>
                   <input
                     type="text"
-                    className="profile-form-input"
+                    className={`profile-form-input ${errorNama ? "profile-form-input-error" : ""}`}
                     id="input-profile-name"
                     placeholder="Nama Anda"
                     value={nama}
-                    onChange={(e) => setNama(e.target.value)}
+                    onChange={(e) => {
+                      setNama(e.target.value);
+
+                      if (e.target.value.trim().length >= 4) {
+                        setErrorNama("");
+                      } else if (!e.target.value.trim()) {
+                        setErrorNama("Nama lengkap wajib diisi.");
+                      } else {
+                        setErrorNama("Nama lengkap minimal 4 karakter.");
+                      }
+                    }}
                     required
                   />
+                  {errorNama && (
+                    <p className="profile-form-error">{errorNama}</p>
+                  )}
                 </div>
 
                 <div className="profile-form-group">
@@ -460,12 +681,24 @@ export default function ProfilPage() {
                   </label>
                   <input
                     type="text"
-                    className="profile-form-input"
+                    className={`profile-form-input ${errorKota ? "profile-form-input-error" : ""}`}
                     id="input-profile-city"
                     placeholder="Domisili Anda (Contoh: Kota Bandung / Kab. Bandung)"
                     value={kota}
-                    onChange={(e) => setKota(e.target.value)}
+                    onChange={(e) => {
+                      setKota(e.target.value);
+
+                      if (e.target.value.trim()) {
+                        setErrorKota("");
+                      } else {
+                        setErrorKota("Asal kota/kabupaten wajib diisi.");
+                      }
+                    }}
+                    required
                   />
+                  {errorKota && (
+                    <p className="profile-form-error">{errorKota}</p>
+                  )}
                 </div>
 
                 <button
@@ -715,6 +948,166 @@ export default function ProfilPage() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Modal hasil upload foto profil */}
+      {notifikasiFoto && (
+        <>
+          <div
+            className="modal fade show d-block profile-popup-modal"
+            id="modal-upload-foto-profil"
+            tabIndex={-1}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="profile-upload-title"
+          >
+            <div className="modal-dialog modal-dialog-centered">
+              <div className="modal-content">
+                <div className="modal-body text-center">
+                  {notifikasiFoto.tipe === "sukses" && (
+                    <div className="my-3">
+                      <i className="bx bx-check-circle text-success display-1"></i>
+                    </div>
+                  )}
+                  <h4
+                    id="profile-upload-title"
+                    className="fw-bold text-dark mb-2"
+                  >
+                    {notifikasiFoto.judul}
+                  </h4>
+                  <p className="text-muted small mb-4">
+                    {notifikasiFoto.pesan}
+                  </p>
+                  {notifikasiFoto.tipe === "sukses" ? (
+                    <div className="d-flex justify-content-center">
+                      <button
+                        type="button"
+                        id="btn-profile-upload-close"
+                        className="btn btn-success px-4"
+                        onClick={() => setNotifikasiFoto(null)}
+                      >
+                        Tutup
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="d-flex justify-content-center gap-2">
+                      <button
+                        type="button"
+                        id="btn-profile-upload-cancel"
+                        className="btn btn-light border px-4"
+                        onClick={() => setNotifikasiFoto(null)}
+                      >
+                        Tutup
+                      </button>
+                      <button
+                        type="button"
+                        id="btn-profile-upload-retry"
+                        className="btn btn-success px-4"
+                        onClick={uploadUlangFoto}
+                      >
+                        Upload Ulang
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="modal-backdrop fade show profile-popup-backdrop"></div>
+        </>
+      )}
+
+      {/* Modal notifikasi */}
+      {notifikasi && (
+        <>
+          <div
+            className="modal fade show d-block profile-popup-modal"
+            id="modal-notifikasi-profil"
+            tabIndex={-1}
+            role="dialog"
+            aria-modal="true"
+          >
+            <div className="modal-dialog modal-dialog-centered">
+              <div className="modal-content">
+                <div className="modal-body text-center">
+                  {notifikasi.tipe === "sukses" && (
+                    <div className="my-3">
+                      <i className="bx bx-check-circle text-success display-1"></i>
+                    </div>
+                  )}
+                  <h4 className="fw-bold text-dark mb-2">
+                    {notifikasi.judul}
+                  </h4>
+                  <p className="text-muted small mb-4">
+                    {notifikasi.pesan}
+                  </p>
+                  <div className="d-flex justify-content-center">
+                    <button
+                      type="button"
+                      id="btn-profile-notification-close"
+                      className="btn btn-success px-4"
+                      onClick={tutupNotifikasi}
+                    >
+                      Tutup
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="modal-backdrop fade show profile-popup-backdrop"></div>
+        </>
+      )}
+
+      {/* Modal konfirmasi hapus kuliner */}
+      {konfirmasiHapus && (
+        <>
+          <div
+            className="modal fade show d-block profile-popup-modal"
+            id="modal-konfirmasi-hapus-profil"
+            tabIndex={-1}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="profile-confirm-title"
+          >
+            <div className="modal-dialog modal-dialog-centered">
+              <div className="modal-content">
+                <div className="modal-body text-center">
+                  <h4
+                    id="profile-confirm-title"
+                    className="fw-bold text-dark mb-2"
+                  >
+                    Hapus Kuliner?
+                  </h4>
+                  <p className="text-muted small mb-4">
+                    Apakah Anda yakin ingin menghapus{" "}
+                    <strong>{konfirmasiHapus.nama}</strong> dari histori kuliner
+                    kamu? Tindakan ini tidak dapat dibatalkan.
+                  </p>
+                  <div className="d-flex justify-content-center gap-2">
+                    <button
+                      type="button"
+                      id="btn-profile-confirm-cancel"
+                      className="btn btn-light border px-4"
+                      onClick={() => setKonfirmasiHapus(null)}
+                    >
+                      Batal
+                    </button>
+                    <button
+                      type="button"
+                      id="btn-profile-confirm-delete"
+                      className="btn btn-success px-4"
+                      onClick={konfirmasiHapusUsulan}
+                    >
+                      Hapus
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="modal-backdrop fade show profile-popup-backdrop"></div>
+        </>
       )}
     </main>
   );
