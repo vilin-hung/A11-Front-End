@@ -156,8 +156,11 @@ function DaftarKulinerContent() {
   const [kataKunciUrlSebelumnya, setKataKunciUrlSebelumnya] = useState(kataKunciUrl);
   const [filter, setFilter] = useState<FilterState>(FILTER_KOSONG);
   const [favorit, setFavorit] = useState<string[]>([]);
-  const [semuaKuliner, setSemuaKuliner] = useState<Kuliner[]>(DATA_KULINER);
-
+  const [userId, setUserId] = useState<string | null >(null);
+  const [semuaKuliner] = useState<Kuliner[]>(() => [
+    ...bacaKulinerBawaan(),
+    ...bacaUsulanAktif(),
+  ]);
   const refKota = useRef<HTMLSelectElement>(null);
   const refKategori = useRef<HTMLSelectElement>(null);
   const refHarga = useRef<HTMLSelectElement>(null);
@@ -169,15 +172,28 @@ function DaftarKulinerContent() {
   }
 
   useEffect(() => {
-    try {
-      const tersimpan = localStorage.getItem("jelajahRasaFavorites");
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      if (tersimpan) setFavorit(JSON.parse(tersimpan));
-    } catch {
-      /* abaikan */
+    async function cekSesiDanFavorit() {
+      try {
+        const resMe = await fetch("/api/auth/me", { cache: "no-store" });
+        const dataMe = await resMe.json();
+
+        if (resMe.ok && dataMe.user && dataMe.user.id) {
+          const currentUserId = dataMe.user.id;
+          setUserId(currentUserId);
+
+          const resFav = await fetch(`/api/favorite?userId=${encodeURIComponent(currentUserId)}`);
+          if (resFav.ok) {
+            const dataFav = await resFav.json();
+            const listIdFav = dataFav.map((item: { kulinerId: string }) => item.kulinerId);
+            setFavorit(listIdFav);
+          }
+        }
+      } catch (err) {
+        console.error("Gagal memuat status favorit:", err);
+      }
     }
 
-    setSemuaKuliner([...bacaKulinerBawaan(), ...bacaUsulanAktif()]);
+    void cekSesiDanFavorit();
   }, []);
 
   const ambilNilai = (el: HTMLSelectElement | null) =>
@@ -201,16 +217,42 @@ function DaftarKulinerContent() {
     setKataKunci("");
   };
 
-  const toggleLike = (id: string) => {
-    setFavorit((lama) => {
-      const baru = lama.includes(id) ? lama.filter((x) => x !== id) : [...lama, id];
-      try {
-        localStorage.setItem("jelajahRasaFavorites", JSON.stringify(baru));
-      } catch {
-        /* abaikan */
+  const toggleLike = async (kulinerId: string) => {
+    if (!userId) {
+      alert("Silakan masuk (login) terlebih dahulu untuk menyimpan kuliner favorit!");
+      return;
+    }
+
+    const sudahDisukai = favorit.includes(kulinerId);
+
+    try {
+      if (sudahDisukai) {
+        // Hapus dari database (DELETE)
+        const res = await fetch("/api/favorite", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ userId, kulinerId }),
+        });
+
+        if (res.ok) {
+          setFavorit((lama) => lama.filter((id) => id !== kulinerId));
+        }
+      } else {
+        // Tambah ke database (POST)
+        const res = await fetch("/api/favorite", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ userId, kulinerId }),
+        });
+
+        if (res.ok) {
+          setFavorit((lama) => [...lama, kulinerId]);
+        }
       }
-      return baru;
-    });
+    } catch (err) {
+      console.error("Gagal mengubah status favorit:", err);
+      alert("Terjadi kesalahan saat memperbarui favorit.");
+    }
   };
 
   const bagikan = async (item: Kuliner) => {
