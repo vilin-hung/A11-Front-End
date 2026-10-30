@@ -35,7 +35,13 @@ const KULINER_KEY = 'jelajahRasaKuliner';
 const CHART_URL =
   'https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js';
 
-type TabType = 'ringkasan' | 'kuliner' | 'ulasan';
+type TabType = 
+  | 'ringkasan'
+  | 'kuliner'
+  | 'ulasan'
+  | "pengguna"
+  | 'peta'
+  | 'metadata';
 
 type User = {
   id: string;
@@ -44,6 +50,16 @@ type User = {
   kota: string | null;
   avatar: string | null;
   role: string;
+};
+
+type MapRegion = {
+  id: string;
+  nama: string;
+  daerah: string;
+  deskripsi: string;
+  posisiX: number;
+  posisiY: number;
+  isActive: boolean;
 };
 
 /* =========================
@@ -69,6 +85,23 @@ const KULINER_AWAL: ItemAdmin[] = DATA_KULINER.map((item) => ({
   img: item.gambar,
   sumber: 'bawaan',
 }));
+
+type SiteMetadata = {
+  key: string;
+  value: string;
+};
+
+const METADATA_AWAL: SiteMetadata[] = [
+  { key: "site_name", value: "JelajahRasa" },
+  {
+    key: "site_description",
+    value: "Jelajahi kuliner khas Jawa Barat",
+  },
+  { key: "site_email", value: "halo@jelajahrasajabar.id" },
+  { key: "site_phone", value: "" },
+  { key: "site_address", value: "Jawa Barat, Indonesia" },
+  { key: "footer_text", value: "© 2026 JelajahRasa" },
+];
 
 /* =========================
    BANTUAN STORAGE
@@ -128,20 +161,53 @@ export default function AdminDashboard() {
   const [usulan, setUsulan] = useState<ItemAdmin[]>([]);
   const [ulasan, setUlasan] = useState<Ulasan[]>([]);
   const [favorit, setFavorit] = useState<string[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
 
   const [chartSiap, setChartSiap] = useState(false);
 
+  // state untuk kelola peta
+  const [regions, setRegions] = useState<MapRegion[]>([]);
+  const [regionLoading, setRegionLoading] = useState(false);
+  const [regionError, setRegionError] = useState("");
+  const [regionMessage, setRegionMessage] = useState("");
+  const [editingRegion, setEditingRegion] = useState<MapRegion | null>(null);
+  const [regionFormOpen, setRegionFormOpen] = useState(false);
+  const [regionForm, setRegionForm] = useState({
+    nama: "",
+    daerah: "",
+    deskripsi: "",
+    posisiX: 50,
+    posisiY: 50,
+    isActive: true,
+  });
+  
   /* Modal */
   const [editForm, setEditForm] = useState<ItemAdmin | null>(null);
   const [tolakItem, setTolakItem] = useState<ItemAdmin | null>(null);
   const [gambarBesar, setGambarBesar] = useState<ItemAdmin | null>(null);
   const [peringkatTerbuka, setPeringkatTerbuka] = useState(false);
 
-  const menu = [
-    { id: 'ringkasan', icon: 'bx-grid-alt', label: 'Ringkasan' },
-    { id: 'kuliner', icon: 'bx-restaurant', label: 'Kelola Kuliner' },
-    { id: 'ulasan', icon: 'bx-chat', label: 'Kelola Ulasan' },
-  ] as { id: TabType; icon: string; label: string }[];
+  const menu: {
+    id: TabType;
+    icon: string;
+    label: string;
+  } [] = [
+    { id: "ringkasan", icon: "bx-grid-alt", label: "Ringkasan" },
+    { id: "kuliner", icon: "bx-restaurant", label: "Kelola Kuliner" },
+    { id: "ulasan", icon: "bx-chat", label: "Kelola Ulasan" },
+    { id: "pengguna", icon: "bx-user", label: "Kelola Pengguna" },
+    { id: "peta", icon: "bx-map", label: "Kelola Peta" },
+    { id: "metadata", icon: "bx-cog", label: "Metadata Website" },
+  ];
+
+  // state untuk metadata website
+  const [metadata, setMetadata] =
+    useState<SiteMetadata[]>(METADATA_AWAL);
+
+  const [metadataLoading, setMetadataLoading] = useState(false);
+  const [metadataSaving, setMetadataSaving] = useState(false);
+  const [metadataError, setMetadataError] = useState("");
+  const [metadataMessage, setMetadataMessage] = useState("");
 
   const daftar = [...kuliner, ...usulan];
 
@@ -181,6 +247,16 @@ export default function AdminDashboard() {
         setUsulan(rapikanUsulan(bacaJson(USULAN_KEY, [])));
         setUlasan(bacaJson(ULASAN_KEY, []));
         setFavorit(bacaJson(FAVORIT_KEY, []));
+        
+        const userResponse = await fetch('/api/admin/users', {
+          cache: 'no-store',
+        });
+
+        if (userResponse.ok) {
+          const userData = await userResponse.json();
+          setUsers(userData.users || []);
+        }
+
         setSiap(true);
       } catch (error) {
         // Menangani kegagalan saat memeriksa session admin
@@ -383,6 +459,229 @@ export default function AdminDashboard() {
     .sort((a, b) => b.jumlah - a.jumlah)
     .slice(0, 5);
 
+  // peta rasa
+  const bukaFormRegion = (region?: MapRegion) => {
+    if (region) {
+      setEditingRegion(region);
+
+      setRegionForm({
+        nama: region.nama,
+        daerah: region.daerah,
+        deskripsi: region.deskripsi,
+        posisiX: region.posisiX,
+        posisiY: region.posisiY,
+        isActive: region.isActive,
+      });
+    } else {
+      setEditingRegion(null);
+
+      setRegionForm({
+        nama: "",
+        daerah: "",
+        deskripsi: "",
+        posisiX: 50,
+        posisiY: 50,
+        isActive: true,
+      });
+    }
+
+    setRegionMessage("");
+    setRegionError("");
+    setRegionFormOpen(true);
+  };
+
+  const simpanRegion = async () => {
+    setRegionLoading(true);
+    setRegionError("");
+    setRegionMessage("");
+
+    try {
+      const response = await fetch("/api/map-regions", {
+        method: editingRegion ? "PATCH" : "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...(editingRegion ? { id: editingRegion.id } : {}),
+          ...regionForm,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Gagal menyimpan daerah.");
+      }
+
+      if (editingRegion) {
+        setRegions((sebelumnya) =>
+          sebelumnya.map((item) =>
+            item.id === editingRegion.id ? data.region : item
+          )
+        );
+      } else {
+        setRegions((sebelumnya) => [
+          ...sebelumnya,
+          data.region,
+        ]);
+      }
+
+      setRegionMessage(data.message);
+      setRegionFormOpen(false);
+      setEditingRegion(null);
+    } catch (error) {
+      setRegionError(
+        error instanceof Error
+          ? error.message
+          : "Terjadi kesalahan saat menyimpan daerah."
+      );
+    } finally {
+      setRegionLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!siap || activeTab !== "peta") return;
+
+    let masihAktif = true;
+
+    async function loadRegions() {
+      try {
+        const response = await fetch("/api/map-regions", {
+          cache: "no-store",
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.message || "Gagal mengambil data daerah.");
+        }
+
+        if (masihAktif) {
+          setRegions(data.regions ?? []);
+          setRegionError("");
+        }
+      } catch (error) {
+        if (masihAktif) {
+          setRegionError(
+            error instanceof Error
+              ? error.message
+              : "Terjadi kesalahan saat mengambil data daerah."
+          );
+        }
+      } finally {
+        if (masihAktif) {
+          setRegionLoading(false);
+        }
+      }
+    }
+
+    void loadRegions();
+
+    return () => {
+      masihAktif = false;
+    };
+  }, [siap, activeTab]);
+
+  // Mengubah nilai metadata di state
+  const ubahMetadata = (key: string, value: string) => {
+    setMetadata((sebelumnya) =>
+      sebelumnya.map((item) =>
+        item.key === key ? { ...item, value } : item
+      )
+    );
+
+    setMetadataMessage("");
+  };
+
+  // Menyimpan metadata ke database
+  const simpanMetadata = async () => {
+    setMetadataSaving(true);
+    setMetadataError("");
+    setMetadataMessage("");
+
+    try {
+      const response = await fetch("/api/admin/site-metadata", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ metadata }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Gagal menyimpan metadata.");
+      }
+
+      setMetadata(data.metadata ?? metadata);
+      setMetadataMessage(data.message);
+    } catch (error) {
+      setMetadataError(
+        error instanceof Error
+          ? error.message
+          : "Terjadi kesalahan saat menyimpan metadata."
+      );
+    } finally {
+      setMetadataSaving(false);
+    }
+  };
+
+
+  useEffect(() => {
+    if (!siap || activeTab !== "metadata") return;
+
+    let masihAktif = true;
+
+    async function loadMetadata() {
+      try {
+        const response = await fetch("/api/admin/site-metadata", {
+          cache: "no-store",
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.message || "Gagal mengambil metadata.");
+        }
+
+        const metadataDatabase: SiteMetadata[] = data.metadata ?? [];
+
+        const metadataLengkap = METADATA_AWAL.map((item) => {
+          const ditemukan = metadataDatabase.find(
+            (data) => data.key === item.key
+          );
+
+          return ditemukan ?? item;
+        });
+
+        if (masihAktif) {
+          setMetadata(metadataLengkap);
+        }
+      } catch (error) {
+        if (masihAktif) {
+          setMetadataError(
+            error instanceof Error
+              ? error.message
+              : "Terjadi kesalahan saat mengambil metadata."
+          );
+        }
+      } finally {
+        if (masihAktif) {
+          setMetadataLoading(false);
+        }
+      }
+    }
+
+    void loadMetadata();
+
+    return () => {
+      masihAktif = false;
+    };
+  }, [siap, activeTab]);
+
+
   if (!siap || !admin) {
     return (
       <div className="body-admin">
@@ -444,7 +743,21 @@ export default function AdminDashboard() {
                   className={`list-group-item list-group-item-action ${
                     activeTab === item.id ? 'active' : ''
                   }`}
-                  onClick={() => setActiveTab(item.id)}
+                  onClick={() => {
+                    if (item.id === "peta") {
+                      setRegionLoading(true);
+                      setRegionError("");
+                      setRegionMessage("");
+                    }
+
+                    if (item.id === "metadata") {
+                      setMetadataLoading(true);
+                      setMetadataError("");
+                      setMetadataMessage("");
+                    }
+
+                    setActiveTab(item.id);
+                  }}
                   role="tab"
                   aria-selected={activeTab === item.id}
                 >
@@ -646,6 +959,399 @@ export default function AdminDashboard() {
                       </tbody>
                     </table>
                   </div>
+                </div>
+              </section>
+            )}
+
+            {activeTab === 'pengguna' && (
+              <section id="tab-kelola-pengguna">
+                <h4>Kelola Pengguna</h4>
+
+                <div className="box-tabel border rounded bg-white">
+                  <div className="table-responsive">
+                    <table className="table align-middle">
+                      <thead className="table-light">
+                        <tr>
+                          <th>Nama</th>
+                          <th>Email</th>
+                          <th>Kota</th>
+                          <th>Role</th>
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                        {users.length === 0 ? (
+                          <BarisKosong
+                            kolom={4}
+                            ikon="bx-user"
+                            pesan="Belum ada data pengguna."
+                          />
+                        ) : (
+                          users.map((user) => (
+                            <tr key={user.id}>
+                              <td>{user.nama}</td>
+                              <td>{user.email}</td>
+                              <td>{user.kota || '-'}</td>
+                              <td>
+                                <span
+                                  className={`badge ${
+                                    user.role === 'ADMIN'
+                                      ? 'bg-success'
+                                      : 'bg-secondary'
+                                  }`}
+                                >
+                                  {user.role}
+                                </span>
+                              </td>
+                            </tr>
+                          ))
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <small className="text-muted d-block mt-3">
+                  Role hanya dapat diubah oleh developer melalui database.
+                </small>
+              </section>
+            )}
+
+            {activeTab === "peta" && (
+              <section id="tab-kelola-peta">
+                <h4>Kelola Peta Rasa</h4>
+
+                <div className="box-tabel border rounded bg-white p-4">
+                  <div className="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                      <h5>Data Daerah</h5>
+                      <p className="text-muted mb-0">
+                        Kelola nama daerah, posisi pin, dan status tampil.
+                      </p>
+                    </div>
+
+                    <button
+                      type="button"
+                      className="btn btn-success"
+                      onClick={() => bukaFormRegion()}
+                    >
+                      <i className="bx bx-plus me-1" />
+                      Tambah Daerah
+                    </button>
+                  </div>
+
+                  {regionError && (
+                    <div className="alert alert-danger">
+                      {regionError}
+                    </div>
+                  )}
+
+                  {regionMessage && (
+                    <div className="alert alert-success">
+                      {regionMessage}
+                    </div>
+                  )}
+
+                  {regionLoading && (
+                    <p className="text-muted">Memuat data daerah...</p>
+                  )}
+
+                  {!regionLoading && regions.length === 0 && (
+                    <div className="text-center text-muted py-4">
+                      <i className="bx bx-map fs-1" />
+                      <p>Belum ada data daerah di database.</p>
+                    </div>
+                  )}
+
+                  {!regionLoading && regions.length > 0 && (
+                    <div className="table-responsive">
+                      <table className="table table-hover align-middle">
+                        <thead className="table-light">
+                          <tr>
+                            <th>Nama</th>
+                            <th>Daerah</th>
+                            <th>Posisi X</th>
+                            <th>Posisi Y</th>
+                            <th>Status</th>
+                            <th>Aksi</th>
+                          </tr>
+                        </thead>
+
+                        <tbody>
+                          {regions.map((region) => (
+                            <tr key={region.id}>
+                              <td className="fw-semibold">{region.nama}</td>
+                              <td>{region.daerah}</td>
+                              <td>{region.posisiX}%</td>
+                              <td>{region.posisiY}%</td>
+                              <td>
+                                <span
+                                  className={`badge ${
+                                    region.isActive
+                                      ? "bg-success"
+                                      : "bg-secondary"
+                                  }`}
+                                >
+                                  {region.isActive ? "Aktif" : "Nonaktif"}
+                                </span>
+                              </td>
+                              <td>
+                                <button
+                                  type="button"
+                                  className="btn btn-sm btn-outline-success"
+                                  onClick={() => bukaFormRegion(region)}
+                                >
+                                  <i className="bx bx-edit-alt me-1" />
+                                  Edit
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </div>
+
+                {regionFormOpen && (
+                  <div className="box-tabel border rounded bg-white p-4 mt-4">
+                    <h5>
+                      {editingRegion ? "Edit Daerah" : "Tambah Daerah"}
+                    </h5>
+
+                    <div className="mb-3">
+                      <label className="form-label">Nama</label>
+                      <input
+                        className="form-control"
+                        value={regionForm.nama}
+                        onChange={(e) =>
+                          setRegionForm({
+                            ...regionForm,
+                            nama: e.target.value,
+                          })
+                        }
+                        placeholder="Contoh: Bandung"
+                      />
+                    </div>
+
+                    <div className="mb-3">
+                      <label className="form-label">Daerah</label>
+                      <input
+                        className="form-control"
+                        value={regionForm.daerah}
+                        onChange={(e) =>
+                          setRegionForm({
+                            ...regionForm,
+                            daerah: e.target.value,
+                          })
+                        }
+                        placeholder="Contoh: Kota Bandung"
+                      />
+                    </div>
+
+                    <div className="mb-3">
+                      <label className="form-label">Deskripsi</label>
+                      <textarea
+                        className="form-control"
+                        rows={3}
+                        value={regionForm.deskripsi}
+                        onChange={(e) =>
+                          setRegionForm({
+                            ...regionForm,
+                            deskripsi: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+
+                    <div className="row">
+                      <div className="col-md-6 mb-3">
+                        <label className="form-label">Posisi X (%)</label>
+                        <input
+                          type="number"
+                          className="form-control"
+                          min="0"
+                          max="100"
+                          value={regionForm.posisiX}
+                          onChange={(e) =>
+                            setRegionForm({
+                              ...regionForm,
+                              posisiX: Number(e.target.value),
+                            })
+                          }
+                        />
+                      </div>
+
+                      <div className="col-md-6 mb-3">
+                        <label className="form-label">Posisi Y (%)</label>
+                        <input
+                          type="number"
+                          className="form-control"
+                          min="0"
+                          max="100"
+                          value={regionForm.posisiY}
+                          onChange={(e) =>
+                            setRegionForm({
+                              ...regionForm,
+                              posisiY: Number(e.target.value),
+                            })
+                          }
+                        />
+                      </div>
+                    </div>
+
+                    <div className="form-check mb-4">
+                      <input
+                        type="checkbox"
+                        className="form-check-input"
+                        id="region-active"
+                        checked={regionForm.isActive}
+                        onChange={(e) =>
+                          setRegionForm({
+                            ...regionForm,
+                            isActive: e.target.checked,
+                          })
+                        }
+                      />
+                      <label
+                        className="form-check-label"
+                        htmlFor="region-active"
+                      >
+                        Tampilkan daerah pada Peta Rasa
+                      </label>
+                    </div>
+
+                    <div className="d-flex justify-content-end gap-2">
+                      <button
+                        type="button"
+                        className="btn btn-outline-secondary"
+                        onClick={() => {
+                          setRegionFormOpen(false);
+                          setEditingRegion(null);
+                        }}
+                        disabled={regionLoading}
+                      >
+                        Batal
+                      </button>
+
+                      <button
+                        type="button"
+                        className="btn btn-success"
+                        onClick={simpanRegion}
+                        disabled={
+                          regionLoading ||
+                          !regionForm.nama.trim() ||
+                          !regionForm.daerah.trim() ||
+                          !regionForm.deskripsi.trim() ||
+                          regionForm.posisiX < 0 ||
+                          regionForm.posisiX > 100 ||
+                          regionForm.posisiY < 0 ||
+                          regionForm.posisiY > 100
+                        }
+                      >
+                        {regionLoading ? "Menyimpan..." : "Simpan Perubahan"}
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </section>
+            )}
+
+            {activeTab === 'metadata' && (
+              <section id="tab-metadata">
+                <h4>Metadata Website</h4>
+
+                <p className="text-muted">
+                  Kelola informasi umum yang ditampilkan pada website JelajahRasa.
+                </p>
+
+                <div className="box-tabel border rounded bg-white p-4">
+                  {metadataLoading ? (
+                    <p className="text-muted mb-0">
+                      Memuat metadata website...
+                    </p>
+                  ) : (
+                    <>
+                      {metadataError && (
+                        <div className="alert alert-danger">
+                          {metadataError}
+                        </div>
+                      )}
+
+                      {metadataMessage && (
+                        <div className="alert alert-success">
+                          {metadataMessage}
+                        </div>
+                      )}
+
+                      {metadata.map((item) => {
+                        const label: Record<string, string> = {
+                          site_name: "Nama Website",
+                          site_description: "Deskripsi Website",
+                          site_email: "Email Kontak",
+                          site_phone: "Nomor Telepon",
+                          site_address: "Alamat",
+                          footer_text: "Teks Footer",
+                        };
+
+                        return (
+                          <div className="mb-3" key={item.key}>
+                            <label
+                              htmlFor={`metadata-${item.key}`}
+                              className="form-label fw-semibold"
+                            >
+                              {label[item.key]}
+                            </label>
+
+                            {item.key === "site_description" ||
+                            item.key === "site_address" ||
+                            item.key === "footer_text" ? (
+                              <textarea
+                                id={`metadata-${item.key}`}
+                                className="form-control"
+                                rows={item.key === "site_description" ? 3 : 2}
+                                value={item.value}
+                                onChange={(event) =>
+                                  ubahMetadata(item.key, event.target.value)
+                                }
+                              />
+                            ) : (
+                              <input
+                                id={`metadata-${item.key}`}
+                                type={item.key === "site_email" ? "email" : "text"}
+                                className="form-control"
+                                value={item.value}
+                                onChange={(event) =>
+                                  ubahMetadata(item.key, event.target.value)
+                                }
+                              />
+                            )}
+                          </div>
+                        );
+                      })}
+
+                      <div className="d-flex justify-content-end mt-4">
+                        <button
+                          type="button"
+                          className="btn btn-success"
+                          onClick={simpanMetadata}
+                          disabled={metadataSaving}
+                        >
+                          {metadataSaving ? (
+                            <>
+                              <span className="spinner-border spinner-border-sm me-2" />
+                              Menyimpan...
+                            </>
+                          ) : (
+                            <>
+                              <i className="bx bx-save me-1" />
+                              Simpan Perubahan
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    </>
+                  )}
                 </div>
               </section>
             )}
