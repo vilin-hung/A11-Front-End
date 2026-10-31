@@ -240,8 +240,8 @@ export type ReviewWhereInput = {
   komentar?: Prisma.StringFilter<"Review"> | string
   status?: Prisma.StringFilter<"Review"> | string
   createdAt?: Prisma.DateTimeFilter<"Review"> | Date | string
-  user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   kuliner?: Prisma.XOR<Prisma.KulinerScalarRelationFilter, Prisma.KulinerWhereInput>
+  user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
 }
 
 export type ReviewOrderByWithRelationInput = {
@@ -253,8 +253,8 @@ export type ReviewOrderByWithRelationInput = {
   komentar?: Prisma.SortOrder
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  user?: Prisma.UserOrderByWithRelationInput
   kuliner?: Prisma.KulinerOrderByWithRelationInput
+  user?: Prisma.UserOrderByWithRelationInput
 }
 
 export type ReviewWhereUniqueInput = Prisma.AtLeast<{
@@ -269,8 +269,8 @@ export type ReviewWhereUniqueInput = Prisma.AtLeast<{
   komentar?: Prisma.StringFilter<"Review"> | string
   status?: Prisma.StringFilter<"Review"> | string
   createdAt?: Prisma.DateTimeFilter<"Review"> | Date | string
-  user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   kuliner?: Prisma.XOR<Prisma.KulinerScalarRelationFilter, Prisma.KulinerWhereInput>
+  user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
 }, "id">
 
 export type ReviewOrderByWithAggregationInput = {
@@ -310,8 +310,8 @@ export type ReviewCreateInput = {
   komentar: string
   status?: string
   createdAt?: Date | string
-  user?: Prisma.UserCreateNestedOneWithoutReviewsInput
   kuliner: Prisma.KulinerCreateNestedOneWithoutReviewsInput
+  user?: Prisma.UserCreateNestedOneWithoutReviewsInput
 }
 
 export type ReviewUncheckedCreateInput = {
@@ -332,8 +332,8 @@ export type ReviewUpdateInput = {
   komentar?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  user?: Prisma.UserUpdateOneWithoutReviewsNestedInput
   kuliner?: Prisma.KulinerUpdateOneRequiredWithoutReviewsNestedInput
+  user?: Prisma.UserUpdateOneWithoutReviewsNestedInput
 }
 
 export type ReviewUncheckedUpdateInput = {
@@ -710,8 +710,8 @@ export type ReviewSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   komentar?: boolean
   status?: boolean
   createdAt?: boolean
-  user?: boolean | Prisma.Review$userArgs<ExtArgs>
   kuliner?: boolean | Prisma.KulinerDefaultArgs<ExtArgs>
+  user?: boolean | Prisma.Review$userArgs<ExtArgs>
 }, ExtArgs["result"]["review"]>
 
 export type ReviewSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -723,8 +723,8 @@ export type ReviewSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extens
   komentar?: boolean
   status?: boolean
   createdAt?: boolean
-  user?: boolean | Prisma.Review$userArgs<ExtArgs>
   kuliner?: boolean | Prisma.KulinerDefaultArgs<ExtArgs>
+  user?: boolean | Prisma.Review$userArgs<ExtArgs>
 }, ExtArgs["result"]["review"]>
 
 export type ReviewSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -736,8 +736,8 @@ export type ReviewSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extens
   komentar?: boolean
   status?: boolean
   createdAt?: boolean
-  user?: boolean | Prisma.Review$userArgs<ExtArgs>
   kuliner?: boolean | Prisma.KulinerDefaultArgs<ExtArgs>
+  user?: boolean | Prisma.Review$userArgs<ExtArgs>
 }, ExtArgs["result"]["review"]>
 
 export type ReviewSelectScalar = {
@@ -753,23 +753,23 @@ export type ReviewSelectScalar = {
 
 export type ReviewOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "namaUser" | "kulinerId" | "rating" | "komentar" | "status" | "createdAt", ExtArgs["result"]["review"]>
 export type ReviewInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  user?: boolean | Prisma.Review$userArgs<ExtArgs>
   kuliner?: boolean | Prisma.KulinerDefaultArgs<ExtArgs>
+  user?: boolean | Prisma.Review$userArgs<ExtArgs>
 }
 export type ReviewIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  user?: boolean | Prisma.Review$userArgs<ExtArgs>
   kuliner?: boolean | Prisma.KulinerDefaultArgs<ExtArgs>
+  user?: boolean | Prisma.Review$userArgs<ExtArgs>
 }
 export type ReviewIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  user?: boolean | Prisma.Review$userArgs<ExtArgs>
   kuliner?: boolean | Prisma.KulinerDefaultArgs<ExtArgs>
+  user?: boolean | Prisma.Review$userArgs<ExtArgs>
 }
 
 export type $ReviewPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Review"
   objects: {
-    user: Prisma.$UserPayload<ExtArgs> | null
     kuliner: Prisma.$KulinerPayload<ExtArgs>
+    user: Prisma.$UserPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1174,8 +1174,8 @@ readonly fields: ReviewFieldRefs;
  */
 export interface Prisma__ReviewClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  user<T extends Prisma.Review$userArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Review$userArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   kuliner<T extends Prisma.KulinerDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.KulinerDefaultArgs<ExtArgs>>): Prisma.Prisma__KulinerClient<runtime.Types.Result.GetResult<Prisma.$KulinerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  user<T extends Prisma.Review$userArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Review$userArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.

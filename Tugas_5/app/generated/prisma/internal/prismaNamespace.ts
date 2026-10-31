@@ -403,7 +403,7 @@ export const ModelName = {
   Review: 'Review',
   FAQ: 'FAQ',
   SiteMetadata: 'SiteMetadata',
-  MapPin: 'MapPin'
+  MapRegion: 'MapRegion'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -419,7 +419,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "kuliner" | "favorite" | "review" | "fAQ" | "siteMetadata" | "mapPin"
+    modelProps: "user" | "kuliner" | "favorite" | "review" | "fAQ" | "siteMetadata" | "mapRegion"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -867,77 +867,77 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
-    MapPin: {
-      payload: Prisma.$MapPinPayload<ExtArgs>
-      fields: Prisma.MapPinFieldRefs
+    MapRegion: {
+      payload: Prisma.$MapRegionPayload<ExtArgs>
+      fields: Prisma.MapRegionFieldRefs
       operations: {
         findUnique: {
-          args: Prisma.MapPinFindUniqueArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$MapPinPayload> | null
+          args: Prisma.MapRegionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MapRegionPayload> | null
         }
         findUniqueOrThrow: {
-          args: Prisma.MapPinFindUniqueOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$MapPinPayload>
+          args: Prisma.MapRegionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MapRegionPayload>
         }
         findFirst: {
-          args: Prisma.MapPinFindFirstArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$MapPinPayload> | null
+          args: Prisma.MapRegionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MapRegionPayload> | null
         }
         findFirstOrThrow: {
-          args: Prisma.MapPinFindFirstOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$MapPinPayload>
+          args: Prisma.MapRegionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MapRegionPayload>
         }
         findMany: {
-          args: Prisma.MapPinFindManyArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$MapPinPayload>[]
+          args: Prisma.MapRegionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MapRegionPayload>[]
         }
         create: {
-          args: Prisma.MapPinCreateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$MapPinPayload>
+          args: Prisma.MapRegionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MapRegionPayload>
         }
         createMany: {
-          args: Prisma.MapPinCreateManyArgs<ExtArgs>
+          args: Prisma.MapRegionCreateManyArgs<ExtArgs>
           result: BatchPayload
         }
         createManyAndReturn: {
-          args: Prisma.MapPinCreateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$MapPinPayload>[]
+          args: Prisma.MapRegionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MapRegionPayload>[]
         }
         delete: {
-          args: Prisma.MapPinDeleteArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$MapPinPayload>
+          args: Prisma.MapRegionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MapRegionPayload>
         }
         update: {
-          args: Prisma.MapPinUpdateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$MapPinPayload>
+          args: Prisma.MapRegionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MapRegionPayload>
         }
         deleteMany: {
-          args: Prisma.MapPinDeleteManyArgs<ExtArgs>
+          args: Prisma.MapRegionDeleteManyArgs<ExtArgs>
           result: BatchPayload
         }
         updateMany: {
-          args: Prisma.MapPinUpdateManyArgs<ExtArgs>
+          args: Prisma.MapRegionUpdateManyArgs<ExtArgs>
           result: BatchPayload
         }
         updateManyAndReturn: {
-          args: Prisma.MapPinUpdateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$MapPinPayload>[]
+          args: Prisma.MapRegionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MapRegionPayload>[]
         }
         upsert: {
-          args: Prisma.MapPinUpsertArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$MapPinPayload>
+          args: Prisma.MapRegionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MapRegionPayload>
         }
         aggregate: {
-          args: Prisma.MapPinAggregateArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.AggregateMapPin>
+          args: Prisma.MapRegionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateMapRegion>
         }
         groupBy: {
-          args: Prisma.MapPinGroupByArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.MapPinGroupByOutputType>[]
+          args: Prisma.MapRegionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MapRegionGroupByOutputType>[]
         }
         count: {
-          args: Prisma.MapPinCountArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.MapPinCountAggregateOutputType> | number
+          args: Prisma.MapRegionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MapRegionCountAggregateOutputType> | number
         }
       }
     }
@@ -999,6 +999,7 @@ export const KulinerScalarFieldEnum = {
   id: 'id',
   nama: 'nama',
   deskripsi: 'deskripsi',
+  sejarah: 'sejarah',
   kategori: 'kategori',
   daerah: 'daerah',
   bahan: 'bahan',
@@ -1041,14 +1042,14 @@ export type ReviewScalarFieldEnum = (typeof ReviewScalarFieldEnum)[keyof typeof 
 
 export const FAQScalarFieldEnum = {
   id: 'id',
-  slug: 'slug',
   pertanyaan: 'pertanyaan',
   jawaban: 'jawaban',
-  iconClass: 'iconClass',
   urutan: 'urutan',
   isActive: 'isActive',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  iconClass: 'iconClass',
+  slug: 'slug'
 } as const
 
 export type FAQScalarFieldEnum = (typeof FAQScalarFieldEnum)[keyof typeof FAQScalarFieldEnum]
@@ -1064,14 +1065,17 @@ export const SiteMetadataScalarFieldEnum = {
 export type SiteMetadataScalarFieldEnum = (typeof SiteMetadataScalarFieldEnum)[keyof typeof SiteMetadataScalarFieldEnum]
 
 
-export const MapPinScalarFieldEnum = {
+export const MapRegionScalarFieldEnum = {
   id: 'id',
-  kulinerId: 'kulinerId',
-  latitude: 'latitude',
-  longitude: 'longitude'
+  nama: 'nama',
+  daerah: 'daerah',
+  deskripsi: 'deskripsi',
+  posisiX: 'posisiX',
+  posisiY: 'posisiY',
+  isActive: 'isActive'
 } as const
 
-export type MapPinScalarFieldEnum = (typeof MapPinScalarFieldEnum)[keyof typeof MapPinScalarFieldEnum]
+export type MapRegionScalarFieldEnum = (typeof MapRegionScalarFieldEnum)[keyof typeof MapRegionScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1323,7 +1327,7 @@ export type GlobalOmitConfig = {
   review?: Prisma.ReviewOmit
   fAQ?: Prisma.FAQOmit
   siteMetadata?: Prisma.SiteMetadataOmit
-  mapPin?: Prisma.MapPinOmit
+  mapRegion?: Prisma.MapRegionOmit
 }
 
 /* Types for Logging */

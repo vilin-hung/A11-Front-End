@@ -1,47 +1,47 @@
-datasource db {
-  provider = "postgresql"
-}
-
 generator client {
   provider = "prisma-client"
   output   = "../app/generated/prisma"
 }
 
+datasource db {
+  provider = "postgresql"
+}
+
 model User {
-  id           String      @id @default(uuid())
+  id           String     @id @default(uuid())
   nama         String
-  email        String      @unique
+  email        String     @unique
   passwordHash String
-  role         String      @default("USER")
+  role         String     @default("USER")
   kota         String?
   avatar       String?
-  kuliner      Kuliner[]   @relation("UserKuliner")
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
   favorites    Favorite[]
+  kuliner      Kuliner[]  @relation("UserKuliner")
   reviews      Review[]
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
 }
 
 model Kuliner {
-  id            String       @id @default(uuid())
-  nama          String
-  deskripsi     String
-  kategori      String
-  daerah        String
-  bahan         String[]
-  rasa          String[]
-  gambar        String?
-  hargaMin      Int
-  hargaMax      Int
-  status        String       @default("PENDING")
-  catatanAdmin  String?
-  submittedBy   String?
-  user          User?        @relation("UserKuliner", fields: [submittedBy], references: [id], onDelete: SetNull)
-  favorites     Favorite[]
-  reviews       Review[]
-  mapPin        MapPin?
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  id           String     @id @default(uuid())
+  nama         String
+  deskripsi    String
+  sejarah      String     @default("")
+  kategori     String
+  daerah       String
+  bahan        String[]
+  rasa         String[]
+  gambar       String?
+  hargaMin     Int
+  hargaMax     Int
+  status       String     @default("PENDING")
+  catatanAdmin String?
+  submittedBy  String?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  favorites    Favorite[]
+  user         User?      @relation("UserKuliner", fields: [submittedBy], references: [id])
+  reviews      Review[]
 
   @@index([status])
   @@index([kategori])
@@ -51,9 +51,10 @@ model Kuliner {
 model Favorite {
   userId    String
   kulinerId String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  kuliner   Kuliner  @relation(fields: [kulinerId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
+  kuliner   Kuliner  @relation(fields: [kulinerId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@id([userId, kulinerId])
   @@index([kulinerId])
 }
@@ -66,36 +67,39 @@ model Review {
   rating    Int
   komentar  String
   status    String   @default("TAMPIL")
-  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
-  kuliner   Kuliner  @relation(fields: [kulinerId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
+  kuliner   Kuliner  @relation(fields: [kulinerId], references: [id], onDelete: Cascade)
+  user      User?    @relation(fields: [userId], references: [id])
+
   @@index([kulinerId])
   @@index([status])
 }
 
 model FAQ {
   id         String   @id @default(uuid())
-  slug       String   @unique
   pertanyaan String
   jawaban    String
-  iconClass  String   @default("bx bx-info-circle")
   urutan     Int      @default(0)
   isActive   Boolean  @default(true)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  iconClass  String   @default("bx bx-info-circle")
+  slug       String   @unique
 }
 
 model SiteMetadata {
-  id    String @id @default(uuid())
-  key   String @unique
-  value String
+  id        String   @id @default(uuid())
+  key       String   @unique
+  value     String
   updatedAt DateTime @updatedAt
 }
 
-model MapPin {
-  id        String   @id @default(uuid())
-  kulinerId String   @unique
-  kuliner   Kuliner  @relation(fields: [kulinerId], references: [id], onDelete: Cascade)
-  latitude  Float
-  longitude Float
+model MapRegion {
+  id        String  @id
+  nama      String
+  daerah    String  @unique
+  deskripsi String
+  posisiX   Float   @default(50)
+  posisiY   Float   @default(50)
+  isActive  Boolean @default(true)
 }

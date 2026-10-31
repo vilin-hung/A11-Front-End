@@ -1,11 +1,13 @@
+export type KategoriKuliner = "makanan" | "jajanan" | "minuman" | "oleh-oleh";
+export type HargaKuliner = "murah" | "sedang" | "tinggi";
 
 export type Kuliner = {
   id: string;
   nama: string;
   kota: string;
-  kategori: "makanan" | "jajanan" | "minuman" | "oleh-oleh";
+  kategori: KategoriKuliner;
   kategoriLabel: string;
-  harga: "murah" | "sedang" | "tinggi";
+  harga: HargaKuliner;
   rasa: string;
   asal: string;
   gambar: string;
@@ -13,6 +15,7 @@ export type Kuliner = {
   bahan: string;
   karakterRasa: string;
   estimasiHarga: string;
+  sejarah?: string; 
 };
 
 export const DATA_KULINER: Kuliner[] = [

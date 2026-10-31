@@ -2,11 +2,12 @@
 
 import { Suspense, useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import "./daftar-kuliner.css";
 import FavoriteButton from "../components/FavoriteButton";
-import { DATA_KULINER, type Kuliner } from "../data/kuliner";
-import { bacaKulinerBawaan, bacaUsulanAktif } from "../data/usulan";
+import { type Kuliner } from "../data/kuliner";
+import { bacaUsulanAktif } from "../data/usulan";
 
 type FilterState = {
   kota: string[];
@@ -16,6 +17,56 @@ type FilterState = {
 };
 
 const FILTER_KOSONG: FilterState = { kota: [], kategori: [], harga: [], rasa: [] };
+
+/* =========================
+   PEMETAAN DATA DATABASE
+   ========================= */
+type KulinerDb = {
+  id: string;
+  nama: string;
+  deskripsi: string;
+  kategori: string;
+  daerah: string;
+  bahan: string[];
+  rasa: string[];
+  gambar: string | null;
+  sejarah: string | null;
+  hargaMin: number;
+  hargaMax: number;
+};
+
+const kapital = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+const rupiah = (n: number) => `Rp ${n.toLocaleString("id-ID")}`;
+
+function petakanKuliner(raw: Record<string, unknown>): Kuliner {
+  if (typeof raw.kota === "string" && typeof raw.asal === "string") {
+    return { ...(raw as unknown as Kuliner), gambar: (raw.gambar as string | null) ?? "" };
+  }
+
+  const d = raw as unknown as KulinerDb;
+  const daerah = d.daerah ?? "";
+  const kategoriKecil = (d.kategori ?? "").toLowerCase();
+  const rasaList = Array.isArray(d.rasa) ? d.rasa : [];
+  const hargaMin = Number(d.hargaMin) || 0;
+  const hargaMax = Number(d.hargaMax) || hargaMin;
+
+  return {
+    id: d.id,
+    nama: d.nama,
+    kota: daerah.toLowerCase().replace(/^(kota|kab\.?)\s+/, "").trim(),
+    kategori: (kategoriKecil.includes("oleh") ? "oleh-oleh" : kategoriKecil) as Kuliner["kategori"],
+    kategoriLabel: d.kategori,
+    harga: hargaMin < 15000 ? "murah" : hargaMin <= 30000 ? "sedang" : "tinggi",
+    rasa: rasaList.map((r) => (r.toLowerCase() === "asam" ? "segar" : r.toLowerCase())).join(" "),
+    asal: daerah,
+    gambar: d.gambar ?? "",
+    sejarah: d.sejarah ?? undefined, 
+    deskripsi: d.deskripsi,
+    bahan: (d.bahan ?? []).join(", "),
+    karakterRasa: rasaList.map(kapital).join(", "),
+    estimasiHarga: `${rupiah(hargaMin)} - ${rupiah(hargaMax)}`,
+  };
+}
 
 /* =========================
    FILTER KOTA & KABUPATEN
@@ -80,8 +131,19 @@ function KartuKuliner({ item, disukai, onLike, onShare }: KartuProps) {
       >
         {/* Gambar & tombol aksi */}
         <div className="position-relative card-media-wrapper">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={item.gambar} alt={item.nama} className="card-img-top item-img" />
+          {item.gambar ? (
+            <Image
+              src={item.gambar}
+              alt={item.nama}
+              width={400}
+              height={300}
+              className="card-img-top item-img"
+            />
+          ) : (
+            <div className="card-img-top item-img d-flex align-items-center justify-content-center bg-light text-muted small">
+              Belum ada gambar
+            </div>
+          )}
           <div className="item-actions position-absolute top-0 end-0 p-2 d-flex gap-2">
             <FavoriteButton
               isFavorite={disukai}
@@ -128,6 +190,11 @@ function KartuKuliner({ item, disukai, onLike, onShare }: KartuProps) {
               id={`detail-${item.id}`}
               className={`collapse mt-3 detail-info-box bg-light p-3 rounded-3 border ${terbuka ? "show" : ""}`}
             >
+              {item.sejarah && (
+                <p className="small mb-1">
+                  <strong>Sejarah:</strong> {item.sejarah}
+                </p>
+              )}
               <p className="small mb-1">
                 <strong>Bahan utama:</strong> {item.bahan}
               </p>
@@ -156,11 +223,13 @@ function DaftarKulinerContent() {
   const [kataKunciUrlSebelumnya, setKataKunciUrlSebelumnya] = useState(kataKunciUrl);
   const [filter, setFilter] = useState<FilterState>(FILTER_KOSONG);
   const [favorit, setFavorit] = useState<string[]>([]);
-  const [userId, setUserId] = useState<string | null >(null);
-  const [semuaKuliner] = useState<Kuliner[]>(() => [
-    ...bacaKulinerBawaan(),
-    ...bacaUsulanAktif(),
-  ]);
+  const [userId, setUserId] = useState<string | null>(null);
+
+  // Data kuliner diambil dari database
+  const [semuaKuliner, setSemuaKuliner] = useState<Kuliner[]>([]);
+  const [memuat, setMemuat] = useState(true);
+  const [galat, setGalat] = useState<string | null>(null);
+
   const refKota = useRef<HTMLSelectElement>(null);
   const refKategori = useRef<HTMLSelectElement>(null);
   const refHarga = useRef<HTMLSelectElement>(null);
@@ -170,6 +239,29 @@ function DaftarKulinerContent() {
     setKataKunciUrlSebelumnya(kataKunciUrl);
     setKataKunci(kataKunciUrl);
   }
+
+  // Ambil data kuliner dari database (/api/kuliner)
+  useEffect(() => {
+    async function muatKuliner() {
+      try {
+        const res = await fetch("/api/kuliner", { cache: "no-store" });
+        if (!res.ok) throw new Error("Respons server tidak OK");
+        const json = await res.json();
+
+        const daftar: Record<string, unknown>[] = Array.isArray(json) ? json : (json.data ?? []);
+
+        setSemuaKuliner([...daftar.map(petakanKuliner), ...bacaUsulanAktif()]);
+        setGalat(null);
+      } catch (err) {
+        console.error("Gagal memuat data kuliner:", err);
+        setGalat("Gagal memuat data kuliner dari server.");
+      } finally {
+        setMemuat(false);
+      }
+    }
+
+    void muatKuliner();
+  }, []);
 
   useEffect(() => {
     async function cekSesiDanFavorit() {
@@ -227,7 +319,6 @@ function DaftarKulinerContent() {
 
     try {
       if (sudahDisukai) {
-        // Hapus dari database (DELETE)
         const res = await fetch("/api/favorite", {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
@@ -238,7 +329,6 @@ function DaftarKulinerContent() {
           setFavorit((lama) => lama.filter((id) => id !== kulinerId));
         }
       } else {
-        // Tambah ke database (POST)
         const res = await fetch("/api/favorite", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -408,19 +498,36 @@ function DaftarKulinerContent() {
         </div>
 
         {/* Info hasil */}
-        <p className="result-info">
-          Menampilkan <strong>{hasil.length}</strong> dari {semuaKuliner.length} kuliner
-          {kataKunci && (
-            <>
-              {" "}
-              untuk pencarian &quot;<strong>{kataKunci}</strong>&quot;
-            </>
-          )}
-        </p>
+        {!memuat && !galat && (
+          <p className="result-info">
+            Menampilkan <strong>{hasil.length}</strong> dari {semuaKuliner.length} kuliner
+            {kataKunci && (
+              <>
+                {" "}
+                untuk pencarian &quot;<strong>{kataKunci}</strong>&quot;
+              </>
+            )}
+          </p>
+        )}
 
         {/* Katalog */}
         <div id="culinary-catalog-grid" className="row g-4 catalog-grid">
-          {hasil.length > 0 ? (
+          {memuat ? (
+            <div className="col-12">
+              <div className="empty-state">
+                <i className="bx bx-loader-alt bx-spin"></i>
+                <h6>Memuat data kuliner...</h6>
+              </div>
+            </div>
+          ) : galat ? (
+            <div className="col-12">
+              <div className="empty-state">
+                <i className="bx bx-error-circle"></i>
+                <h6>{galat}</h6>
+                <p>Coba muat ulang halaman.</p>
+              </div>
+            </div>
+          ) : hasil.length > 0 ? (
             hasil.map((item) => (
               <KartuKuliner
                 key={item.id}

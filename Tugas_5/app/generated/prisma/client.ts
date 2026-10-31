@@ -72,7 +72,7 @@ export type FAQ = Prisma.FAQModel
  */
 export type SiteMetadata = Prisma.SiteMetadataModel
 /**
- * Model MapPin
+ * Model MapRegion
  * 
  */
-export type MapPin = Prisma.MapPinModel
+export type MapRegion = Prisma.MapRegionModel
