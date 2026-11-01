@@ -40,6 +40,7 @@ export type KulinerMinAggregateOutputType = {
   id: string | null
   nama: string | null
   deskripsi: string | null
+  sejarah: string | null
   kategori: string | null
   daerah: string | null
   gambar: string | null
@@ -56,6 +57,7 @@ export type KulinerMaxAggregateOutputType = {
   id: string | null
   nama: string | null
   deskripsi: string | null
+  sejarah: string | null
   kategori: string | null
   daerah: string | null
   gambar: string | null
@@ -72,6 +74,7 @@ export type KulinerCountAggregateOutputType = {
   id: number
   nama: number
   deskripsi: number
+  sejarah: number
   kategori: number
   daerah: number
   bahan: number
@@ -102,6 +105,7 @@ export type KulinerMinAggregateInputType = {
   id?: true
   nama?: true
   deskripsi?: true
+  sejarah?: true
   kategori?: true
   daerah?: true
   gambar?: true
@@ -118,6 +122,7 @@ export type KulinerMaxAggregateInputType = {
   id?: true
   nama?: true
   deskripsi?: true
+  sejarah?: true
   kategori?: true
   daerah?: true
   gambar?: true
@@ -134,6 +139,7 @@ export type KulinerCountAggregateInputType = {
   id?: true
   nama?: true
   deskripsi?: true
+  sejarah?: true
   kategori?: true
   daerah?: true
   bahan?: true
@@ -239,6 +245,7 @@ export type KulinerGroupByOutputType = {
   id: string
   nama: string
   deskripsi: string
+  sejarah: string
   kategori: string
   daerah: string
   bahan: string[]
@@ -280,6 +287,7 @@ export type KulinerWhereInput = {
   id?: Prisma.StringFilter<"Kuliner"> | string
   nama?: Prisma.StringFilter<"Kuliner"> | string
   deskripsi?: Prisma.StringFilter<"Kuliner"> | string
+  sejarah?: Prisma.StringFilter<"Kuliner"> | string
   kategori?: Prisma.StringFilter<"Kuliner"> | string
   daerah?: Prisma.StringFilter<"Kuliner"> | string
   bahan?: Prisma.StringNullableListFilter<"Kuliner">
@@ -292,16 +300,16 @@ export type KulinerWhereInput = {
   submittedBy?: Prisma.StringNullableFilter<"Kuliner"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Kuliner"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Kuliner"> | Date | string
-  user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   favorites?: Prisma.FavoriteListRelationFilter
+  user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   reviews?: Prisma.ReviewListRelationFilter
-  mapPin?: Prisma.XOR<Prisma.MapPinNullableScalarRelationFilter, Prisma.MapPinWhereInput> | null
 }
 
 export type KulinerOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   nama?: Prisma.SortOrder
   deskripsi?: Prisma.SortOrder
+  sejarah?: Prisma.SortOrder
   kategori?: Prisma.SortOrder
   daerah?: Prisma.SortOrder
   bahan?: Prisma.SortOrder
@@ -314,10 +322,9 @@ export type KulinerOrderByWithRelationInput = {
   submittedBy?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  user?: Prisma.UserOrderByWithRelationInput
   favorites?: Prisma.FavoriteOrderByRelationAggregateInput
+  user?: Prisma.UserOrderByWithRelationInput
   reviews?: Prisma.ReviewOrderByRelationAggregateInput
-  mapPin?: Prisma.MapPinOrderByWithRelationInput
 }
 
 export type KulinerWhereUniqueInput = Prisma.AtLeast<{
@@ -327,6 +334,7 @@ export type KulinerWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.KulinerWhereInput | Prisma.KulinerWhereInput[]
   nama?: Prisma.StringFilter<"Kuliner"> | string
   deskripsi?: Prisma.StringFilter<"Kuliner"> | string
+  sejarah?: Prisma.StringFilter<"Kuliner"> | string
   kategori?: Prisma.StringFilter<"Kuliner"> | string
   daerah?: Prisma.StringFilter<"Kuliner"> | string
   bahan?: Prisma.StringNullableListFilter<"Kuliner">
@@ -339,16 +347,16 @@ export type KulinerWhereUniqueInput = Prisma.AtLeast<{
   submittedBy?: Prisma.StringNullableFilter<"Kuliner"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Kuliner"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Kuliner"> | Date | string
-  user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   favorites?: Prisma.FavoriteListRelationFilter
+  user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   reviews?: Prisma.ReviewListRelationFilter
-  mapPin?: Prisma.XOR<Prisma.MapPinNullableScalarRelationFilter, Prisma.MapPinWhereInput> | null
 }, "id">
 
 export type KulinerOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   nama?: Prisma.SortOrder
   deskripsi?: Prisma.SortOrder
+  sejarah?: Prisma.SortOrder
   kategori?: Prisma.SortOrder
   daerah?: Prisma.SortOrder
   bahan?: Prisma.SortOrder
@@ -375,6 +383,7 @@ export type KulinerScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"Kuliner"> | string
   nama?: Prisma.StringWithAggregatesFilter<"Kuliner"> | string
   deskripsi?: Prisma.StringWithAggregatesFilter<"Kuliner"> | string
+  sejarah?: Prisma.StringWithAggregatesFilter<"Kuliner"> | string
   kategori?: Prisma.StringWithAggregatesFilter<"Kuliner"> | string
   daerah?: Prisma.StringWithAggregatesFilter<"Kuliner"> | string
   bahan?: Prisma.StringNullableListFilter<"Kuliner">
@@ -393,6 +402,7 @@ export type KulinerCreateInput = {
   id?: string
   nama: string
   deskripsi: string
+  sejarah?: string
   kategori: string
   daerah: string
   bahan?: Prisma.KulinerCreatebahanInput | string[]
@@ -404,16 +414,16 @@ export type KulinerCreateInput = {
   catatanAdmin?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  user?: Prisma.UserCreateNestedOneWithoutKulinerInput
   favorites?: Prisma.FavoriteCreateNestedManyWithoutKulinerInput
+  user?: Prisma.UserCreateNestedOneWithoutKulinerInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutKulinerInput
-  mapPin?: Prisma.MapPinCreateNestedOneWithoutKulinerInput
 }
 
 export type KulinerUncheckedCreateInput = {
   id?: string
   nama: string
   deskripsi: string
+  sejarah?: string
   kategori: string
   daerah: string
   bahan?: Prisma.KulinerCreatebahanInput | string[]
@@ -428,13 +438,13 @@ export type KulinerUncheckedCreateInput = {
   updatedAt?: Date | string
   favorites?: Prisma.FavoriteUncheckedCreateNestedManyWithoutKulinerInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutKulinerInput
-  mapPin?: Prisma.MapPinUncheckedCreateNestedOneWithoutKulinerInput
 }
 
 export type KulinerUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   nama?: Prisma.StringFieldUpdateOperationsInput | string
   deskripsi?: Prisma.StringFieldUpdateOperationsInput | string
+  sejarah?: Prisma.StringFieldUpdateOperationsInput | string
   kategori?: Prisma.StringFieldUpdateOperationsInput | string
   daerah?: Prisma.StringFieldUpdateOperationsInput | string
   bahan?: Prisma.KulinerUpdatebahanInput | string[]
@@ -446,16 +456,16 @@ export type KulinerUpdateInput = {
   catatanAdmin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  user?: Prisma.UserUpdateOneWithoutKulinerNestedInput
   favorites?: Prisma.FavoriteUpdateManyWithoutKulinerNestedInput
+  user?: Prisma.UserUpdateOneWithoutKulinerNestedInput
   reviews?: Prisma.ReviewUpdateManyWithoutKulinerNestedInput
-  mapPin?: Prisma.MapPinUpdateOneWithoutKulinerNestedInput
 }
 
 export type KulinerUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   nama?: Prisma.StringFieldUpdateOperationsInput | string
   deskripsi?: Prisma.StringFieldUpdateOperationsInput | string
+  sejarah?: Prisma.StringFieldUpdateOperationsInput | string
   kategori?: Prisma.StringFieldUpdateOperationsInput | string
   daerah?: Prisma.StringFieldUpdateOperationsInput | string
   bahan?: Prisma.KulinerUpdatebahanInput | string[]
@@ -470,13 +480,13 @@ export type KulinerUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   favorites?: Prisma.FavoriteUncheckedUpdateManyWithoutKulinerNestedInput
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutKulinerNestedInput
-  mapPin?: Prisma.MapPinUncheckedUpdateOneWithoutKulinerNestedInput
 }
 
 export type KulinerCreateManyInput = {
   id?: string
   nama: string
   deskripsi: string
+  sejarah?: string
   kategori: string
   daerah: string
   bahan?: Prisma.KulinerCreatebahanInput | string[]
@@ -495,6 +505,7 @@ export type KulinerUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   nama?: Prisma.StringFieldUpdateOperationsInput | string
   deskripsi?: Prisma.StringFieldUpdateOperationsInput | string
+  sejarah?: Prisma.StringFieldUpdateOperationsInput | string
   kategori?: Prisma.StringFieldUpdateOperationsInput | string
   daerah?: Prisma.StringFieldUpdateOperationsInput | string
   bahan?: Prisma.KulinerUpdatebahanInput | string[]
@@ -512,6 +523,7 @@ export type KulinerUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   nama?: Prisma.StringFieldUpdateOperationsInput | string
   deskripsi?: Prisma.StringFieldUpdateOperationsInput | string
+  sejarah?: Prisma.StringFieldUpdateOperationsInput | string
   kategori?: Prisma.StringFieldUpdateOperationsInput | string
   daerah?: Prisma.StringFieldUpdateOperationsInput | string
   bahan?: Prisma.KulinerUpdatebahanInput | string[]
@@ -548,6 +560,7 @@ export type KulinerCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   nama?: Prisma.SortOrder
   deskripsi?: Prisma.SortOrder
+  sejarah?: Prisma.SortOrder
   kategori?: Prisma.SortOrder
   daerah?: Prisma.SortOrder
   bahan?: Prisma.SortOrder
@@ -571,6 +584,7 @@ export type KulinerMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   nama?: Prisma.SortOrder
   deskripsi?: Prisma.SortOrder
+  sejarah?: Prisma.SortOrder
   kategori?: Prisma.SortOrder
   daerah?: Prisma.SortOrder
   gambar?: Prisma.SortOrder
@@ -587,6 +601,7 @@ export type KulinerMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   nama?: Prisma.SortOrder
   deskripsi?: Prisma.SortOrder
+  sejarah?: Prisma.SortOrder
   kategori?: Prisma.SortOrder
   daerah?: Prisma.SortOrder
   gambar?: Prisma.SortOrder
@@ -705,24 +720,11 @@ export type KulinerUpdateOneRequiredWithoutReviewsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.KulinerUpdateToOneWithWhereWithoutReviewsInput, Prisma.KulinerUpdateWithoutReviewsInput>, Prisma.KulinerUncheckedUpdateWithoutReviewsInput>
 }
 
-export type KulinerCreateNestedOneWithoutMapPinInput = {
-  create?: Prisma.XOR<Prisma.KulinerCreateWithoutMapPinInput, Prisma.KulinerUncheckedCreateWithoutMapPinInput>
-  connectOrCreate?: Prisma.KulinerCreateOrConnectWithoutMapPinInput
-  connect?: Prisma.KulinerWhereUniqueInput
-}
-
-export type KulinerUpdateOneRequiredWithoutMapPinNestedInput = {
-  create?: Prisma.XOR<Prisma.KulinerCreateWithoutMapPinInput, Prisma.KulinerUncheckedCreateWithoutMapPinInput>
-  connectOrCreate?: Prisma.KulinerCreateOrConnectWithoutMapPinInput
-  upsert?: Prisma.KulinerUpsertWithoutMapPinInput
-  connect?: Prisma.KulinerWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.KulinerUpdateToOneWithWhereWithoutMapPinInput, Prisma.KulinerUpdateWithoutMapPinInput>, Prisma.KulinerUncheckedUpdateWithoutMapPinInput>
-}
-
 export type KulinerCreateWithoutUserInput = {
   id?: string
   nama: string
   deskripsi: string
+  sejarah?: string
   kategori: string
   daerah: string
   bahan?: Prisma.KulinerCreatebahanInput | string[]
@@ -736,13 +738,13 @@ export type KulinerCreateWithoutUserInput = {
   updatedAt?: Date | string
   favorites?: Prisma.FavoriteCreateNestedManyWithoutKulinerInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutKulinerInput
-  mapPin?: Prisma.MapPinCreateNestedOneWithoutKulinerInput
 }
 
 export type KulinerUncheckedCreateWithoutUserInput = {
   id?: string
   nama: string
   deskripsi: string
+  sejarah?: string
   kategori: string
   daerah: string
   bahan?: Prisma.KulinerCreatebahanInput | string[]
@@ -756,7 +758,6 @@ export type KulinerUncheckedCreateWithoutUserInput = {
   updatedAt?: Date | string
   favorites?: Prisma.FavoriteUncheckedCreateNestedManyWithoutKulinerInput
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutKulinerInput
-  mapPin?: Prisma.MapPinUncheckedCreateNestedOneWithoutKulinerInput
 }
 
 export type KulinerCreateOrConnectWithoutUserInput = {
@@ -792,6 +793,7 @@ export type KulinerScalarWhereInput = {
   id?: Prisma.StringFilter<"Kuliner"> | string
   nama?: Prisma.StringFilter<"Kuliner"> | string
   deskripsi?: Prisma.StringFilter<"Kuliner"> | string
+  sejarah?: Prisma.StringFilter<"Kuliner"> | string
   kategori?: Prisma.StringFilter<"Kuliner"> | string
   daerah?: Prisma.StringFilter<"Kuliner"> | string
   bahan?: Prisma.StringNullableListFilter<"Kuliner">
@@ -810,6 +812,7 @@ export type KulinerCreateWithoutFavoritesInput = {
   id?: string
   nama: string
   deskripsi: string
+  sejarah?: string
   kategori: string
   daerah: string
   bahan?: Prisma.KulinerCreatebahanInput | string[]
@@ -823,13 +826,13 @@ export type KulinerCreateWithoutFavoritesInput = {
   updatedAt?: Date | string
   user?: Prisma.UserCreateNestedOneWithoutKulinerInput
   reviews?: Prisma.ReviewCreateNestedManyWithoutKulinerInput
-  mapPin?: Prisma.MapPinCreateNestedOneWithoutKulinerInput
 }
 
 export type KulinerUncheckedCreateWithoutFavoritesInput = {
   id?: string
   nama: string
   deskripsi: string
+  sejarah?: string
   kategori: string
   daerah: string
   bahan?: Prisma.KulinerCreatebahanInput | string[]
@@ -843,7 +846,6 @@ export type KulinerUncheckedCreateWithoutFavoritesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutKulinerInput
-  mapPin?: Prisma.MapPinUncheckedCreateNestedOneWithoutKulinerInput
 }
 
 export type KulinerCreateOrConnectWithoutFavoritesInput = {
@@ -866,6 +868,7 @@ export type KulinerUpdateWithoutFavoritesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   nama?: Prisma.StringFieldUpdateOperationsInput | string
   deskripsi?: Prisma.StringFieldUpdateOperationsInput | string
+  sejarah?: Prisma.StringFieldUpdateOperationsInput | string
   kategori?: Prisma.StringFieldUpdateOperationsInput | string
   daerah?: Prisma.StringFieldUpdateOperationsInput | string
   bahan?: Prisma.KulinerUpdatebahanInput | string[]
@@ -879,13 +882,13 @@ export type KulinerUpdateWithoutFavoritesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneWithoutKulinerNestedInput
   reviews?: Prisma.ReviewUpdateManyWithoutKulinerNestedInput
-  mapPin?: Prisma.MapPinUpdateOneWithoutKulinerNestedInput
 }
 
 export type KulinerUncheckedUpdateWithoutFavoritesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   nama?: Prisma.StringFieldUpdateOperationsInput | string
   deskripsi?: Prisma.StringFieldUpdateOperationsInput | string
+  sejarah?: Prisma.StringFieldUpdateOperationsInput | string
   kategori?: Prisma.StringFieldUpdateOperationsInput | string
   daerah?: Prisma.StringFieldUpdateOperationsInput | string
   bahan?: Prisma.KulinerUpdatebahanInput | string[]
@@ -899,13 +902,13 @@ export type KulinerUncheckedUpdateWithoutFavoritesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutKulinerNestedInput
-  mapPin?: Prisma.MapPinUncheckedUpdateOneWithoutKulinerNestedInput
 }
 
 export type KulinerCreateWithoutReviewsInput = {
   id?: string
   nama: string
   deskripsi: string
+  sejarah?: string
   kategori: string
   daerah: string
   bahan?: Prisma.KulinerCreatebahanInput | string[]
@@ -917,15 +920,15 @@ export type KulinerCreateWithoutReviewsInput = {
   catatanAdmin?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  user?: Prisma.UserCreateNestedOneWithoutKulinerInput
   favorites?: Prisma.FavoriteCreateNestedManyWithoutKulinerInput
-  mapPin?: Prisma.MapPinCreateNestedOneWithoutKulinerInput
+  user?: Prisma.UserCreateNestedOneWithoutKulinerInput
 }
 
 export type KulinerUncheckedCreateWithoutReviewsInput = {
   id?: string
   nama: string
   deskripsi: string
+  sejarah?: string
   kategori: string
   daerah: string
   bahan?: Prisma.KulinerCreatebahanInput | string[]
@@ -939,7 +942,6 @@ export type KulinerUncheckedCreateWithoutReviewsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   favorites?: Prisma.FavoriteUncheckedCreateNestedManyWithoutKulinerInput
-  mapPin?: Prisma.MapPinUncheckedCreateNestedOneWithoutKulinerInput
 }
 
 export type KulinerCreateOrConnectWithoutReviewsInput = {
@@ -962,6 +964,7 @@ export type KulinerUpdateWithoutReviewsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   nama?: Prisma.StringFieldUpdateOperationsInput | string
   deskripsi?: Prisma.StringFieldUpdateOperationsInput | string
+  sejarah?: Prisma.StringFieldUpdateOperationsInput | string
   kategori?: Prisma.StringFieldUpdateOperationsInput | string
   daerah?: Prisma.StringFieldUpdateOperationsInput | string
   bahan?: Prisma.KulinerUpdatebahanInput | string[]
@@ -973,15 +976,15 @@ export type KulinerUpdateWithoutReviewsInput = {
   catatanAdmin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  user?: Prisma.UserUpdateOneWithoutKulinerNestedInput
   favorites?: Prisma.FavoriteUpdateManyWithoutKulinerNestedInput
-  mapPin?: Prisma.MapPinUpdateOneWithoutKulinerNestedInput
+  user?: Prisma.UserUpdateOneWithoutKulinerNestedInput
 }
 
 export type KulinerUncheckedUpdateWithoutReviewsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   nama?: Prisma.StringFieldUpdateOperationsInput | string
   deskripsi?: Prisma.StringFieldUpdateOperationsInput | string
+  sejarah?: Prisma.StringFieldUpdateOperationsInput | string
   kategori?: Prisma.StringFieldUpdateOperationsInput | string
   daerah?: Prisma.StringFieldUpdateOperationsInput | string
   bahan?: Prisma.KulinerUpdatebahanInput | string[]
@@ -995,109 +998,13 @@ export type KulinerUncheckedUpdateWithoutReviewsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   favorites?: Prisma.FavoriteUncheckedUpdateManyWithoutKulinerNestedInput
-  mapPin?: Prisma.MapPinUncheckedUpdateOneWithoutKulinerNestedInput
-}
-
-export type KulinerCreateWithoutMapPinInput = {
-  id?: string
-  nama: string
-  deskripsi: string
-  kategori: string
-  daerah: string
-  bahan?: Prisma.KulinerCreatebahanInput | string[]
-  rasa?: Prisma.KulinerCreaterasaInput | string[]
-  gambar?: string | null
-  hargaMin: number
-  hargaMax: number
-  status?: string
-  catatanAdmin?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  user?: Prisma.UserCreateNestedOneWithoutKulinerInput
-  favorites?: Prisma.FavoriteCreateNestedManyWithoutKulinerInput
-  reviews?: Prisma.ReviewCreateNestedManyWithoutKulinerInput
-}
-
-export type KulinerUncheckedCreateWithoutMapPinInput = {
-  id?: string
-  nama: string
-  deskripsi: string
-  kategori: string
-  daerah: string
-  bahan?: Prisma.KulinerCreatebahanInput | string[]
-  rasa?: Prisma.KulinerCreaterasaInput | string[]
-  gambar?: string | null
-  hargaMin: number
-  hargaMax: number
-  status?: string
-  catatanAdmin?: string | null
-  submittedBy?: string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  favorites?: Prisma.FavoriteUncheckedCreateNestedManyWithoutKulinerInput
-  reviews?: Prisma.ReviewUncheckedCreateNestedManyWithoutKulinerInput
-}
-
-export type KulinerCreateOrConnectWithoutMapPinInput = {
-  where: Prisma.KulinerWhereUniqueInput
-  create: Prisma.XOR<Prisma.KulinerCreateWithoutMapPinInput, Prisma.KulinerUncheckedCreateWithoutMapPinInput>
-}
-
-export type KulinerUpsertWithoutMapPinInput = {
-  update: Prisma.XOR<Prisma.KulinerUpdateWithoutMapPinInput, Prisma.KulinerUncheckedUpdateWithoutMapPinInput>
-  create: Prisma.XOR<Prisma.KulinerCreateWithoutMapPinInput, Prisma.KulinerUncheckedCreateWithoutMapPinInput>
-  where?: Prisma.KulinerWhereInput
-}
-
-export type KulinerUpdateToOneWithWhereWithoutMapPinInput = {
-  where?: Prisma.KulinerWhereInput
-  data: Prisma.XOR<Prisma.KulinerUpdateWithoutMapPinInput, Prisma.KulinerUncheckedUpdateWithoutMapPinInput>
-}
-
-export type KulinerUpdateWithoutMapPinInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  nama?: Prisma.StringFieldUpdateOperationsInput | string
-  deskripsi?: Prisma.StringFieldUpdateOperationsInput | string
-  kategori?: Prisma.StringFieldUpdateOperationsInput | string
-  daerah?: Prisma.StringFieldUpdateOperationsInput | string
-  bahan?: Prisma.KulinerUpdatebahanInput | string[]
-  rasa?: Prisma.KulinerUpdaterasaInput | string[]
-  gambar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hargaMin?: Prisma.IntFieldUpdateOperationsInput | number
-  hargaMax?: Prisma.IntFieldUpdateOperationsInput | number
-  status?: Prisma.StringFieldUpdateOperationsInput | string
-  catatanAdmin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  user?: Prisma.UserUpdateOneWithoutKulinerNestedInput
-  favorites?: Prisma.FavoriteUpdateManyWithoutKulinerNestedInput
-  reviews?: Prisma.ReviewUpdateManyWithoutKulinerNestedInput
-}
-
-export type KulinerUncheckedUpdateWithoutMapPinInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  nama?: Prisma.StringFieldUpdateOperationsInput | string
-  deskripsi?: Prisma.StringFieldUpdateOperationsInput | string
-  kategori?: Prisma.StringFieldUpdateOperationsInput | string
-  daerah?: Prisma.StringFieldUpdateOperationsInput | string
-  bahan?: Prisma.KulinerUpdatebahanInput | string[]
-  rasa?: Prisma.KulinerUpdaterasaInput | string[]
-  gambar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  hargaMin?: Prisma.IntFieldUpdateOperationsInput | number
-  hargaMax?: Prisma.IntFieldUpdateOperationsInput | number
-  status?: Prisma.StringFieldUpdateOperationsInput | string
-  catatanAdmin?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  submittedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  favorites?: Prisma.FavoriteUncheckedUpdateManyWithoutKulinerNestedInput
-  reviews?: Prisma.ReviewUncheckedUpdateManyWithoutKulinerNestedInput
 }
 
 export type KulinerCreateManyUserInput = {
   id?: string
   nama: string
   deskripsi: string
+  sejarah?: string
   kategori: string
   daerah: string
   bahan?: Prisma.KulinerCreatebahanInput | string[]
@@ -1115,6 +1022,7 @@ export type KulinerUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   nama?: Prisma.StringFieldUpdateOperationsInput | string
   deskripsi?: Prisma.StringFieldUpdateOperationsInput | string
+  sejarah?: Prisma.StringFieldUpdateOperationsInput | string
   kategori?: Prisma.StringFieldUpdateOperationsInput | string
   daerah?: Prisma.StringFieldUpdateOperationsInput | string
   bahan?: Prisma.KulinerUpdatebahanInput | string[]
@@ -1128,13 +1036,13 @@ export type KulinerUpdateWithoutUserInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   favorites?: Prisma.FavoriteUpdateManyWithoutKulinerNestedInput
   reviews?: Prisma.ReviewUpdateManyWithoutKulinerNestedInput
-  mapPin?: Prisma.MapPinUpdateOneWithoutKulinerNestedInput
 }
 
 export type KulinerUncheckedUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   nama?: Prisma.StringFieldUpdateOperationsInput | string
   deskripsi?: Prisma.StringFieldUpdateOperationsInput | string
+  sejarah?: Prisma.StringFieldUpdateOperationsInput | string
   kategori?: Prisma.StringFieldUpdateOperationsInput | string
   daerah?: Prisma.StringFieldUpdateOperationsInput | string
   bahan?: Prisma.KulinerUpdatebahanInput | string[]
@@ -1148,13 +1056,13 @@ export type KulinerUncheckedUpdateWithoutUserInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   favorites?: Prisma.FavoriteUncheckedUpdateManyWithoutKulinerNestedInput
   reviews?: Prisma.ReviewUncheckedUpdateManyWithoutKulinerNestedInput
-  mapPin?: Prisma.MapPinUncheckedUpdateOneWithoutKulinerNestedInput
 }
 
 export type KulinerUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   nama?: Prisma.StringFieldUpdateOperationsInput | string
   deskripsi?: Prisma.StringFieldUpdateOperationsInput | string
+  sejarah?: Prisma.StringFieldUpdateOperationsInput | string
   kategori?: Prisma.StringFieldUpdateOperationsInput | string
   daerah?: Prisma.StringFieldUpdateOperationsInput | string
   bahan?: Prisma.KulinerUpdatebahanInput | string[]
@@ -1212,6 +1120,7 @@ export type KulinerSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   id?: boolean
   nama?: boolean
   deskripsi?: boolean
+  sejarah?: boolean
   kategori?: boolean
   daerah?: boolean
   bahan?: boolean
@@ -1224,10 +1133,9 @@ export type KulinerSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   submittedBy?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  user?: boolean | Prisma.Kuliner$userArgs<ExtArgs>
   favorites?: boolean | Prisma.Kuliner$favoritesArgs<ExtArgs>
+  user?: boolean | Prisma.Kuliner$userArgs<ExtArgs>
   reviews?: boolean | Prisma.Kuliner$reviewsArgs<ExtArgs>
-  mapPin?: boolean | Prisma.Kuliner$mapPinArgs<ExtArgs>
   _count?: boolean | Prisma.KulinerCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["kuliner"]>
 
@@ -1235,6 +1143,7 @@ export type KulinerSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   id?: boolean
   nama?: boolean
   deskripsi?: boolean
+  sejarah?: boolean
   kategori?: boolean
   daerah?: boolean
   bahan?: boolean
@@ -1254,6 +1163,7 @@ export type KulinerSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   id?: boolean
   nama?: boolean
   deskripsi?: boolean
+  sejarah?: boolean
   kategori?: boolean
   daerah?: boolean
   bahan?: boolean
@@ -1273,6 +1183,7 @@ export type KulinerSelectScalar = {
   id?: boolean
   nama?: boolean
   deskripsi?: boolean
+  sejarah?: boolean
   kategori?: boolean
   daerah?: boolean
   bahan?: boolean
@@ -1287,12 +1198,11 @@ export type KulinerSelectScalar = {
   updatedAt?: boolean
 }
 
-export type KulinerOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "nama" | "deskripsi" | "kategori" | "daerah" | "bahan" | "rasa" | "gambar" | "hargaMin" | "hargaMax" | "status" | "catatanAdmin" | "submittedBy" | "createdAt" | "updatedAt", ExtArgs["result"]["kuliner"]>
+export type KulinerOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "nama" | "deskripsi" | "sejarah" | "kategori" | "daerah" | "bahan" | "rasa" | "gambar" | "hargaMin" | "hargaMax" | "status" | "catatanAdmin" | "submittedBy" | "createdAt" | "updatedAt", ExtArgs["result"]["kuliner"]>
 export type KulinerInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  user?: boolean | Prisma.Kuliner$userArgs<ExtArgs>
   favorites?: boolean | Prisma.Kuliner$favoritesArgs<ExtArgs>
+  user?: boolean | Prisma.Kuliner$userArgs<ExtArgs>
   reviews?: boolean | Prisma.Kuliner$reviewsArgs<ExtArgs>
-  mapPin?: boolean | Prisma.Kuliner$mapPinArgs<ExtArgs>
   _count?: boolean | Prisma.KulinerCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type KulinerIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1305,15 +1215,15 @@ export type KulinerIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
 export type $KulinerPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Kuliner"
   objects: {
-    user: Prisma.$UserPayload<ExtArgs> | null
     favorites: Prisma.$FavoritePayload<ExtArgs>[]
+    user: Prisma.$UserPayload<ExtArgs> | null
     reviews: Prisma.$ReviewPayload<ExtArgs>[]
-    mapPin: Prisma.$MapPinPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     nama: string
     deskripsi: string
+    sejarah: string
     kategori: string
     daerah: string
     bahan: string[]
@@ -1720,10 +1630,9 @@ readonly fields: KulinerFieldRefs;
  */
 export interface Prisma__KulinerClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  user<T extends Prisma.Kuliner$userArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Kuliner$userArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   favorites<T extends Prisma.Kuliner$favoritesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Kuliner$favoritesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FavoritePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  user<T extends Prisma.Kuliner$userArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Kuliner$userArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   reviews<T extends Prisma.Kuliner$reviewsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Kuliner$reviewsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReviewPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  mapPin<T extends Prisma.Kuliner$mapPinArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Kuliner$mapPinArgs<ExtArgs>>): Prisma.Prisma__MapPinClient<runtime.Types.Result.GetResult<Prisma.$MapPinPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1756,6 +1665,7 @@ export interface KulinerFieldRefs {
   readonly id: Prisma.FieldRef<"Kuliner", 'String'>
   readonly nama: Prisma.FieldRef<"Kuliner", 'String'>
   readonly deskripsi: Prisma.FieldRef<"Kuliner", 'String'>
+  readonly sejarah: Prisma.FieldRef<"Kuliner", 'String'>
   readonly kategori: Prisma.FieldRef<"Kuliner", 'String'>
   readonly daerah: Prisma.FieldRef<"Kuliner", 'String'>
   readonly bahan: Prisma.FieldRef<"Kuliner", 'String[]'>
@@ -2169,25 +2079,6 @@ export type KulinerDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Inter
 }
 
 /**
- * Kuliner.user
- */
-export type Kuliner$userArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the User
-   */
-  select?: Prisma.UserSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the User
-   */
-  omit?: Prisma.UserOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.UserInclude<ExtArgs> | null
-  where?: Prisma.UserWhereInput
-}
-
-/**
  * Kuliner.favorites
  */
 export type Kuliner$favoritesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2212,6 +2103,25 @@ export type Kuliner$favoritesArgs<ExtArgs extends runtime.Types.Extensions.Inter
 }
 
 /**
+ * Kuliner.user
+ */
+export type Kuliner$userArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the User
+   */
+  select?: Prisma.UserSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the User
+   */
+  omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  where?: Prisma.UserWhereInput
+}
+
+/**
  * Kuliner.reviews
  */
 export type Kuliner$reviewsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2233,25 +2143,6 @@ export type Kuliner$reviewsArgs<ExtArgs extends runtime.Types.Extensions.Interna
   take?: number
   skip?: number
   distinct?: Prisma.ReviewScalarFieldEnum | Prisma.ReviewScalarFieldEnum[]
-}
-
-/**
- * Kuliner.mapPin
- */
-export type Kuliner$mapPinArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the MapPin
-   */
-  select?: Prisma.MapPinSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the MapPin
-   */
-  omit?: Prisma.MapPinOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.MapPinInclude<ExtArgs> | null
-  where?: Prisma.MapPinWhereInput
 }
 
 /**

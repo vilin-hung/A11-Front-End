@@ -26,6 +26,7 @@ model Kuliner {
   id           String     @id @default(uuid())
   nama         String
   deskripsi    String
+  sejarah      String     @default("")
   kategori     String
   daerah       String
   bahan        String[]
@@ -38,7 +39,6 @@ model Kuliner {
   submittedBy  String?
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
-  sejarah      String     @default("")
   favorites    Favorite[]
   user         User?      @relation("UserKuliner", fields: [submittedBy], references: [id])
   reviews      Review[]
@@ -95,7 +95,7 @@ model SiteMetadata {
 }
 
 model MapRegion {
-  id        String  @id @default(uuid())
+  id        String  @id
   nama      String
   daerah    String  @unique
   deskripsi String

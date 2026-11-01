@@ -57,7 +57,7 @@ export const ModelName = {
   Review: 'Review',
   FAQ: 'FAQ',
   SiteMetadata: 'SiteMetadata',
-  MapPin: 'MapPin'
+  MapRegion: 'MapRegion'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -95,6 +95,7 @@ export const KulinerScalarFieldEnum = {
   id: 'id',
   nama: 'nama',
   deskripsi: 'deskripsi',
+  sejarah: 'sejarah',
   kategori: 'kategori',
   daerah: 'daerah',
   bahan: 'bahan',
@@ -137,14 +138,14 @@ export type ReviewScalarFieldEnum = (typeof ReviewScalarFieldEnum)[keyof typeof 
 
 export const FAQScalarFieldEnum = {
   id: 'id',
-  slug: 'slug',
   pertanyaan: 'pertanyaan',
   jawaban: 'jawaban',
-  iconClass: 'iconClass',
   urutan: 'urutan',
   isActive: 'isActive',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  iconClass: 'iconClass',
+  slug: 'slug'
 } as const
 
 export type FAQScalarFieldEnum = (typeof FAQScalarFieldEnum)[keyof typeof FAQScalarFieldEnum]
@@ -160,14 +161,17 @@ export const SiteMetadataScalarFieldEnum = {
 export type SiteMetadataScalarFieldEnum = (typeof SiteMetadataScalarFieldEnum)[keyof typeof SiteMetadataScalarFieldEnum]
 
 
-export const MapPinScalarFieldEnum = {
+export const MapRegionScalarFieldEnum = {
   id: 'id',
-  kulinerId: 'kulinerId',
-  latitude: 'latitude',
-  longitude: 'longitude'
+  nama: 'nama',
+  daerah: 'daerah',
+  deskripsi: 'deskripsi',
+  posisiX: 'posisiX',
+  posisiY: 'posisiY',
+  isActive: 'isActive'
 } as const
 
-export type MapPinScalarFieldEnum = (typeof MapPinScalarFieldEnum)[keyof typeof MapPinScalarFieldEnum]
+export type MapRegionScalarFieldEnum = (typeof MapRegionScalarFieldEnum)[keyof typeof MapRegionScalarFieldEnum]
 
 
 export const SortOrder = {
