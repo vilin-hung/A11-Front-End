@@ -1,8 +1,14 @@
+import {
+  LABEL_STATUS,
+  WARNA_STATUS,
+  type StatusKuliner,
+  type StatusUlasan,
+} from '../data/status';
+
 /* =========================
    TIPE DATA
    ========================= */
-export type StatusKuliner = 'Aktif' | 'Menunggu' | 'Nonaktif';
-export type StatusUlasan = 'Tampil' | 'Sembunyi';
+export type { StatusKuliner, StatusUlasan };
 
 export type ItemAdmin = {
   id: string;
@@ -13,20 +19,20 @@ export type ItemAdmin = {
   bahan: string;
   deskripsi: string;
   img: string;
-  pengirim?: string;
-  tanggal?: string;
-  catatan?: string;
-  rasa?: string;
-  harga?: string;
-  sumber: 'bawaan' | 'usulan';
+  pengirim: string;
+  tanggal: string;
+  catatan: string;
+  rasa: string;
 };
 
 export type Ulasan = {
-  id: number;
-  nama: string;
-  pesan: string;
+  id: string;
+  namaUser: string;
+  komentar: string;
+  rating: number;
   status: StatusUlasan;
   tanggal: string;
+  kuliner: string;
 };
 
 /* =========================
@@ -56,20 +62,16 @@ export const DAFTAR_DAERAH = [
 /* =========================
    KOMPONEN KECIL
    ========================= */
-const WARNA_STATUS = {
-  Aktif: 'bg-primary',
-  Menunggu: 'bg-warning text-dark',
-  Nonaktif: 'bg-secondary',
-  Tampil: 'bg-success',
-  Sembunyi: 'bg-secondary',
-};
-
 export function BadgeStatus({
   status,
 }: {
   status: StatusKuliner | StatusUlasan;
 }) {
-  return <span className={`badge ${WARNA_STATUS[status]}`}>{status}</span>;
+  return (
+    <span className={`badge ${WARNA_STATUS[status] ?? 'bg-secondary'}`}>
+      {LABEL_STATUS[status] ?? status}
+    </span>
+  );
 }
 
 export function FotoMini({
@@ -148,7 +150,7 @@ export function BarisUsulan({
         <BadgeStatus status={item.status} />
       </td>
       <td className="text-center text-nowrap">
-        {item.status === 'Menunggu' ? (
+        {item.status === 'PENDING' ? (
           <>
             <button
               type="button"
@@ -222,8 +224,14 @@ export function BarisUlasan({
 }) {
   return (
     <tr>
-      <td>{item.nama}</td>
-      <td>{item.pesan}</td>
+      <td>{item.namaUser}</td>
+      <td>
+        {item.komentar}
+        <small className="d-block text-muted">
+          <i className="bx bx-restaurant me-1" />
+          {item.kuliner} &middot; {item.rating}/5
+        </small>
+      </td>
       <td>{item.tanggal}</td>
       <td>
         <BadgeStatus status={item.status} />
@@ -232,13 +240,13 @@ export function BarisUlasan({
         <button
           type="button"
           className={
-            item.status === 'Tampil'
+            item.status === 'TAMPIL'
               ? 'btn btn-outline-secondary btn-sm'
               : 'btn btn-success btn-sm'
           }
           onClick={onToggle}
         >
-          {item.status === 'Tampil' ? 'Sembunyikan' : 'Tampilkan'}
+          {item.status === 'TAMPIL' ? 'Sembunyikan' : 'Tampilkan'}
         </button>
       </td>
     </tr>
