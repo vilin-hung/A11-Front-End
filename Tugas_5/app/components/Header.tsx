@@ -14,9 +14,14 @@ type User = {
   role: string;
 };
 
+type SiteMetadata = {
+  site_name: string;
+};
+
 export default function Header() {
   const pathname = usePathname();
   const [user, setUser] = useState<User | null>(null);
+  const [siteName, setSiteName] = useState("JelajahRasa");
 
   /* Header dipasang di layout, jadi tidak ikut dipasang ulang tiap pindah
      halaman. pathname dipakai supaya nama ikut berubah setelah login. */
@@ -65,6 +70,35 @@ export default function Header() {
     };
   }, [pathname]);
 
+  // use effect untuk metadata
+  useEffect(() => {
+    let masihAktif = true;
+
+    const ambilMetadata = async () => {
+      try {
+        const response = await fetch("/api/site-metadata", {
+          cache: "no-store",
+        });
+
+        if (!response.ok) return;
+
+        const data = (await response.json()) as SiteMetadata;
+
+        if (masihAktif) {
+          setSiteName(data.site_name || "JelajahRasa");
+        }
+      } catch (error) {
+        console.error("Gagal mengambil metadata website:", error);
+      }
+    };
+
+    void ambilMetadata();
+
+    return () => {
+      masihAktif = false;
+    };
+  }, []);
+
   return (
     <header id="main-header" className="site-header">
       <div className="header-container">
@@ -83,7 +117,7 @@ export default function Header() {
 
           <Link id="logo" className="logo-link" href="/">
             <i className="bx bx-map-pin"></i>
-            JelajahRasa
+            {siteName}
           </Link>
         </div>
 
@@ -148,6 +182,14 @@ export default function Header() {
               FAQ
             </Link>
           </li>
+  
+          {user?.role === "ADMIN" && (
+            <li>
+              <Link href="/admin-dashboard" className="header-nav-link">
+                Admin Dashboard
+              </Link>
+            </li>
+          )}
         </ul>
 
         {/* Profil */}

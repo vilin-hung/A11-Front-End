@@ -467,7 +467,7 @@
     z-index: 999;
 }
 
-.peta-pin-item:not(
+/* .peta-pin-item:not(
     .pin-kota-bandung,
     .pin-kota-bogor,
     .pin-kota-cirebon,
@@ -481,7 +481,7 @@
     .pin-kab-pangandaran
 ) {
     display: none;
-}
+} */
 
 .btn-pin:hover {
     transform: scale(1.2);
@@ -543,7 +543,7 @@
     overflow-wrap: break-word;
 }
 
-.pin-kota-bogor { top: 42%; left: 16%; }
+/* .pin-kota-bogor { top: 42%; left: 16%; }
 .pin-kota-bandung { top: 61%; left: 49%; }
 .pin-kota-cirebon { top: 51%; left: 88%; }
 .pin-kota-tasikmalaya { top: 78%; left: 69%; }
@@ -554,7 +554,7 @@
 .pin-kab-sumedang { top: 51%; left: 64%; }
 .pin-kab-garut { top: 73%; left: 55%; }
 .pin-kab-cirebon { top: 45%; left: 80%; }
-.pin-kab-pangandaran { top: 80%; left: 84%; }
+.pin-kab-pangandaran { top: 80%; left: 84%; } */
 
 /* =========================
    REKOMENDASI KULINER
