@@ -290,7 +290,7 @@ export type MapRegionScalarWhereWithAggregatesInput = {
 }
 
 export type MapRegionCreateInput = {
-  id?: string
+  id: string
   nama: string
   daerah: string
   deskripsi: string
@@ -300,7 +300,7 @@ export type MapRegionCreateInput = {
 }
 
 export type MapRegionUncheckedCreateInput = {
-  id?: string
+  id: string
   nama: string
   daerah: string
   deskripsi: string
@@ -330,7 +330,7 @@ export type MapRegionUncheckedUpdateInput = {
 }
 
 export type MapRegionCreateManyInput = {
-  id?: string
+  id: string
   nama: string
   daerah: string
   deskripsi: string
