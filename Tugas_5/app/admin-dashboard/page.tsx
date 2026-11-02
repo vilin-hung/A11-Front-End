@@ -29,9 +29,11 @@ type TabType =
   | 'ringkasan'
   | 'kuliner'
   | 'ulasan'
-  | "pengguna"
+  | 'pengguna'
   | 'peta'
-  | 'metadata';
+  | 'metadata'
+  | 'pesan'
+  | 'faq';
 
 type User = {
   id: string;
@@ -124,6 +126,43 @@ function keUlasan(item: UlasanDb): Ulasan {
   };
 }
 
+type ContactMessage = {
+  id: string;
+  email: string;
+  subjek: string;
+  pesan: string;
+  status: string;
+  isFaqReference: boolean;
+  faqId: string | null;
+  createdAt: string;
+  faq: {
+    id: string;
+    pertanyaan: string;
+  } | null;
+};
+
+type FAQReference = {
+  id: string;
+  email: string;
+  subjek: string;
+  pesan: string;
+  status: string;
+  createdAt: string;
+};
+
+type FAQItem = {
+  id: string;
+  pertanyaan: string;
+  jawaban: string;
+  slug: string;
+  urutan: number;
+  iconClass: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+  messages: FAQReference[];
+};
+
 type SiteMetadata = {
   key: string;
   value: string;
@@ -154,6 +193,29 @@ export default function AdminDashboard() {
   const [kuliner, setKuliner] = useState<ItemAdmin[]>([]);
   const [ulasan, setUlasan] = useState<Ulasan[]>([]);
   const [users, setUsers] = useState<User[]>([]);
+
+  /* state pesan masuk */
+  const [messages, setMessages] = useState<ContactMessage[]>([]);
+  const [messageLoading, setMessageLoading] = useState(false);
+  const [messageError, setMessageError] = useState("");
+  const [messageInfo, setMessageInfo] = useState("");
+  const [selectedMessageIds, setSelectedMessageIds] = useState<string[]>([]);
+  
+  /* state faq */
+  const [faqList, setFaqList] = useState<FAQItem[]>([]);
+  const [faqLoading, setFaqLoading] = useState(false);
+  const [faqError, setFaqError] = useState("");
+  const [faqInfo, setFaqInfo] = useState("");
+  const [draggedFaqId, setDraggedFaqId] = useState<string | null>(null);
+  const [editingFaq, setEditingFaq] = useState<FAQItem | null>(null);
+  const [faqToDelete, setFaqToDelete] = useState<FAQItem | null>(null);
+  const [faqReferenceOpen, setFaqReferenceOpen] = useState<FAQItem | null>(null);
+  const [faqForm, setFaqForm] = useState({
+    pertanyaan: "",
+    jawaban: "",
+    slug: "",
+    messageIds: [] as string[],
+  });
 
   /* Ringkasan dari database; null berarti belum berhasil dimuat */
   const [statistik, setStatistik] = useState<StatistikAdmin | null>(null);
@@ -192,6 +254,8 @@ export default function AdminDashboard() {
     { id: "ulasan", icon: "bx-chat", label: "Kelola Ulasan" },
     { id: "pengguna", icon: "bx-user", label: "Kelola Pengguna" },
     { id: "peta", icon: "bx-map", label: "Kelola Peta" },
+    { id: "pesan", icon: "bx-envelope", label: "Pesan Masuk" },
+    { id: "faq", icon: "bx-question-mark", label: "Kelola FAQ" },
     { id: "metadata", icon: "bx-cog", label: "Metadata Website" },
   ];
 
@@ -244,6 +308,323 @@ export default function AdminDashboard() {
       setUlasan((data.ulasan ?? []).map(keUlasan));
     } catch (error) {
       console.error('Gagal mengambil daftar ulasan:', error);
+    }
+  };
+
+  /* Daftar pesan masuk dari pengunjung */
+  const muatPesan = async () => {
+    setMessageLoading(true);
+    setMessageError("");
+
+    try {
+      const response = await fetch("/api/admin/contact-messages", {
+        cache: "no-store",
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Gagal mengambil pesan masuk.");
+      }
+
+      setMessages(data.messages ?? []);
+    } catch (error) {
+      setMessageError(
+        error instanceof Error
+          ? error.message
+          : "Terjadi kesalahan saat mengambil pesan."
+      );
+    } finally {
+      setMessageLoading(false);
+    }
+  };
+
+  const ubahStatusPesan = async (
+    id: string,
+    status: string
+  ) => {
+    try {
+      const response = await fetch("/api/admin/contact-messages", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id, status }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Gagal mengubah status pesan.");
+      }
+
+      setMessageInfo(data.message || "Status pesan berhasil diperbarui.");
+      await muatPesan();
+    } catch (error) {
+      setMessageError(
+        error instanceof Error
+          ? error.message
+          : "Terjadi kesalahan saat mengubah status."
+      );
+    }
+  };
+
+  const jadikanReferensiFaq = async () => {
+    if (selectedMessageIds.length === 0) return;
+
+    setMessageLoading(true);
+    setMessageError("");
+    setMessageInfo("");
+
+    try {
+      const response = await fetch("/api/admin/contact-messages", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          action: "JADIKAN_REFERENSI",
+          messageIds: selectedMessageIds,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Gagal menyimpan referensi FAQ.");
+      }
+
+      setMessageInfo(data.message);
+      setSelectedMessageIds([]);
+      await muatPesan();
+    } catch (error) {
+      setMessageError(
+        error instanceof Error
+          ? error.message
+          : "Gagal menyimpan referensi FAQ."
+      );
+    } finally {
+      setMessageLoading(false);
+    }
+  };
+
+  const togglePesanTerpilih = (id: string) => {
+    setSelectedMessageIds((sebelumnya) =>
+      sebelumnya.includes(id)
+        ? sebelumnya.filter((item) => item !== id)
+        : [...sebelumnya, id]
+    );
+  };
+
+  const muatFaq = async () => {
+    setFaqLoading(true);
+    setFaqError("");
+
+    try {
+      const response = await fetch("/api/admin/faq", {
+        cache: "no-store",
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Gagal mengambil data FAQ.");
+      }
+
+      setFaqList(data.faq || []);
+    } catch (error) {
+      setFaqError(
+        error instanceof Error
+          ? error.message
+          : "Gagal mengambil data FAQ."
+      );
+    } finally {
+      setFaqLoading(false);
+    }
+  };
+
+  const simpanFaq = async () => {
+    setFaqLoading(true);
+    setFaqError("");
+    setFaqInfo("");
+
+    try {
+      const response = await fetch("/api/admin/faq", {
+        method: editingFaq ? "PATCH" : "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(
+          editingFaq
+            ? { id: editingFaq.id, ...faqForm }
+            : faqForm
+        ),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Gagal menyimpan FAQ.");
+      }
+
+      setFaqInfo(
+        data.message ||
+          (editingFaq
+            ? "FAQ berhasil diperbarui."
+            : "FAQ berhasil ditambahkan.")
+      );
+
+      setEditingFaq(null);
+      setFaqForm({
+        pertanyaan: "",
+        jawaban: "",
+        slug: "",
+        messageIds: [],
+      });
+
+      await muatFaq();
+
+      if (!editingFaq) {
+        await muatPesan();
+      }
+    } catch (error) {
+      setFaqError(
+        error instanceof Error
+          ? error.message
+          : "Terjadi kesalahan saat menyimpan FAQ."
+      );
+    } finally {
+      setFaqLoading(false);
+    }
+  };
+
+  const bukaEditFaq = (item: FAQItem) => {
+    setEditingFaq(item);
+    setFaqForm({
+      pertanyaan: item.pertanyaan,
+      jawaban: item.jawaban,
+      slug: item.slug,
+      messageIds: [],
+    });
+    setFaqError("");
+    setFaqInfo("");
+  };
+
+  const toggleStatusFaq = async (item: FAQItem) => {
+    setFaqLoading(true);
+    setFaqError("");
+    setFaqInfo("");
+
+    try {
+      const response = await fetch("/api/admin/faq", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: item.id,
+          isActive: !item.isActive,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Gagal mengubah status FAQ.");
+      }
+
+      setFaqInfo(data.message || "Status FAQ berhasil diperbarui.");
+      await muatFaq();
+    } catch (error) {
+      setFaqError(
+        error instanceof Error
+          ? error.message
+          : "Terjadi kesalahan saat mengubah status FAQ."
+      );
+    } finally {
+      setFaqLoading(false);
+    }
+  };
+
+  const hapusFaq = async (item: FAQItem) => {
+    setFaqLoading(true);
+    setFaqError("");
+    setFaqInfo("");
+
+    try {
+      const response = await fetch("/api/admin/faq", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id: item.id }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Gagal menghapus FAQ.");
+      }
+
+      setFaqInfo(data.message || "FAQ berhasil dihapus.");
+
+      if (editingFaq?.id === item.id) {
+        setEditingFaq(null);
+        setFaqForm({
+          pertanyaan: "",
+          jawaban: "",
+          slug: "",
+          messageIds: [],
+        });
+      }
+
+      await muatFaq();
+      await muatPesan();
+      return true;
+    } catch (error) {
+      setFaqError(
+        error instanceof Error
+          ? error.message
+          : "Terjadi kesalahan saat menghapus FAQ."
+      );
+      return false;
+    } finally {
+      setFaqLoading(false);
+    }
+  };
+  
+  const simpanUrutanFaq = async (faqIds: string[]) => {
+    try {
+      setFaqError("");
+      setFaqInfo("");
+
+      const response = await fetch("/api/admin/faq", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          action: "REORDER",
+          faqIds,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Gagal mengatur urutan FAQ.");
+      }
+
+      setFaqInfo("Urutan FAQ berhasil diperbarui.");
+      await muatFaq();
+    } catch (error) {
+      setFaqError(
+        error instanceof Error
+          ? error.message
+          : "Gagal mengatur urutan FAQ."
+      );
+
+      await muatFaq();
     }
   };
 
@@ -498,6 +879,10 @@ export default function AdminDashboard() {
 
   /* Top 5 favorit sudah dihitung database */
   const peringkat = statistik?.topFavorit ?? [];
+
+  const pesanReferensi = messages.filter(
+    (item) => item.isFaqReference && !item.faqId
+  );
 
   // peta rasa
   const bukaFormRegion = (region?: MapRegion) => {
@@ -795,8 +1180,24 @@ export default function AdminDashboard() {
                       setMetadataError("");
                       setMetadataMessage("");
                     }
+                    
+                    if (item.id === "pesan") {
+                      setMessageLoading(true);
+                      setMessageError("");
+                      setMessageInfo("");
+                    }
+                    
+                    if (item.id === "faq") {
+                      setFaqError("");
+                      setFaqInfo("");
+                      void muatFaq();
+                      void muatPesan();
+                    }
 
                     setActiveTab(item.id);
+                    if (item.id === "pesan") {
+                      void muatPesan();
+                    }
                   }}
                   role="tab"
                   aria-selected={activeTab === item.id}
@@ -1433,9 +1834,534 @@ export default function AdminDashboard() {
                 </div>
               </section>
             )}
+
+            {activeTab === "pesan" && (
+              <section id="tab-pesan">
+                <div className="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                  <div>
+                    <h4>Pesan Masuk</h4>
+                    <p className="text-muted mb-0">
+                      Daftar pesan dan pertanyaan dari pengunjung website.
+                    </p>
+                  </div>
+                  <div className="d-flex align-items-center gap-2 flex-wrap">
+                    {/* Tombol Muat Ulang */}
+                    <button
+                      type="button"
+                      className="btn btn-outline-success"
+                      onClick={() => void muatPesan()}
+                      disabled={messageLoading}
+                    >
+                      <i className="bx bx-refresh me-1" />
+                      Muat Ulang
+                    </button>
+
+                    {/* Tombol Jadikan Referensi FAQ */}
+                    <button
+                      type="button"
+                      className="btn btn-success"
+                      onClick={ jadikanReferensiFaq }
+                      disabled={ selectedMessageIds.length === 0 || messageLoading }
+                    >
+                      <i className="bx bx-bookmark-plus me-1" />
+                      Jadikan Referensi FAQ ({selectedMessageIds.length})
+                    </button>
+                  </div>
+                </div>
+
+                {messageError && (
+                  <div className="alert alert-danger">{messageError}</div>
+                )}
+
+                {messageInfo && (
+                  <div className="alert alert-success">{messageInfo}</div>
+                )}
+
+                <div className="box-tabel border rounded bg-white">
+                  <div className="table-responsive">
+                    <table className="table align-middle">
+                      <thead className="table-light">
+                        <tr>
+                          <th>Pilih</th>
+                          <th>Email</th>
+                          <th>Subjek</th>
+                          <th>Pesan</th>
+                          <th>Tanggal</th>
+                          <th>Status</th>
+                          <th>FAQ Terkait</th>
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                        {messageLoading ? (
+                          <BarisKosong
+                            kolom={7}
+                            ikon="bx-loader-circle"
+                            pesan="Memuat pesan masuk..."
+                          />
+                        ) : messages.length === 0 ? (
+                          <BarisKosong
+                            kolom={7}
+                            ikon="bx-envelope"
+                            pesan="Belum ada pesan masuk."
+                          />
+                        ) : (
+                          messages.map((item) => (
+                            <tr key={item.id}>
+                              <td>
+                                <input
+                                  type="checkbox"
+                                  className="form-check-input"
+                                  checked={selectedMessageIds.includes(item.id)}
+                                  disabled={item.status !== "DIPROSES" || !!item.faqId || item.isFaqReference}
+                                  onChange={() => togglePesanTerpilih(item.id)}
+                                />
+                              </td>
+                              <td>{item.email}</td>
+                              <td>{item.subjek}</td>
+                              <td style={{ minWidth: 220, maxWidth: 350 }}>
+                                <div style={{ whiteSpace: "pre-wrap" }}>
+                                  {item.pesan}
+                                </div>
+                              </td>
+                              <td>
+                                {new Date(item.createdAt).toLocaleDateString("id-ID")}
+                              </td>
+                              <td>
+                                <select
+                                  className="form-select form-select-sm"
+                                  value={item.status}
+                                  onChange={(e) =>
+                                    void ubahStatusPesan(item.id, e.target.value)
+                                  }
+                                >
+                                  <option value="BARU">Baru</option>
+                                  <option value="DIPROSES">Diproses</option>
+                                  <option value="SELESAI">Selesai</option>
+                                </select>
+                              </td>
+                              <td>
+                                {item.faq ? (
+                                  <span className="badge bg-success">
+                                    Referensi FAQ
+                                  </span>
+                                ) : (
+                                  <span className="text-muted">Belum digunakan</span>
+                                )}
+                              </td>
+                            </tr>
+                          ))
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </section>
+            )}
+
+            {activeTab === "faq" && (
+              <section id="tab-kelola-faq">
+                <div className="mb-4">
+                  <h4>Kelola FAQ</h4>
+                  <p className="text-muted">
+                    Kelola pertanyaan dan jawaban yang ditampilkan pada halaman FAQ.
+                  </p>
+                </div>
+
+                {faqError && (
+                  <div className="alert alert-danger">{faqError}</div>
+                )}
+
+                {faqInfo && (
+                  <div className="alert alert-success">{faqInfo}</div>
+                )}
+
+                {/* Form Tambah FAQ */}
+                <div className="box-tabel border rounded bg-white p-4 mb-4">
+                  <h5>{editingFaq ? "Edit FAQ" : "Tambah FAQ Baru"}</h5>
+
+                  <div className="mb-3">
+                    <label className="form-label">Pertanyaan</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={faqForm.pertanyaan}
+                      onChange={(e) =>
+                        setFaqForm({
+                          ...faqForm,
+                          pertanyaan: e.target.value,
+                        })
+                      }
+                      placeholder="Masukkan pertanyaan FAQ"
+                    />
+                  </div>
+
+                  <div className="mb-3">
+                    <label className="form-label">Jawaban</label>
+                    <textarea
+                      className="form-control"
+                      rows={4}
+                      value={faqForm.jawaban}
+                      onChange={(e) =>
+                        setFaqForm({
+                          ...faqForm,
+                          jawaban: e.target.value,
+                        })
+                      }
+                      placeholder="Masukkan jawaban FAQ"
+                    />
+                  </div>
+
+                  <div className="mb-3">
+                    <label className="form-label">Slug</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={faqForm.slug}
+                      onChange={(e) =>
+                        setFaqForm({
+                          ...faqForm,
+                          slug: e.target.value,
+                        })
+                      }
+                      placeholder="Contoh: cara-menggunakan-website"
+                    />
+                    <small className="text-muted">
+                      Gunakan huruf kecil dan tanda hubung.
+                    </small>
+                  </div>
+                  
+                  <div className="mb-3">
+                    <label className="form-label">
+                      Referensi dari Pesan Masuk
+                    </label>
+
+                    {editingFaq ? (
+                      <p className="text-muted small mb-0">
+                        Referensi FAQ tidak diubah saat edit.
+                      </p>
+                    ) : pesanReferensi.length === 0 ? (
+                      <p className="text-muted small mb-0">
+                        Belum ada pesan yang ditandai sebagai referensi FAQ.
+                      </p>
+                    ) : (
+                      <div className="border rounded p-3">
+                        {pesanReferensi.map((pesan) => (
+                          <div className="form-check mb-2" key={pesan.id}>
+                            <input
+                              className="form-check-input"
+                              type="checkbox"
+                              id={`referensi-${pesan.id}`}
+                              checked={faqForm.messageIds.includes(pesan.id)}
+                              onChange={() =>
+                                setFaqForm((sebelumnya) => ({
+                                  ...sebelumnya,
+                                  messageIds: sebelumnya.messageIds.includes(pesan.id)
+                                    ? sebelumnya.messageIds.filter(
+                                        (id) => id !== pesan.id
+                                      )
+                                    : [...sebelumnya.messageIds, pesan.id],
+                                }))
+                              }
+                            />
+
+                            <label
+                              className="form-check-label"
+                              htmlFor={`referensi-${pesan.id}`}
+                            >
+                              <strong>{pesan.subjek}</strong>
+                              <small className="d-block text-muted">
+                                {pesan.email}
+                              </small>
+                              <span className="d-block">{pesan.pesan}</span>
+                            </label>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  <button
+                    type="button"
+                    className="btn btn-success"
+                    onClick={simpanFaq}
+                    disabled={
+                      faqLoading ||
+                      !faqForm.pertanyaan.trim() ||
+                      !faqForm.jawaban.trim() ||
+                      !faqForm.slug.trim()
+                    }
+                  >
+                    <i className="bx bx-save me-1" />
+                    {faqLoading ? "Menyimpan..." 
+                    : editingFaq 
+                      ? "Simpan Perubahan"
+                      : "Simpan FAQ"}
+                  </button>
+
+                  {editingFaq && (
+                    <button
+                      type="button"
+                      className="btn btn-outline-secondary ms-2"
+                      onClick={() => {
+                        setEditingFaq(null);
+                        setFaqForm({
+                          pertanyaan: "",
+                          jawaban: "",
+                          slug: "",
+                          messageIds: [],
+                        });
+                        setFaqError("");
+                        setFaqInfo("");
+                      }}
+                      disabled={faqLoading}
+                    >
+                      Batal Edit
+                    </button>
+                  )}
+                </div>
+
+                {/* Daftar FAQ */}
+                <div className="box-tabel border rounded bg-white p-4">
+                  <h5>Daftar FAQ</h5>
+
+                  {faqLoading ? (
+                    <p className="text-muted">Memuat data FAQ...</p>
+                  ) : faqList.length === 0 ? (
+                    <p className="text-muted">Belum ada FAQ.</p>
+                  ) : (
+                    <div className="table-responsive">
+                      <table className="table align-middle">
+                        <thead className="table-light">
+                          <tr>
+                            <th style={{ width: 50 }}>Urut</th>
+                            <th>Pertanyaan</th>
+                            <th>Slug</th>
+                            <th>Urutan</th>
+                            <th>Referensi</th>
+                            <th>Status</th>
+                            <th>Aksi</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {faqList.map((item) => (
+                            <tr
+                              key={item.id}
+                              draggable
+                              onDragStart={() => setDraggedFaqId(item.id)}
+                              onDragOver={(e) => e.preventDefault()}
+                              onDrop={() => {
+                                if (!draggedFaqId || draggedFaqId === item.id) return;
+
+                                const daftarBaru = [...faqList];
+                                const indexAwal = daftarBaru.findIndex(
+                                  (faq) => faq.id === draggedFaqId
+                                );
+                                const indexTujuan = daftarBaru.findIndex(
+                                  (faq) => faq.id === item.id
+                                );
+
+                                if (indexAwal === -1 || indexTujuan === -1) return;
+
+                                const [faqDipindahkan] = daftarBaru.splice(indexAwal, 1);
+                                daftarBaru.splice(indexTujuan, 0, faqDipindahkan);
+
+                                setFaqList(
+                                  daftarBaru.map((faq, index) => ({
+                                    ...faq,
+                                    urutan: index + 1,
+                                  }))
+                                );
+
+                                setDraggedFaqId(null);
+
+                                void simpanUrutanFaq(daftarBaru.map((faq) => faq.id));
+                              }}
+                              onDragEnd={() => setDraggedFaqId(null)}
+                              style={{
+                                cursor: "grab",
+                                opacity: draggedFaqId === item.id ? 0.4 : 1,
+                              }}
+                            >
+                              <td>
+                                <i className="bx bx-menu fs-4 text-muted" />
+                              </td>
+                              <td>{item.pertanyaan}</td>
+                              <td>{item.slug}</td>
+                              <td>{item.urutan}</td>
+                              <td>
+                                {item.messages?.length > 0 ? (
+                                  <button
+                                    type="button"
+                                    className="btn btn-sm btn-outline-primary"
+                                    onClick={() => setFaqReferenceOpen(item)}
+                                  >
+                                    <i className="bx bx-book-content me-1" />
+                                    Lihat ({item.messages.length})
+                                  </button>
+                                ) : (
+                                  <span className="text-muted small">
+                                    Tidak ada referensi
+                                  </span>
+                                )}
+                              </td>
+                              <td>
+                                <span
+                                  className={`badge ${
+                                    item.isActive ? "bg-success" : "bg-secondary"
+                                  }`}
+                                >
+                                  {item.isActive ? "Aktif" : "Nonaktif"}
+                                </span>
+                              </td>
+                              <td>
+                                <div className="d-flex flex-wrap gap-2">
+                                  <button
+                                    type="button"
+                                    className="btn btn-sm btn-outline-success"
+                                    onClick={() => bukaEditFaq(item)}
+                                  >
+                                    <i className="bx bx-edit-alt me-1" />
+                                    Edit
+                                  </button>
+                                  
+                                  <button
+                                    type="button"
+                                    className={`btn btn-sm ${
+                                      item.isActive
+                                        ? "btn-outline-secondary"
+                                        : "btn-outline-success"
+                                    } ms-1`}
+                                    onClick={() => void toggleStatusFaq(item)}
+                                    disabled={faqLoading}
+                                  >
+                                    {item.isActive ? "Nonaktifkan" : "Aktifkan"}
+                                  </button>
+
+                                  <button
+                                    type="button"
+                                    className="btn btn-sm btn-outline-danger"
+                                    onClick={() => setFaqToDelete(item)}
+                                    disabled={faqLoading}
+                                  >
+                                    <i className="bx bx-trash me-1" />
+                                    Hapus
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </div>
+              </section>
+            )}
           </main>
         </div>
       </div>
+      
+      {faqToDelete && (
+        <div
+          className="modal fade show d-block"
+          tabIndex={-1}
+          role="dialog"
+          style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
+        >
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Hapus FAQ</h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => setFaqToDelete(null)}
+                />
+              </div>
+
+              <div className="modal-body">
+                <p>Apakah kamu yakin ingin menghapus FAQ ini?</p>
+                <strong>{faqToDelete.pertanyaan}</strong>
+              </div>
+
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-outline-secondary"
+                  onClick={() => setFaqToDelete(null)}
+                  disabled={faqLoading}
+                >
+                  Batal
+                </button>
+
+                <button
+                  type="button"
+                  className="btn btn-danger"
+                  onClick={async () => {
+                    const berhasil = await hapusFaq(faqToDelete);
+                    if (berhasil) {
+                      setFaqToDelete(null);
+                    }
+                  }}
+                  disabled={faqLoading}
+                >
+                  {faqLoading ? "Menghapus..." : "Ya, Hapus"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {faqReferenceOpen && (
+        <div
+          className="modal d-block"
+          tabIndex={-1}
+          style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+        >
+          <div className="modal-dialog modal-lg modal-dialog-centered">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">
+                  Referensi Pesan FAQ
+                </h5>
+
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => setFaqReferenceOpen(null)}
+                />
+              </div>
+
+              <div className="modal-body">
+                <h6>{faqReferenceOpen.pertanyaan}</h6>
+
+                <hr />
+
+                {faqReferenceOpen.messages.map((pesan) => (
+                  <div
+                    key={pesan.id}
+                    className="border rounded p-3 mb-3"
+                  >
+                    <strong>{pesan.subjek}</strong>
+
+                    <p className="text-muted small mb-2">
+                      {pesan.email}
+                    </p>
+
+                    <p className="mb-2">{pesan.pesan}</p>
+
+                    <span className="badge bg-success">
+                      {pesan.status}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {editForm && (
         <ModalEditKuliner

@@ -30,6 +30,7 @@ export type ContactMessageMinAggregateOutputType = {
   subjek: string | null
   pesan: string | null
   status: string | null
+  isFaqReference: boolean | null
   faqId: string | null
   createdAt: Date | null
 }
@@ -40,6 +41,7 @@ export type ContactMessageMaxAggregateOutputType = {
   subjek: string | null
   pesan: string | null
   status: string | null
+  isFaqReference: boolean | null
   faqId: string | null
   createdAt: Date | null
 }
@@ -50,6 +52,7 @@ export type ContactMessageCountAggregateOutputType = {
   subjek: number
   pesan: number
   status: number
+  isFaqReference: number
   faqId: number
   createdAt: number
   _all: number
@@ -62,6 +65,7 @@ export type ContactMessageMinAggregateInputType = {
   subjek?: true
   pesan?: true
   status?: true
+  isFaqReference?: true
   faqId?: true
   createdAt?: true
 }
@@ -72,6 +76,7 @@ export type ContactMessageMaxAggregateInputType = {
   subjek?: true
   pesan?: true
   status?: true
+  isFaqReference?: true
   faqId?: true
   createdAt?: true
 }
@@ -82,6 +87,7 @@ export type ContactMessageCountAggregateInputType = {
   subjek?: true
   pesan?: true
   status?: true
+  isFaqReference?: true
   faqId?: true
   createdAt?: true
   _all?: true
@@ -165,6 +171,7 @@ export type ContactMessageGroupByOutputType = {
   subjek: string
   pesan: string
   status: string
+  isFaqReference: boolean
   faqId: string | null
   createdAt: Date
   _count: ContactMessageCountAggregateOutputType | null
@@ -196,6 +203,7 @@ export type ContactMessageWhereInput = {
   subjek?: Prisma.StringFilter<"ContactMessage"> | string
   pesan?: Prisma.StringFilter<"ContactMessage"> | string
   status?: Prisma.StringFilter<"ContactMessage"> | string
+  isFaqReference?: Prisma.BoolFilter<"ContactMessage"> | boolean
   faqId?: Prisma.StringNullableFilter<"ContactMessage"> | string | null
   createdAt?: Prisma.DateTimeFilter<"ContactMessage"> | Date | string
   faq?: Prisma.XOR<Prisma.FAQNullableScalarRelationFilter, Prisma.FAQWhereInput> | null
@@ -207,6 +215,7 @@ export type ContactMessageOrderByWithRelationInput = {
   subjek?: Prisma.SortOrder
   pesan?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  isFaqReference?: Prisma.SortOrder
   faqId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   faq?: Prisma.FAQOrderByWithRelationInput
@@ -221,6 +230,7 @@ export type ContactMessageWhereUniqueInput = Prisma.AtLeast<{
   subjek?: Prisma.StringFilter<"ContactMessage"> | string
   pesan?: Prisma.StringFilter<"ContactMessage"> | string
   status?: Prisma.StringFilter<"ContactMessage"> | string
+  isFaqReference?: Prisma.BoolFilter<"ContactMessage"> | boolean
   faqId?: Prisma.StringNullableFilter<"ContactMessage"> | string | null
   createdAt?: Prisma.DateTimeFilter<"ContactMessage"> | Date | string
   faq?: Prisma.XOR<Prisma.FAQNullableScalarRelationFilter, Prisma.FAQWhereInput> | null
@@ -232,6 +242,7 @@ export type ContactMessageOrderByWithAggregationInput = {
   subjek?: Prisma.SortOrder
   pesan?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  isFaqReference?: Prisma.SortOrder
   faqId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.ContactMessageCountOrderByAggregateInput
@@ -248,6 +259,7 @@ export type ContactMessageScalarWhereWithAggregatesInput = {
   subjek?: Prisma.StringWithAggregatesFilter<"ContactMessage"> | string
   pesan?: Prisma.StringWithAggregatesFilter<"ContactMessage"> | string
   status?: Prisma.StringWithAggregatesFilter<"ContactMessage"> | string
+  isFaqReference?: Prisma.BoolWithAggregatesFilter<"ContactMessage"> | boolean
   faqId?: Prisma.StringNullableWithAggregatesFilter<"ContactMessage"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"ContactMessage"> | Date | string
 }
@@ -258,6 +270,7 @@ export type ContactMessageCreateInput = {
   subjek: string
   pesan: string
   status?: string
+  isFaqReference?: boolean
   createdAt?: Date | string
   faq?: Prisma.FAQCreateNestedOneWithoutMessagesInput
 }
@@ -268,6 +281,7 @@ export type ContactMessageUncheckedCreateInput = {
   subjek: string
   pesan: string
   status?: string
+  isFaqReference?: boolean
   faqId?: string | null
   createdAt?: Date | string
 }
@@ -278,6 +292,7 @@ export type ContactMessageUpdateInput = {
   subjek?: Prisma.StringFieldUpdateOperationsInput | string
   pesan?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  isFaqReference?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   faq?: Prisma.FAQUpdateOneWithoutMessagesNestedInput
 }
@@ -288,6 +303,7 @@ export type ContactMessageUncheckedUpdateInput = {
   subjek?: Prisma.StringFieldUpdateOperationsInput | string
   pesan?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  isFaqReference?: Prisma.BoolFieldUpdateOperationsInput | boolean
   faqId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -298,6 +314,7 @@ export type ContactMessageCreateManyInput = {
   subjek: string
   pesan: string
   status?: string
+  isFaqReference?: boolean
   faqId?: string | null
   createdAt?: Date | string
 }
@@ -308,6 +325,7 @@ export type ContactMessageUpdateManyMutationInput = {
   subjek?: Prisma.StringFieldUpdateOperationsInput | string
   pesan?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  isFaqReference?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -317,6 +335,7 @@ export type ContactMessageUncheckedUpdateManyInput = {
   subjek?: Prisma.StringFieldUpdateOperationsInput | string
   pesan?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  isFaqReference?: Prisma.BoolFieldUpdateOperationsInput | boolean
   faqId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -337,6 +356,7 @@ export type ContactMessageCountOrderByAggregateInput = {
   subjek?: Prisma.SortOrder
   pesan?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  isFaqReference?: Prisma.SortOrder
   faqId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -347,6 +367,7 @@ export type ContactMessageMaxOrderByAggregateInput = {
   subjek?: Prisma.SortOrder
   pesan?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  isFaqReference?: Prisma.SortOrder
   faqId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -357,6 +378,7 @@ export type ContactMessageMinOrderByAggregateInput = {
   subjek?: Prisma.SortOrder
   pesan?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  isFaqReference?: Prisma.SortOrder
   faqId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -409,6 +431,7 @@ export type ContactMessageCreateWithoutFaqInput = {
   subjek: string
   pesan: string
   status?: string
+  isFaqReference?: boolean
   createdAt?: Date | string
 }
 
@@ -418,6 +441,7 @@ export type ContactMessageUncheckedCreateWithoutFaqInput = {
   subjek: string
   pesan: string
   status?: string
+  isFaqReference?: boolean
   createdAt?: Date | string
 }
 
@@ -456,6 +480,7 @@ export type ContactMessageScalarWhereInput = {
   subjek?: Prisma.StringFilter<"ContactMessage"> | string
   pesan?: Prisma.StringFilter<"ContactMessage"> | string
   status?: Prisma.StringFilter<"ContactMessage"> | string
+  isFaqReference?: Prisma.BoolFilter<"ContactMessage"> | boolean
   faqId?: Prisma.StringNullableFilter<"ContactMessage"> | string | null
   createdAt?: Prisma.DateTimeFilter<"ContactMessage"> | Date | string
 }
@@ -466,6 +491,7 @@ export type ContactMessageCreateManyFaqInput = {
   subjek: string
   pesan: string
   status?: string
+  isFaqReference?: boolean
   createdAt?: Date | string
 }
 
@@ -475,6 +501,7 @@ export type ContactMessageUpdateWithoutFaqInput = {
   subjek?: Prisma.StringFieldUpdateOperationsInput | string
   pesan?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  isFaqReference?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -484,6 +511,7 @@ export type ContactMessageUncheckedUpdateWithoutFaqInput = {
   subjek?: Prisma.StringFieldUpdateOperationsInput | string
   pesan?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  isFaqReference?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -493,6 +521,7 @@ export type ContactMessageUncheckedUpdateManyWithoutFaqInput = {
   subjek?: Prisma.StringFieldUpdateOperationsInput | string
   pesan?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
+  isFaqReference?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -504,6 +533,7 @@ export type ContactMessageSelect<ExtArgs extends runtime.Types.Extensions.Intern
   subjek?: boolean
   pesan?: boolean
   status?: boolean
+  isFaqReference?: boolean
   faqId?: boolean
   createdAt?: boolean
   faq?: boolean | Prisma.ContactMessage$faqArgs<ExtArgs>
@@ -515,6 +545,7 @@ export type ContactMessageSelectCreateManyAndReturn<ExtArgs extends runtime.Type
   subjek?: boolean
   pesan?: boolean
   status?: boolean
+  isFaqReference?: boolean
   faqId?: boolean
   createdAt?: boolean
   faq?: boolean | Prisma.ContactMessage$faqArgs<ExtArgs>
@@ -526,6 +557,7 @@ export type ContactMessageSelectUpdateManyAndReturn<ExtArgs extends runtime.Type
   subjek?: boolean
   pesan?: boolean
   status?: boolean
+  isFaqReference?: boolean
   faqId?: boolean
   createdAt?: boolean
   faq?: boolean | Prisma.ContactMessage$faqArgs<ExtArgs>
@@ -537,11 +569,12 @@ export type ContactMessageSelectScalar = {
   subjek?: boolean
   pesan?: boolean
   status?: boolean
+  isFaqReference?: boolean
   faqId?: boolean
   createdAt?: boolean
 }
 
-export type ContactMessageOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "subjek" | "pesan" | "status" | "faqId" | "createdAt", ExtArgs["result"]["contactMessage"]>
+export type ContactMessageOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "subjek" | "pesan" | "status" | "isFaqReference" | "faqId" | "createdAt", ExtArgs["result"]["contactMessage"]>
 export type ContactMessageInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   faq?: boolean | Prisma.ContactMessage$faqArgs<ExtArgs>
 }
@@ -563,6 +596,7 @@ export type $ContactMessagePayload<ExtArgs extends runtime.Types.Extensions.Inte
     subjek: string
     pesan: string
     status: string
+    isFaqReference: boolean
     faqId: string | null
     createdAt: Date
   }, ExtArgs["result"]["contactMessage"]>
@@ -994,6 +1028,7 @@ export interface ContactMessageFieldRefs {
   readonly subjek: Prisma.FieldRef<"ContactMessage", 'String'>
   readonly pesan: Prisma.FieldRef<"ContactMessage", 'String'>
   readonly status: Prisma.FieldRef<"ContactMessage", 'String'>
+  readonly isFaqReference: Prisma.FieldRef<"ContactMessage", 'Boolean'>
   readonly faqId: Prisma.FieldRef<"ContactMessage", 'String'>
   readonly createdAt: Prisma.FieldRef<"ContactMessage", 'DateTime'>
 }
