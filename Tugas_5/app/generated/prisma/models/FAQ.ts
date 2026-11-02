@@ -248,6 +248,7 @@ export type FAQWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"FAQ"> | Date | string
   iconClass?: Prisma.StringFilter<"FAQ"> | string
   slug?: Prisma.StringFilter<"FAQ"> | string
+  messages?: Prisma.ContactMessageListRelationFilter
 }
 
 export type FAQOrderByWithRelationInput = {
@@ -260,6 +261,7 @@ export type FAQOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   iconClass?: Prisma.SortOrder
   slug?: Prisma.SortOrder
+  messages?: Prisma.ContactMessageOrderByRelationAggregateInput
 }
 
 export type FAQWhereUniqueInput = Prisma.AtLeast<{
@@ -275,6 +277,7 @@ export type FAQWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"FAQ"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"FAQ"> | Date | string
   iconClass?: Prisma.StringFilter<"FAQ"> | string
+  messages?: Prisma.ContactMessageListRelationFilter
 }, "id" | "slug">
 
 export type FAQOrderByWithAggregationInput = {
@@ -319,6 +322,7 @@ export type FAQCreateInput = {
   updatedAt?: Date | string
   iconClass?: string
   slug: string
+  messages?: Prisma.ContactMessageCreateNestedManyWithoutFaqInput
 }
 
 export type FAQUncheckedCreateInput = {
@@ -331,6 +335,7 @@ export type FAQUncheckedCreateInput = {
   updatedAt?: Date | string
   iconClass?: string
   slug: string
+  messages?: Prisma.ContactMessageUncheckedCreateNestedManyWithoutFaqInput
 }
 
 export type FAQUpdateInput = {
@@ -343,6 +348,7 @@ export type FAQUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   iconClass?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
+  messages?: Prisma.ContactMessageUpdateManyWithoutFaqNestedInput
 }
 
 export type FAQUncheckedUpdateInput = {
@@ -355,6 +361,7 @@ export type FAQUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   iconClass?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
+  messages?: Prisma.ContactMessageUncheckedUpdateManyWithoutFaqNestedInput
 }
 
 export type FAQCreateManyInput = {
@@ -437,10 +444,124 @@ export type FAQSumOrderByAggregateInput = {
   urutan?: Prisma.SortOrder
 }
 
+export type FAQNullableScalarRelationFilter = {
+  is?: Prisma.FAQWhereInput | null
+  isNot?: Prisma.FAQWhereInput | null
+}
+
 export type BoolFieldUpdateOperationsInput = {
   set?: boolean
 }
 
+export type FAQCreateNestedOneWithoutMessagesInput = {
+  create?: Prisma.XOR<Prisma.FAQCreateWithoutMessagesInput, Prisma.FAQUncheckedCreateWithoutMessagesInput>
+  connectOrCreate?: Prisma.FAQCreateOrConnectWithoutMessagesInput
+  connect?: Prisma.FAQWhereUniqueInput
+}
+
+export type FAQUpdateOneWithoutMessagesNestedInput = {
+  create?: Prisma.XOR<Prisma.FAQCreateWithoutMessagesInput, Prisma.FAQUncheckedCreateWithoutMessagesInput>
+  connectOrCreate?: Prisma.FAQCreateOrConnectWithoutMessagesInput
+  upsert?: Prisma.FAQUpsertWithoutMessagesInput
+  disconnect?: Prisma.FAQWhereInput | boolean
+  delete?: Prisma.FAQWhereInput | boolean
+  connect?: Prisma.FAQWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.FAQUpdateToOneWithWhereWithoutMessagesInput, Prisma.FAQUpdateWithoutMessagesInput>, Prisma.FAQUncheckedUpdateWithoutMessagesInput>
+}
+
+export type FAQCreateWithoutMessagesInput = {
+  id?: string
+  pertanyaan: string
+  jawaban: string
+  urutan?: number
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  iconClass?: string
+  slug: string
+}
+
+export type FAQUncheckedCreateWithoutMessagesInput = {
+  id?: string
+  pertanyaan: string
+  jawaban: string
+  urutan?: number
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  iconClass?: string
+  slug: string
+}
+
+export type FAQCreateOrConnectWithoutMessagesInput = {
+  where: Prisma.FAQWhereUniqueInput
+  create: Prisma.XOR<Prisma.FAQCreateWithoutMessagesInput, Prisma.FAQUncheckedCreateWithoutMessagesInput>
+}
+
+export type FAQUpsertWithoutMessagesInput = {
+  update: Prisma.XOR<Prisma.FAQUpdateWithoutMessagesInput, Prisma.FAQUncheckedUpdateWithoutMessagesInput>
+  create: Prisma.XOR<Prisma.FAQCreateWithoutMessagesInput, Prisma.FAQUncheckedCreateWithoutMessagesInput>
+  where?: Prisma.FAQWhereInput
+}
+
+export type FAQUpdateToOneWithWhereWithoutMessagesInput = {
+  where?: Prisma.FAQWhereInput
+  data: Prisma.XOR<Prisma.FAQUpdateWithoutMessagesInput, Prisma.FAQUncheckedUpdateWithoutMessagesInput>
+}
+
+export type FAQUpdateWithoutMessagesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  pertanyaan?: Prisma.StringFieldUpdateOperationsInput | string
+  jawaban?: Prisma.StringFieldUpdateOperationsInput | string
+  urutan?: Prisma.IntFieldUpdateOperationsInput | number
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  iconClass?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+}
+
+export type FAQUncheckedUpdateWithoutMessagesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  pertanyaan?: Prisma.StringFieldUpdateOperationsInput | string
+  jawaban?: Prisma.StringFieldUpdateOperationsInput | string
+  urutan?: Prisma.IntFieldUpdateOperationsInput | number
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  iconClass?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+}
+
+
+/**
+ * Count Type FAQCountOutputType
+ */
+
+export type FAQCountOutputType = {
+  messages: number
+}
+
+export type FAQCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  messages?: boolean | FAQCountOutputTypeCountMessagesArgs
+}
+
+/**
+ * FAQCountOutputType without action
+ */
+export type FAQCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the FAQCountOutputType
+   */
+  select?: Prisma.FAQCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * FAQCountOutputType without action
+ */
+export type FAQCountOutputTypeCountMessagesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ContactMessageWhereInput
+}
 
 
 export type FAQSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -453,6 +574,8 @@ export type FAQSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = ru
   updatedAt?: boolean
   iconClass?: boolean
   slug?: boolean
+  messages?: boolean | Prisma.FAQ$messagesArgs<ExtArgs>
+  _count?: boolean | Prisma.FAQCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["fAQ"]>
 
 export type FAQSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -492,10 +615,18 @@ export type FAQSelectScalar = {
 }
 
 export type FAQOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "pertanyaan" | "jawaban" | "urutan" | "isActive" | "createdAt" | "updatedAt" | "iconClass" | "slug", ExtArgs["result"]["fAQ"]>
+export type FAQInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  messages?: boolean | Prisma.FAQ$messagesArgs<ExtArgs>
+  _count?: boolean | Prisma.FAQCountOutputTypeDefaultArgs<ExtArgs>
+}
+export type FAQIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
+export type FAQIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
 
 export type $FAQPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "FAQ"
-  objects: {}
+  objects: {
+    messages: Prisma.$ContactMessagePayload<ExtArgs>[]
+  }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     pertanyaan: string
@@ -900,6 +1031,7 @@ readonly fields: FAQFieldRefs;
  */
 export interface Prisma__FAQClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  messages<T extends Prisma.FAQ$messagesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.FAQ$messagesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ContactMessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -955,6 +1087,10 @@ export type FAQFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.InternalA
    */
   omit?: Prisma.FAQOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FAQInclude<ExtArgs> | null
+  /**
    * Filter, which FAQ to fetch.
    */
   where: Prisma.FAQWhereUniqueInput
@@ -973,6 +1109,10 @@ export type FAQFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Extensions.In
    */
   omit?: Prisma.FAQOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FAQInclude<ExtArgs> | null
+  /**
    * Filter, which FAQ to fetch.
    */
   where: Prisma.FAQWhereUniqueInput
@@ -990,6 +1130,10 @@ export type FAQFindFirstArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
    * Omit specific fields from the FAQ
    */
   omit?: Prisma.FAQOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FAQInclude<ExtArgs> | null
   /**
    * Filter, which FAQ to fetch.
    */
@@ -1039,6 +1183,10 @@ export type FAQFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extensions.Int
    */
   omit?: Prisma.FAQOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FAQInclude<ExtArgs> | null
+  /**
    * Filter, which FAQ to fetch.
    */
   where?: Prisma.FAQWhereInput
@@ -1086,6 +1234,10 @@ export type FAQFindManyArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
    * Omit specific fields from the FAQ
    */
   omit?: Prisma.FAQOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FAQInclude<ExtArgs> | null
   /**
    * Filter, which FAQS to fetch.
    */
@@ -1135,6 +1287,10 @@ export type FAQCreateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs 
    */
   omit?: Prisma.FAQOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FAQInclude<ExtArgs> | null
+  /**
    * The data needed to create a FAQ.
    */
   data: Prisma.XOR<Prisma.FAQCreateInput, Prisma.FAQUncheckedCreateInput>
@@ -1182,6 +1338,10 @@ export type FAQUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs 
    * Omit specific fields from the FAQ
    */
   omit?: Prisma.FAQOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FAQInclude<ExtArgs> | null
   /**
    * The data needed to update a FAQ.
    */
@@ -1249,6 +1409,10 @@ export type FAQUpsertArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs 
    */
   omit?: Prisma.FAQOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FAQInclude<ExtArgs> | null
+  /**
    * The filter to search for the FAQ to update in case it exists.
    */
   where: Prisma.FAQWhereUniqueInput
@@ -1275,6 +1439,10 @@ export type FAQDeleteArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs 
    */
   omit?: Prisma.FAQOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FAQInclude<ExtArgs> | null
+  /**
    * Filter which FAQ to delete.
    */
   where: Prisma.FAQWhereUniqueInput
@@ -1295,6 +1463,30 @@ export type FAQDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.InternalA
 }
 
 /**
+ * FAQ.messages
+ */
+export type FAQ$messagesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ContactMessage
+   */
+  select?: Prisma.ContactMessageSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ContactMessage
+   */
+  omit?: Prisma.ContactMessageOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ContactMessageInclude<ExtArgs> | null
+  where?: Prisma.ContactMessageWhereInput
+  orderBy?: Prisma.ContactMessageOrderByWithRelationInput | Prisma.ContactMessageOrderByWithRelationInput[]
+  cursor?: Prisma.ContactMessageWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ContactMessageScalarFieldEnum | Prisma.ContactMessageScalarFieldEnum[]
+}
+
+/**
  * FAQ without action
  */
 export type FAQDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1306,4 +1498,8 @@ export type FAQDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs
    * Omit specific fields from the FAQ
    */
   omit?: Prisma.FAQOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FAQInclude<ExtArgs> | null
 }
