@@ -131,9 +131,9 @@ export function ModalEditKuliner({
                       })
                     }
                   >
-                    <option value="Aktif">Aktif</option>
-                    <option value="Menunggu">Menunggu</option>
-                    <option value="Nonaktif">Nonaktif</option>
+                    <option value="PENDING">Menunggu</option>
+                    <option value="APPROVED">Aktif</option>
+                    <option value="REJECTED">Nonaktif</option>
                   </select>
                 </div>
 

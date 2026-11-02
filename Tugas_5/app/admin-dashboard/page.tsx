@@ -5,7 +5,6 @@ import Link from 'next/link';
 import Script from 'next/script';
 import { useRouter } from 'next/navigation';
 import './admin-dashboard.css';
-import { DATA_KULINER } from '../data/kuliner';
 import {
   BarisKosong,
   BarisKuliner,
@@ -13,24 +12,15 @@ import {
   BarisUsulan,
   KATEGORI,
   type ItemAdmin,
-  type StatusKuliner,
-  type StatusUlasan,
   type Ulasan,
 } from '../components/AdminTabel';
+import type { StatusKuliner, StatusUlasan } from '../data/status';
 import {
   ModalEditKuliner,
   ModalGambar,
   ModalPeringkat,
   ModalTolakUsulan,
 } from '../components/AdminModal';
-
-/* =========================
-   KEY LOCAL STORAGE
-   ========================= */
-const USULAN_KEY = 'jelajahRasaUsulan';
-const ULASAN_KEY = 'jelajahRasaUlasan';
-const FAVORIT_KEY = 'jelajahRasaFavorites';
-const KULINER_KEY = 'jelajahRasaKuliner';
 
 const CHART_URL =
   'https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js';
@@ -62,29 +52,77 @@ type MapRegion = {
   isActive: boolean;
 };
 
-/* =========================
-   DATA BAWAAN
-   ========================= */
-const LABEL_KATEGORI = {
-  makanan: 'Makanan',
-  jajanan: 'Jajanan',
-  minuman: 'Minuman',
-  'oleh-oleh': 'Oleh-Oleh Khas',
+/* Angka ringkasan yang dihitung dari database oleh /api/admin/stats */
+type StatistikAdmin = {
+  totalPengguna: number;
+  kulinerApproved: number;
+  kulinerPending: number;
+  kulinerRejected: number;
+  totalUlasan: number;
+  totalFavorit: number;
+  perKategori: { [kategori: string]: number };
+  sebaranDaerah: { daerah: string; jumlah: number }[];
+  topFavorit: { id: string; nama: string; kategori: string; jumlah: number }[];
 };
 
-/* Kuliner bawaan disamakan bentuknya dengan usulan pengguna
-   supaya satu tabel bisa menampung keduanya. */
-const KULINER_AWAL: ItemAdmin[] = DATA_KULINER.map((item) => ({
-  id: item.id,
-  nama: item.nama,
-  kategori: LABEL_KATEGORI[item.kategori],
-  daerah: item.asal,
-  status: 'Aktif',
-  bahan: item.bahan,
-  deskripsi: item.deskripsi,
-  img: item.gambar,
-  sumber: 'bawaan',
-}));
+/* =========================
+   BENTUK DATA DARI DATABASE
+   ========================= */
+type KulinerDb = {
+  id: string;
+  nama: string;
+  deskripsi: string;
+  kategori: string;
+  daerah: string;
+  bahan: string[];
+  rasa: string[];
+  gambar: string | null;
+  status: string;
+  catatanAdmin: string | null;
+  createdAt: string;
+  user: { nama: string } | null;
+};
+
+type UlasanDb = {
+  id: string;
+  namaUser: string;
+  komentar: string;
+  rating: number;
+  status: string;
+  createdAt: string;
+  kuliner: { nama: string };
+};
+
+/* Menyamakan bentuk data database dengan bentuk yang dipakai
+   tabel dan modal admin. */
+function keItemAdmin(item: KulinerDb): ItemAdmin {
+  return {
+    id: item.id,
+    nama: item.nama,
+    kategori: item.kategori,
+    daerah: item.daerah,
+    status: item.status as StatusKuliner,
+    bahan: item.bahan.join(', '),
+    deskripsi: item.deskripsi,
+    img: item.gambar ?? '',
+    pengirim: item.user?.nama ?? '-',
+    tanggal: item.createdAt.slice(0, 10),
+    catatan: item.catatanAdmin ?? '',
+    rasa: item.rasa.join(', '),
+  };
+}
+
+function keUlasan(item: UlasanDb): Ulasan {
+  return {
+    id: item.id,
+    namaUser: item.namaUser,
+    komentar: item.komentar,
+    rating: item.rating,
+    status: item.status as StatusUlasan,
+    tanggal: item.createdAt.slice(0, 10),
+    kuliner: item.kuliner?.nama ?? '-',
+  };
+}
 
 type SiteMetadata = {
   key: string;
@@ -104,50 +142,6 @@ const METADATA_AWAL: SiteMetadata[] = [
 ];
 
 /* =========================
-   BANTUAN STORAGE
-   ========================= */
-function bacaJson(key: string, fallback: unknown) {
-  try {
-    const tersimpan = localStorage.getItem(key);
-    if (!tersimpan) return fallback;
-    return JSON.parse(tersimpan);
-  } catch {
-    return fallback;
-  }
-}
-
-function simpanJson(key: string, nilai: unknown) {
-  try {
-    localStorage.setItem(key, JSON.stringify(nilai));
-  } catch {
-    /* abaikan kalau storage penuh */
-  }
-}
-
-/* Usulan dari localStorage belum tentu lengkap (data lama),
-   jadi diberi nilai default dulu. */
-function rapikanUsulan(data: unknown): ItemAdmin[] {
-  if (!Array.isArray(data)) return [];
-
-  return data.map((item, indeks) => ({
-    id: String(item.id ?? `usulan-${indeks}`),
-    nama: item.nama || '(tanpa nama)',
-    kategori: item.kategori || 'Makanan',
-    daerah: item.daerah || '-',
-    status: item.status || 'Menunggu',
-    bahan: item.bahan ?? '',
-    deskripsi: item.deskripsi ?? '',
-    img: item.img ?? '',
-    pengirim: item.pengirim || 'Pengunjung',
-    tanggal: item.tanggal || '',
-    catatan: item.catatan,
-    rasa: item.rasa ?? '',
-    harga: item.harga ?? '',
-    sumber: 'usulan',
-  }));
-}
-
-/* =========================
    HALAMAN
    ========================= */
 export default function AdminDashboard() {
@@ -157,11 +151,12 @@ export default function AdminDashboard() {
   const [siap, setSiap] = useState(false);
   const [admin, setAdmin] = useState<User | null>(null);
 
-  const [kuliner, setKuliner] = useState<ItemAdmin[]>(KULINER_AWAL);
-  const [usulan, setUsulan] = useState<ItemAdmin[]>([]);
+  const [kuliner, setKuliner] = useState<ItemAdmin[]>([]);
   const [ulasan, setUlasan] = useState<Ulasan[]>([]);
-  const [favorit, setFavorit] = useState<string[]>([]);
   const [users, setUsers] = useState<User[]>([]);
+
+  /* Ringkasan dari database; null berarti belum berhasil dimuat */
+  const [statistik, setStatistik] = useState<StatistikAdmin | null>(null);
 
   const [chartSiap, setChartSiap] = useState(false);
 
@@ -209,7 +204,48 @@ export default function AdminDashboard() {
   const [metadataError, setMetadataError] = useState("");
   const [metadataMessage, setMetadataMessage] = useState("");
 
-  const daftar = [...kuliner, ...usulan];
+  /* Ambil angka ringkasan dari database. Dipisah dari effect awal
+     supaya bisa dipanggil ulang setelah admin mengubah data. */
+  const muatStatistik = async () => {
+    try {
+      const response = await fetch('/api/admin/stats', { cache: 'no-store' });
+
+      if (!response.ok) return;
+
+      const data = (await response.json()) as StatistikAdmin;
+      setStatistik(data);
+    } catch (error) {
+      console.error('Gagal mengambil statistik admin:', error);
+    }
+  };
+
+  /* Daftar kuliner dari database */
+  const muatKuliner = async () => {
+    try {
+      const response = await fetch('/api/admin/kuliner', { cache: 'no-store' });
+
+      if (!response.ok) return;
+
+      const data = (await response.json()) as { kuliner?: KulinerDb[] };
+      setKuliner((data.kuliner ?? []).map(keItemAdmin));
+    } catch (error) {
+      console.error('Gagal mengambil daftar kuliner:', error);
+    }
+  };
+
+  /* Daftar ulasan dari database */
+  const muatUlasan = async () => {
+    try {
+      const response = await fetch('/api/admin/ulasan', { cache: 'no-store' });
+
+      if (!response.ok) return;
+
+      const data = (await response.json()) as { ulasan?: UlasanDb[] };
+      setUlasan((data.ulasan ?? []).map(keUlasan));
+    } catch (error) {
+      console.error('Gagal mengambil daftar ulasan:', error);
+    }
+  };
 
   /* Ambil data saat halaman dibuka */
   useEffect(() => {
@@ -241,13 +277,9 @@ export default function AdminDashboard() {
           return;
         }
 
-        /* localStorage baru bisa dibaca setelah komponen terpasang di browser */
+        /* Seluruh data diambil dari database lewat API admin */
         setAdmin(data.user);
-        setKuliner(bacaJson(KULINER_KEY, null) ?? KULINER_AWAL);
-        setUsulan(rapikanUsulan(bacaJson(USULAN_KEY, [])));
-        setUlasan(bacaJson(ULASAN_KEY, []));
-        setFavorit(bacaJson(FAVORIT_KEY, []));
-        
+
         const userResponse = await fetch('/api/admin/users', {
           cache: 'no-store',
         });
@@ -256,6 +288,10 @@ export default function AdminDashboard() {
           const userData = await userResponse.json();
           setUsers(userData.users || []);
         }
+
+        await muatKuliner();
+        await muatUlasan();
+        await muatStatistik();
 
         setSiap(true);
       } catch (error) {
@@ -286,19 +322,8 @@ export default function AdminDashboard() {
     /* lewati kalau canvas atau library belum siap */
     if (!canvas || !Chart) return;
 
-    const hitungDaerah: { [daerah: string]: number } = {};
-
-    [...kuliner, ...usulan].forEach((item) => {
-      /* cuma hitung yang statusnya Aktif */
-      if (item.status !== 'Aktif') return;
-
-      const daerah = item.daerah.replace(/^Kabupaten /, 'Kab. ');
-      hitungDaerah[daerah] = (hitungDaerah[daerah] ?? 0) + 1;
-    });
-
-    const urut = Object.keys(hitungDaerah).sort(
-      (a, b) => hitungDaerah[b] - hitungDaerah[a]
-    );
+    const sebaran = statistik?.sebaranDaerah ?? [];
+    const urut = sebaran.map((baris) => baris.daerah);
 
     const chart = new Chart(canvas, {
       type: 'bar',
@@ -307,7 +332,7 @@ export default function AdminDashboard() {
         datasets: [
           {
             label: 'Jumlah Kuliner',
-            data: urut.map((daerah) => hitungDaerah[daerah]),
+            data: sebaran.map((baris) => baris.jumlah),
             backgroundColor: '#8CA978',
             borderRadius: 4,
           },
@@ -324,86 +349,118 @@ export default function AdminDashboard() {
     });
 
     return () => chart.destroy();
-  }, [chartSiap, activeTab, kuliner, usulan]);
+  }, [chartSiap, activeTab, statistik]);
 
   /* =========================
      AKSI DATA
      ========================= */
 
-  /* sumber ikut tersimpan, tapi saat dibaca selalu diisi 'usulan' lagi */
-  const simpanUsulan = (daftarBaru: ItemAdmin[]) => {
-    setUsulan(daftarBaru);
-    simpanJson(USULAN_KEY, daftarBaru);
-  };
+  /* Semua aksi menulis ke database lalu memuat ulang daftar dan
+     angka ringkasan supaya tabel dan kartu selalu sama. */
+  const ubahStatus = async (
+    id: string,
+    status: StatusKuliner,
+    catatanAdmin = ''
+  ) => {
+    try {
+      const response = await fetch('/api/admin/kuliner', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, status, catatanAdmin }),
+      });
 
-  /* Kuliner bawaan yang sudah diedit/dihapus admin disimpan terpisah,
-     supaya perubahannya tidak hilang saat halaman di-refresh. */
-  const simpanKuliner = (daftarBaru: ItemAdmin[]) => {
-    setKuliner(daftarBaru);
-    simpanJson(KULINER_KEY, daftarBaru);
+      if (!response.ok) return;
+    } catch (error) {
+      console.error('Gagal mengubah status kuliner:', error);
+      return;
+    }
+
+    await muatKuliner();
+    await muatStatistik();
   };
 
   const terimaUsulan = (id: string) => {
-    simpanUsulan(
-      usulan.map((item) =>
-        item.id === id ? { ...item, status: 'Aktif' as StatusKuliner } : item
-      )
-    );
+    void ubahStatus(id, 'APPROVED');
   };
 
   const kirimTolak = (catatan: string) => {
     if (!tolakItem) return;
 
-    simpanUsulan(
-      usulan.map((item) =>
-        item.id === tolakItem.id
-          ? { ...item, status: 'Nonaktif' as StatusKuliner, catatan }
-          : item
-      )
-    );
-
+    void ubahStatus(tolakItem.id, 'REJECTED', catatan);
     setTolakItem(null);
   };
 
-  const hapusItem = (item: ItemAdmin) => {
+  const hapusItem = async (item: ItemAdmin) => {
     if (!confirm(`Hapus "${item.nama}" dari daftar kuliner?`)) return;
 
-    if (item.sumber === 'usulan') {
-      simpanUsulan(usulan.filter((baris) => baris.id !== item.id));
+    try {
+      const response = await fetch('/api/admin/kuliner', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: item.id }),
+      });
+
+      if (!response.ok) return;
+    } catch (error) {
+      console.error('Gagal menghapus kuliner:', error);
       return;
     }
 
-    simpanKuliner(kuliner.filter((baris) => baris.id !== item.id));
+    await muatKuliner();
+    await muatStatistik();
   };
 
-  const simpanEdit = (itemBaru: ItemAdmin) => {
-    if (itemBaru.sumber === 'usulan') {
-      simpanUsulan(
-        usulan.map((item) => (item.id === itemBaru.id ? itemBaru : item))
-      );
-    } else {
-      simpanKuliner(
-        kuliner.map((item) => (item.id === itemBaru.id ? itemBaru : item))
-      );
+  const simpanEdit = async (itemBaru: ItemAdmin) => {
+    try {
+      const response = await fetch('/api/admin/kuliner', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: itemBaru.id,
+          nama: itemBaru.nama,
+          kategori: itemBaru.kategori,
+          daerah: itemBaru.daerah,
+          status: itemBaru.status,
+          bahan: itemBaru.bahan,
+          rasa: itemBaru.rasa,
+          deskripsi: itemBaru.deskripsi,
+        }),
+      });
+
+      if (!response.ok) return;
+    } catch (error) {
+      console.error('Gagal menyimpan perubahan kuliner:', error);
+      return;
     }
 
     setEditForm(null);
+
+    await muatKuliner();
+    await muatStatistik();
   };
 
-  const toggleUlasan = (id: number) => {
-    const terbaru = ulasan.map((item) =>
-      item.id === id
-        ? {
-            ...item,
-            status: (item.status === 'Tampil'
-              ? 'Sembunyi'
-              : 'Tampil') as StatusUlasan,
-          }
-        : item
-    );
+  const toggleUlasan = async (id: string) => {
+    const item = ulasan.find((baris) => baris.id === id);
+    if (!item) return;
 
-    setUlasan(terbaru);
-    simpanJson(ULASAN_KEY, terbaru);
+    const status: StatusUlasan =
+      item.status === 'TAMPIL' ? 'SEMBUNYI' : 'TAMPIL';
+
+    try {
+      const response = await fetch('/api/admin/ulasan', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, status }),
+      });
+
+      if (!response.ok) return;
+    } catch (error) {
+      console.error('Gagal mengubah status ulasan:', error);
+      return;
+    }
+
+    await muatUlasan();
+    await muatStatistik();
   };
 
   /* Logout */
@@ -429,35 +486,18 @@ export default function AdminDashboard() {
   /* =========================
      HITUNGAN
      ========================= */
-  const jumlahPerKategori = (nama: string) =>
-    daftar.filter((item) => item.kategori === nama).length;
 
-  const jumlahMenunggu = usulan.filter(
-    (item) => item.status === 'Menunggu'
-  ).length;
-
-  const usulanTerbaru = usulan
-    .slice()
-    .sort((a, b) => {
-      const urutTanggal = (b.tanggal ?? '').localeCompare(a.tanggal ?? '');
-      if (urutTanggal !== 0) return urutTanggal;
-      return (Number(b.id) || 0) - (Number(a.id) || 0);
-    })
+  /* Kuliner yang masih menunggu ditinjau, lima terbaru.
+     API sudah mengurutkan dari yang paling baru. */
+  const usulanTerbaru = kuliner
+    .filter((item) => item.status === 'PENDING')
     .slice(0, 5);
 
-  const ulasanTerurut = ulasan
-    .slice()
-    .sort((a, b) => (Number(b.id) || 0) - (Number(a.id) || 0));
+  /* API sudah mengurutkan ulasan dari yang paling baru */
+  const ulasanTerurut = ulasan;
 
-  const peringkat = daftar
-    .map((item) => ({
-      nama: item.nama,
-      kategori: item.kategori,
-      jumlah: favorit.filter((id) => String(id) === item.id).length,
-    }))
-    .filter((baris) => baris.jumlah > 0)
-    .sort((a, b) => b.jumlah - a.jumlah)
-    .slice(0, 5);
+  /* Top 5 favorit sudah dihitung database */
+  const peringkat = statistik?.topFavorit ?? [];
 
   // peta rasa
   const bukaFormRegion = (region?: MapRegion) => {
@@ -776,31 +816,57 @@ export default function AdminDashboard() {
 
                 {/* Kartu Statistik */}
                 <div className="row g-3">
-                  <div className="col-md-4 col-xl-3">
+                  <div className="col-6 col-lg-4 col-xl-2">
                     <div className="kartu-stat border rounded bg-white">
-                      <span>Total Kuliner</span>
-                      <h3 id="stat-total-kuliner">{daftar.length}</h3>
-                      <small>Terdaftar dalam sistem</small>
+                      <span>Kuliner Disetujui</span>
+                      <h3 id="stat-total-kuliner">
+                        {statistik?.kulinerApproved ?? 0}
+                      </h3>
+                      <small>Tampil di katalog</small>
                     </div>
                   </div>
 
-                  <div className="col-md-4 col-xl-3">
+                  <div className="col-6 col-lg-4 col-xl-2">
                     <div className="kartu-stat border rounded bg-white">
-                      <span>Perlu Menunggu</span>
-                      <h3 id="stat-perlu-menunggu">{jumlahMenunggu}</h3>
+                      <span>Menunggu Tinjauan</span>
+                      <h3 id="stat-perlu-menunggu">
+                        {statistik?.kulinerPending ?? 0}
+                      </h3>
                       <small>Perlu ditinjau admin</small>
                     </div>
                   </div>
 
-                  <div className="col-md-4 col-xl-3">
+                  <div className="col-6 col-lg-4 col-xl-2">
                     <div className="kartu-stat border rounded bg-white">
-                      <span>Total Usulan</span>
-                      <h3 id="stat-total-usulan">{usulan.length}</h3>
-                      <small>Total dari pengguna</small>
+                      <span>Ditolak</span>
+                      <h3 id="stat-total-ditolak">
+                        {statistik?.kulinerRejected ?? 0}
+                      </h3>
+                      <small>Tidak tampil di katalog</small>
                     </div>
                   </div>
 
-                  <div className="col-md-4 col-xl-3">
+                  <div className="col-6 col-lg-4 col-xl-2">
+                    <div className="kartu-stat border rounded bg-white">
+                      <span>Total Pengguna</span>
+                      <h3 id="stat-total-pengguna">
+                        {statistik?.totalPengguna ?? 0}
+                      </h3>
+                      <small>Akun terdaftar</small>
+                    </div>
+                  </div>
+
+                  <div className="col-6 col-lg-4 col-xl-2">
+                    <div className="kartu-stat border rounded bg-white">
+                      <span>Total Ulasan</span>
+                      <h3 id="stat-total-ulasan">
+                        {statistik?.totalUlasan ?? 0}
+                      </h3>
+                      <small>Ulasan pengguna</small>
+                    </div>
+                  </div>
+
+                  <div className="col-6 col-lg-4 col-xl-2">
                     <button
                       type="button"
                       className="kartu-stat kartu-tombol border rounded bg-white w-100 text-start"
@@ -810,7 +876,9 @@ export default function AdminDashboard() {
                         Total Favorit
                         <i className="bx bx-chevron-right" />
                       </span>
-                      <h3 id="stat-total-favorit">{favorit.length}</h3>
+                      <h3 id="stat-total-favorit">
+                        {statistik?.totalFavorit ?? 0}
+                      </h3>
                       <small className="text-danger">
                         <i className="bx bx-trophy me-1" />
                         Top 5 Terfavorit
@@ -818,6 +886,16 @@ export default function AdminDashboard() {
                     </button>
                   </div>
                 </div>
+
+                {statistik !== null &&
+                  statistik.kulinerApproved === 0 &&
+                  statistik.kulinerPending === 0 &&
+                  statistik.kulinerRejected === 0 && (
+                    <p className="text-muted small mb-0">
+                      Belum ada data kuliner di database. Angka akan terisi
+                      setelah pengajuan masuk atau data awal di-seed.
+                    </p>
+                  )}
 
                 {/* Statistik Kategori */}
                 <div className="box-stat-kategori border rounded bg-white">
@@ -830,7 +908,7 @@ export default function AdminDashboard() {
                             {item.nama}
                           </small>
                           <h4 id={item.id}>
-                            {jumlahPerKategori(item.nama)}
+                            {statistik?.perKategori[item.nama] ?? 0}
                           </h4>
                         </div>
                       </div>
@@ -901,14 +979,14 @@ export default function AdminDashboard() {
                         </tr>
                       </thead>
                       <tbody id="tabel-daftar-kuliner">
-                        {daftar.length === 0 ? (
+                        {kuliner.length === 0 ? (
                           <BarisKosong
                             kolom={5}
                             ikon="bx-folder-open"
                             pesan="Belum ada data kuliner."
                           />
                         ) : (
-                          daftar.map((item) => (
+                          kuliner.map((item) => (
                             <BarisKuliner
                               key={item.id}
                               item={item}

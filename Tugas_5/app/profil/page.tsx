@@ -4,41 +4,38 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import "./profil.css";
-
-/* =========================
-   KEY LOCAL STORAGE
-   ========================= */
-const CURRENT_USER_KEY = "jelajahRasaCurrentUser";
-const USERS_KEY = "jelajahRasaUsers";
-const USULAN_KEY = "jelajahRasaUsulan";
-const FAVORIT_KEY = "jelajahRasaFavorites";
+import {
+  LABEL_STATUS,
+  WARNA_STATUS,
+  type StatusKuliner,
+} from "../data/status";
 
 /* =========================
    TIPE DATA
    ========================= */
 type User = {
-  name: string;
+  id: string;
+  nama: string;
   email: string;
-  city: string;
-  password?: string;
-  avatar?: string;
+  kota: string | null;
+  avatar: string | null;
+  role: string;
 };
 
-type StatusUsulan = "Menunggu" | "Aktif" | "Nonaktif";
-
-type Usulan = {
-  id: number;
+type Kuliner = {
+  id: string;
   nama: string;
+  deskripsi: string;
   kategori: string;
   daerah: string;
-  status: StatusUsulan;
-  bahan?: string;
-  deskripsi?: string;
-  rasa?: string;
-  harga?: string;
-  pengirim?: string;
-  tanggal?: string;
-  img?: string;
+  bahan: string[];
+  rasa: string[];
+  gambar: string | null;
+  hargaMin: number;
+  hargaMax: number;
+  status: string;
+  catatanAdmin: string | null;
+  createdAt: string;
 };
 
 type Notifikasi = {
@@ -97,47 +94,36 @@ const FORMAT_FOTO = ["image/jpeg", "image/png", "image/webp"];
 const MAKS_UKURAN_FOTO = 5 * 1024 * 1024;
 
 /* =========================
-   BANTUAN STORAGE
+   BANTUAN TAMPILAN
    ========================= */
-function bacaJson(key: string, fallback: unknown) {
-  try {
-    const tersimpan = localStorage.getItem(key);
-    if (!tersimpan) return fallback;
-    return JSON.parse(tersimpan);
-  } catch {
-    return fallback;
-  }
-}
-
-function simpanJson(key: string, nilai: unknown): boolean {
-  try {
-    localStorage.setItem(key, JSON.stringify(nilai));
-    return true;
-  } catch {
-    return false;
-  }
-}
-
 function formatTanggal(tanggal?: string) {
   if (!tanggal) return "-";
 
-  const bagian = tanggal.split("-");
+  const bagian = tanggal.slice(0, 10).split("-");
   if (bagian.length !== 3) return tanggal;
 
   return `${Number(bagian[2])} ${NAMA_BULAN[Number(bagian[1]) - 1]} ${bagian[0]}`;
 }
 
+function formatHarga(min: number, max: number) {
+  if (!min && !max) return "";
+
+  const angka = (nilai: number) => nilai.toLocaleString("id-ID");
+
+  if (!max || min === max) return angka(min);
+
+  return `${angka(min)} - ${angka(max)}`;
+}
+
 /* =========================
    BADGE STATUS
    ========================= */
-function BadgeStatus({ status }: { status: StatusUsulan }) {
-  const warna = {
-    Aktif: "bg-success",
-    Menunggu: "bg-warning text-dark",
-    Nonaktif: "bg-secondary",
-  };
-
-  return <span className={`badge ${warna[status] ?? "bg-secondary"}`}>{status}</span>;
+function BadgeStatus({ status }: { status: StatusKuliner }) {
+  return (
+    <span className={`badge ${WARNA_STATUS[status] ?? "bg-secondary"}`}>
+      {LABEL_STATUS[status] ?? status}
+    </span>
+  );
 }
 
 /* =========================
@@ -148,11 +134,12 @@ export default function ProfilPage() {
 
   const [user, setUser] = useState<User | null>(null);
   const [siap, setSiap] = useState(false);
-  const [usulan, setUsulan] = useState<Usulan[]>([]);
+  const [kuliner, setKuliner] = useState<Kuliner[]>([]);
   const [jumlahFavorit, setJumlahFavorit] = useState(0);
   const [notifikasi, setNotifikasi] = useState<Notifikasi | null>(null);
   const [notifikasiFoto, setNotifikasiFoto] = useState<NotifikasiFoto | null>(null);
-  const [konfirmasiHapus, setKonfirmasiHapus] = useState<Usulan | null>(null);
+  const [konfirmasiHapus, setKonfirmasiHapus] = useState<Kuliner | null>(null);
+  const [sedangSimpan, setSedangSimpan] = useState(false);
   const inputAvatarRef = useRef<HTMLInputElement>(null);
 
   /* Form informasi personal */
@@ -162,7 +149,7 @@ export default function ProfilPage() {
   const [errorKota, setErrorKota] = useState("");
 
   /* Modal edit kuliner */
-  const [diedit, setDiedit] = useState<Usulan | null>(null);
+  const [diedit, setDiedit] = useState<Kuliner | null>(null);
   const [editNama, setEditNama] = useState("");
   const [editKategori, setEditKategori] = useState("");
   const [editDaerah, setEditDaerah] = useState("");
@@ -192,44 +179,56 @@ export default function ProfilPage() {
     setNotifikasi(null);
 
     if (redirectLogin) {
+      router.refresh();
       router.push("/login");
     }
   };
 
   /* Ambil data saat halaman dibuka */
   useEffect(() => {
-    const aktif = bacaJson(CURRENT_USER_KEY, null) as User | null;
+    let masihAktif = true;
 
-    if (!aktif) {
-      router.replace("/login");
-      return;
+    async function muatProfil() {
+      try {
+        const response = await fetch("/api/profile", { cache: "no-store" });
+
+        if (response.status === 401) {
+          router.replace("/login");
+          return;
+        }
+
+        const data = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+          throw new Error(data.message ?? "Gagal memuat data profil.");
+        }
+
+        if (!masihAktif) return;
+
+        setUser(data.user);
+        setNama(data.user.nama);
+        setKota(data.user.kota ?? "");
+        setKuliner(data.kuliner ?? []);
+        setJumlahFavorit(data.jumlahFavorit ?? 0);
+        setSiap(true);
+      } catch {
+        if (!masihAktif) return;
+
+        tampilkanNotifikasi(
+          "error",
+          "Gagal Memuat Profil",
+          "Data profil belum berhasil dimuat. Silakan kembali ke halaman masuk dan coba lagi.",
+          true
+        );
+      }
     }
 
-    const semuaUsulan = bacaJson(USULAN_KEY, []) as Usulan[];
-    const favorit = bacaJson(FAVORIT_KEY, []) as string[];
+    void muatProfil();
 
-    /* localStorage baru bisa dibaca setelah komponen terpasang di browser */
-    /* eslint-disable react-hooks/set-state-in-effect */
-    setUser(aktif);
-    setNama(aktif.name);
-    setKota(aktif.city);
-    setUsulan(
-      semuaUsulan.filter((item) => item.pengirim === aktif.name)
-    );
-    setJumlahFavorit(Array.isArray(favorit) ? favorit.length : 0);
-    setSiap(true);
+    return () => {
+      masihAktif = false;
+    };
   }, [router]);
-
-  /* Simpan ulang daftar usulan milik user + semua usulan */
-  const perbaruiUsulan = (daftarMilikUser: Usulan[]) => {
-    const semua = bacaJson(USULAN_KEY, []) as Usulan[];
-    const lain = semua.filter(
-      (item) => item.pengirim !== user?.name
-    );
-
-    simpanJson(USULAN_KEY, [...lain, ...daftarMilikUser]);
-    setUsulan(daftarMilikUser);
-  };
 
   /* Upload foto profil */
   const handleAvatar = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -260,7 +259,7 @@ export default function ProfilPage() {
 
     const reader = new FileReader();
 
-    reader.onload = (e) => {
+    reader.onload = async (e) => {
       const avatar = e.target?.result;
 
       if (typeof avatar !== "string" || !avatar) {
@@ -272,41 +271,40 @@ export default function ProfilPage() {
         return;
       }
 
-      const userBaru = { ...user, avatar };
+      try {
+        const response = await fetch("/api/profile", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ avatar }),
+        });
 
-      if (!simpanJson(CURRENT_USER_KEY, userBaru)) {
+        const data = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+          setNotifikasiFoto({
+            tipe: "error",
+            judul: "Foto Gagal Disimpan",
+            pesan: data.message ?? "Foto gagal diperbarui. Silakan coba lagi.",
+          });
+          return;
+        }
+
+        setUser(data.user);
+
+        window.dispatchEvent(new Event("jelajahRasaUserUpdated"));
+
+        setNotifikasiFoto({
+          tipe: "sukses",
+          judul: "Foto Profil Berhasil Diperbarui",
+          pesan: "Foto baru kini digunakan pada profil Anda.",
+        });
+      } catch {
         setNotifikasiFoto({
           tipe: "error",
           judul: "Foto Gagal Disimpan",
-          pesan: "Penyimpanan foto gagal. Coba pilih foto yang lebih kecil.",
+          pesan: "Tidak dapat menghubungi server. Silakan coba lagi.",
         });
-        return;
       }
-
-      const users = bacaJson(USERS_KEY, []) as User[];
-      const usersBaru = users.map((item) =>
-        item.email === user.email ? { ...item, avatar } : item
-      );
-
-      if (!simpanJson(USERS_KEY, usersBaru)) {
-        simpanJson(CURRENT_USER_KEY, user);
-        setNotifikasiFoto({
-          tipe: "error",
-          judul: "Foto Gagal Disimpan",
-          pesan: "Foto gagal diperbarui pada data pengguna. Silakan coba lagi.",
-        });
-        return;
-      }
-
-      setUser(userBaru);
-      
-      window.dispatchEvent(new Event("jelajahRasaUserUpdated"));
-
-      setNotifikasiFoto({
-        tipe: "sukses",
-        judul: "Foto Profil Berhasil Diperbarui",
-        pesan: "Foto baru kini digunakan pada profil Anda.",
-      });
     };
 
     reader.onerror = () => {
@@ -331,15 +329,14 @@ export default function ProfilPage() {
   };
 
   /* Simpan perubahan profil */
-  const simpanProfil = (event: React.FormEvent<HTMLFormElement>) => {
+  const simpanProfil = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!user) return;
 
     const namaBaru = nama.trim();
     const kotaBaru = kota.trim();
-    const namaLama = user.name;
-    const namaAsli = user.name.trim();
-    const kotaAsli = user.city.trim();
+    const namaAsli = user.nama.trim();
+    const kotaAsli = (user.kota ?? "").trim();
 
     let valid = true;
 
@@ -373,72 +370,63 @@ export default function ProfilPage() {
       return;
     }
 
-    const userBaru = {
-      ...user,
-      name: namaBerubah ? namaBaru : user.name,
-      city: kotaBerubah ? kotaBaru : user.city,
-    };
+    setSedangSimpan(true);
 
-    if (!simpanJson(CURRENT_USER_KEY, userBaru)) {
+    try {
+      const response = await fetch("/api/profile", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nama: namaBaru, kota: kotaBaru }),
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        tampilkanNotifikasi(
+          "error",
+          "Perubahan Gagal Disimpan",
+          data.message ?? "Profil belum berhasil disimpan. Silakan coba lagi."
+        );
+        return;
+      }
+
+      setUser(data.user);
+      setNama(data.user.nama);
+      setKota(data.user.kota ?? "");
+
+      window.dispatchEvent(new Event("jelajahRasaUserUpdated"));
+
+      tampilkanNotifikasi(
+        "sukses",
+        "Profil Berhasil Diperbarui",
+        "Nama atau informasi domisili kamu berhasil diperbarui."
+      );
+    } catch {
       tampilkanNotifikasi(
         "error",
         "Perubahan Gagal Disimpan",
-        "Profil belum berhasil disimpan. Silakan coba lagi."
+        "Tidak dapat menghubungi server. Silakan coba lagi."
       );
-      return;
+    } finally {
+      setSedangSimpan(false);
     }
-
-    const users = bacaJson(USERS_KEY, []) as User[];
-    simpanJson(
-      USERS_KEY,
-      users.map((item) =>
-        item.email === user.email
-          ? { ...item, name: userBaru.name, city: userBaru.city }
-          : item
-      )
-    );
-
-    /* Usulan lama tetap milik user ini walau nama berubah */
-    if (namaBerubah) {
-      const semuaUsulan = bacaJson(USULAN_KEY, []) as Usulan[];
-      const usulanBaru = semuaUsulan.map((item) =>
-        item.pengirim === namaLama
-          ? { ...item, pengirim: namaBaru }
-          : item
-      );
-
-      simpanJson(USULAN_KEY, usulanBaru);
-      setUsulan(
-        usulanBaru.filter((item) => item.pengirim === namaBaru)
-      );
-    }
-
-    setUser(userBaru);
-    setNama(userBaru.name);
-    setKota(userBaru.city);
-
-    tampilkanNotifikasi(
-      "sukses",
-      "Profil Berhasil Diperbarui",
-      "Nama atau informasi domisili kamu berhasil diperbarui."
-    );
   };
 
   /* Buka modal edit */
-  const bukaEdit = (item: Usulan) => {
+  const bukaEdit = (item: Kuliner) => {
     setDiedit(item);
     setEditNama(item.nama);
     setEditKategori(item.kategori);
     setEditDaerah(item.daerah);
-    setEditHarga(item.harga ?? "");
-    setEditBahan(item.bahan ?? "");
-    setEditDeskripsi(item.deskripsi ?? "");
+    setEditHarga(formatHarga(item.hargaMin, item.hargaMax));
+    setEditBahan(item.bahan.join(", "));
+    setEditDeskripsi(item.deskripsi);
   };
 
   const tutupEdit = () => setDiedit(null);
 
   /* Simpan hasil edit */
-  const simpanEdit = (event: React.FormEvent<HTMLFormElement>) => {
+  const simpanEdit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!diedit) return;
 
@@ -451,58 +439,114 @@ export default function ProfilPage() {
       return;
     }
 
-    perbaruiUsulan(
-      usulan.map((item) =>
-        item.id === diedit.id
-          ? {
-              ...item,
-              nama: editNama.trim(),
-              kategori: editKategori,
-              daerah: editDaerah,
-              harga: editHarga.trim(),
-              bahan: editBahan.trim(),
-              deskripsi: editDeskripsi.trim(),
-            }
-          : item
-      )
-    );
+    setSedangSimpan(true);
 
-    tutupEdit();
+    try {
+      const response = await fetch(`/api/profile/kuliner/${diedit.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nama: editNama.trim(),
+          kategori: editKategori,
+          daerah: editDaerah,
+          harga: editHarga.trim(),
+          bahan: editBahan.trim(),
+          deskripsi: editDeskripsi.trim(),
+        }),
+      });
 
-    tampilkanNotifikasi(
-      "sukses",
-      "Kuliner Berhasil Diperbarui",
-      `Informasi kuliner "${editNama.trim()}" berhasil diperbarui.`
-    );
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        tampilkanNotifikasi(
+          "error",
+          "Perubahan Gagal Disimpan",
+          data.message ?? "Kuliner belum berhasil diperbarui. Silakan coba lagi."
+        );
+        return;
+      }
+
+      setKuliner((sebelumnya) =>
+        sebelumnya.map((item) =>
+          item.id === diedit.id ? data.kuliner : item
+        )
+      );
+
+      tutupEdit();
+
+      tampilkanNotifikasi(
+        "sukses",
+        "Kuliner Berhasil Diperbarui",
+        `Informasi kuliner "${editNama.trim()}" berhasil diperbarui dan menunggu peninjauan admin.`
+      );
+    } catch {
+      tampilkanNotifikasi(
+        "error",
+        "Perubahan Gagal Disimpan",
+        "Tidak dapat menghubungi server. Silakan coba lagi."
+      );
+    } finally {
+      setSedangSimpan(false);
+    }
   };
 
   /* Hapus usulan */
-  const hapusUsulan = (item: Usulan) => {
+  const hapusUsulan = (item: Kuliner) => {
     setKonfirmasiHapus(item);
   };
 
   /* Konfirmasi hapus kuliner */
-  const konfirmasiHapusUsulan = () => {
+  const konfirmasiHapusUsulan = async () => {
     if (!konfirmasiHapus) return;
 
     const item = konfirmasiHapus;
 
-    perbaruiUsulan(
-      usulan.filter((baris) => baris.id !== item.id)
-    );
+    try {
+      const response = await fetch(`/api/profile/kuliner/${item.id}`, {
+        method: "DELETE",
+      });
 
-    setKonfirmasiHapus(null);
+      const data = await response.json().catch(() => ({}));
 
-    tampilkanNotifikasi(
-      "sukses",
-      "Kuliner Berhasil Dihapus",
-      `Kuliner "${item.nama}" berhasil dihapus dari histori kuliner kamu.`
-    );
+      if (!response.ok) {
+        setKonfirmasiHapus(null);
+        tampilkanNotifikasi(
+          "error",
+          "Gagal Menghapus Kuliner",
+          data.message ?? "Kuliner belum berhasil dihapus. Silakan coba lagi."
+        );
+        return;
+      }
+
+      setKuliner((sebelumnya) =>
+        sebelumnya.filter((baris) => baris.id !== item.id)
+      );
+      setKonfirmasiHapus(null);
+
+      tampilkanNotifikasi(
+        "sukses",
+        "Kuliner Berhasil Dihapus",
+        `Kuliner "${item.nama}" berhasil dihapus dari histori kuliner kamu.`
+      );
+    } catch {
+      setKonfirmasiHapus(null);
+      tampilkanNotifikasi(
+        "error",
+        "Gagal Menghapus Kuliner",
+        "Tidak dapat menghubungi server. Silakan coba lagi."
+      );
+    }
   };
 
   /* Logout */
-  const logout = () => {
-    localStorage.removeItem(CURRENT_USER_KEY);
+  const logout = async () => {
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+    } catch {
+      /* tetap keluarkan pengguna dari halaman ini walau permintaan gagal */
+    }
+
+    window.dispatchEvent(new Event("jelajahRasaUserUpdated"));
 
     tampilkanNotifikasi(
       "sukses",
@@ -543,6 +587,7 @@ export default function ProfilPage() {
           <div className="col-lg-4">
             <div className="profile-card-main">
               <div className="position-relative d-inline-block mx-auto mb-3">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={user.avatar || "/images/homepage/default-avatar.png"}
                   id="user-avatar-profile"
@@ -568,7 +613,7 @@ export default function ProfilPage() {
               </div>
 
               <h5 className="profile-display-name" id="profile-display-name">
-                {user.name}
+                {user.nama}
               </h5>
               <p className="profile-display-role" id="profile-display-role">
                 Tukang Kuliner
@@ -581,7 +626,7 @@ export default function ProfilPage() {
                     className="profile-stat-number text-success"
                     id="total-added-count"
                   >
-                    {usulan.length}
+                    {kuliner.length}
                   </h6>
                   <small className="profile-stat-label">
                     Kuliner Ditambahkan
@@ -705,8 +750,9 @@ export default function ProfilPage() {
                   type="submit"
                   id="btn-save-profile"
                   className="btn-save-profile"
+                  disabled={sedangSimpan}
                 >
-                  Simpan Perubahan
+                  {sedangSimpan ? "Menyimpan..." : "Simpan Perubahan"}
                 </button>
               </form>
             </div>
@@ -726,13 +772,14 @@ export default function ProfilPage() {
               </div>
 
               <div
-                className={`history-list-container ${usulan.length === 0 ? "d-none" : ""}`}
+                className={`history-list-container ${kuliner.length === 0 ? "d-none" : ""}`}
                 id="history-list-container"
               >
-                {usulan.map((item) => (
+                {kuliner.map((item) => (
                   <div className="history-item" key={item.id}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                      src={item.img || "/images/homepage/default-avatar.png"}
+                      src={item.gambar || "/images/homepage/default-avatar.png"}
                       alt={item.nama}
                       className="history-item-img"
                     />
@@ -747,12 +794,19 @@ export default function ProfilPage() {
 
                       <p className="history-item-meta">
                         <i className="bx bx-calendar"></i>
-                        Ditambahkan pada: {formatTanggal(item.tanggal)}
+                        Ditambahkan pada: {formatTanggal(item.createdAt)}
                       </p>
 
                       <p className="history-item-meta">
-                        <BadgeStatus status={item.status} />
+                        <BadgeStatus status={item.status as StatusKuliner} />
                       </p>
+
+                      {item.status === "REJECTED" && item.catatanAdmin && (
+                        <p className="history-item-meta text-danger">
+                          <i className="bx bx-info-circle"></i>
+                          Catatan admin: {item.catatanAdmin}
+                        </p>
+                      )}
                     </div>
 
                     <div className="history-item-actions">
@@ -779,7 +833,7 @@ export default function ProfilPage() {
               </div>
 
               {/* Tampilan jika histori kosong */}
-              {usulan.length === 0 && (
+              {kuliner.length === 0 && (
                 <div id="empty-history-state" className="empty-history-state">
                   <i className="bx bx-folder-open empty-history-icon"></i>
                   <h6 className="empty-history-title">
@@ -941,8 +995,9 @@ export default function ProfilPage() {
                   type="submit"
                   form="form-edit-kuliner"
                   className="btn btn-success"
+                  disabled={sedangSimpan}
                 >
-                  Simpan Perubahan
+                  {sedangSimpan ? "Menyimpan..." : "Simpan Perubahan"}
                 </button>
               </div>
             </div>
