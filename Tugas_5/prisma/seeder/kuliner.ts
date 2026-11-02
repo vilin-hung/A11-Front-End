@@ -1,12 +1,4 @@
-import "dotenv/config";
-import { PrismaClient } from "../../app/generated/prisma/client";
-import { PrismaPg } from "@prisma/adapter-pg";
-
-const adapter = new PrismaPg({
-  connectionString: process.env.DATABASE_URL!,
-});
-
-const prisma = new PrismaClient({ adapter });
+import type { PrismaClient } from "../../app/generated/prisma/client";
 
 const dataKuliner = [
   {
@@ -551,7 +543,7 @@ const dataKuliner = [
   }
 ]
 
-async function main() {
+export async function seedKuliner(prisma: PrismaClient) {
   for (const item of dataKuliner) {
     await prisma.kuliner.upsert({
       where: { id: item.id },
@@ -559,12 +551,6 @@ async function main() {
       create: { ...item },
     });
   }
-}
 
-main()
-  .then(() => prisma.$disconnect())
-  .catch(async (e) => {
-    console.error(e);
-    await prisma.$disconnect();
-    process.exit(1);
-  });
+  console.log(`Berhasil memasukkan ${dataKuliner.length} data kuliner!`);
+}

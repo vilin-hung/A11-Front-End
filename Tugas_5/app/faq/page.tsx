@@ -163,7 +163,9 @@ export default function FAQPage() {
                   kami langsung.
                 </p>
                 <a
-                  href="mailto:halo@jelajahrasajabar.id"
+                  href="mailto:halo@jelajahrasajabar.id?subject=Pertanyaan%20Jelajah%20Rasa%20Jawa%20Barat&body=Halo%20Tim%20Jelajah%20Rasa,%0A%0ASaya%20ingin%20bertanya%20mengenai..."
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="faq-contact-btn"
                 >
                   <i className="bx bx-envelope"></i> Hubungi Kami

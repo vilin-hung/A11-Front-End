@@ -52,3 +52,8 @@ export type SiteMetadata = Prisma.SiteMetadataModel
  * 
  */
 export type MapRegion = Prisma.MapRegionModel
+/**
+ * Model ContactMessage
+ * 
+ */
+export type ContactMessage = Prisma.ContactMessageModel
