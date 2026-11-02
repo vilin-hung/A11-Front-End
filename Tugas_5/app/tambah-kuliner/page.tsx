@@ -43,6 +43,11 @@ const OPSI_RASA = [
   { id: "rasa-hangat", value: "Hangat Rempah", label: "Hangat Rempah" },
 ];
 
+/* Opsi bahan, dikelompokkan berdasarkan jenis gizinya */
+const OPSI_KARBOHIDRAT = ["Nasi", "Mie", "Bihun", "Singkong", "Ketan", "Ubi"];
+const OPSI_PROTEIN = ["Ayam", "Daging Sapi", "Telur", "Tahu", "Tempe"];
+const OPSI_SERAT = ["Tauge", "Timun", "Sawi", "Kol"];
+
 const FORMAT_FOTO = ["image/jpeg", "image/png", "image/webp"];
 const MAKS_UKURAN_FOTO = 5 * 1024 * 1024;
 
@@ -66,6 +71,120 @@ function labelDaerah(value: string) {
 }
 
 /* =========================
+   HELPER HARGA
+   ========================= */
+/* Hanya angka, boleh titik sebagai pemisah ribuan (mis. 13.000) */
+const POLA_HARGA = /^\d+(\.\d{3})*$/;
+
+function hargaValid(value: string) {
+  const v = value.trim();
+  return v === "" || POLA_HARGA.test(v);
+}
+
+function hargaKeAngka(value: string) {
+  return Number(value.trim().replace(/\./g, ""));
+}
+
+function formatRupiah(angka: number) {
+  return angka.toLocaleString("id-ID");
+}
+
+/* =========================
+   HELPER BAHAN
+   ========================= */
+/* "Kentang, Wortel" -> ["Kentang", "Wortel"] (kosong & spasi dibuang) */
+function pecahDaftar(value: string) {
+  return value
+    .split(",")
+    .map((v) => v.trim())
+    .filter(Boolean);
+}
+
+/* Gabungkan pilihan checkbox + isian "Lainnya" tanpa duplikat */
+function gabungBahan(terpilih: string[], lain: string) {
+  const hasil = [...terpilih];
+  pecahDaftar(lain).forEach((item) => {
+    const sudahAda = hasil.some((h) => h.toLowerCase() === item.toLowerCase());
+    if (!sudahAda) hasil.push(item);
+  });
+  return hasil;
+}
+
+function buatId(prefix: string, value: string) {
+  return `${prefix}-${value.toLowerCase().replace(/\s+/g, "-")}`;
+}
+
+/* =========================
+   KOMPONEN KELOMPOK BAHAN
+   (dibuat di luar halaman supaya input tidak kehilangan fokus saat mengetik)
+   ========================= */
+type KelompokBahanProps = {
+  judul: string;
+  icon: string;
+  prefix: string;
+  opsi: string[];
+  terpilih: string[];
+  onToggle: (value: string) => void;
+  lain: string;
+  onLainChange: (value: string) => void;
+  placeholderLain: string;
+};
+
+function KelompokBahan({
+  judul,
+  icon,
+  prefix,
+  opsi,
+  terpilih,
+  onToggle,
+  lain,
+  onLainChange,
+  placeholderLain,
+}: KelompokBahanProps) {
+  return (
+    <div className="mb-4">
+      <label className="form-label small fw-semibold text-dark d-flex align-items-center gap-1 mb-2">
+        <i className={`bx ${icon} text-success fs-5`}></i> {judul}
+      </label>
+
+      <div className="d-flex flex-wrap gap-2 mb-2">
+        {opsi.map((nama) => {
+          const id = buatId(prefix, nama);
+          return (
+            <span key={id} className="d-contents">
+              <input
+                type="checkbox"
+                className="taste-pill-input"
+                id={id}
+                name={prefix}
+                value={nama}
+                checked={terpilih.includes(nama)}
+                onChange={() => onToggle(nama)}
+              />
+              <label className="taste-pill-label" htmlFor={id}>
+                <i className="bx bx-check-circle"></i> {nama}
+              </label>
+            </span>
+          );
+        })}
+      </div>
+
+      <input
+        type="text"
+        className="form-control form-control-sm"
+        id={`${prefix}-lain`}
+        name={`${prefix}-lain`}
+        placeholder={placeholderLain}
+        aria-label={`${judul} lainnya (opsional)`}
+        value={lain}
+        onChange={(e) => onLainChange(e.target.value)}
+      />
+      <div className="form-text small">Lainnya (opsional). Pisahkan dengan koma jika lebih dari satu.</div>
+    </div>
+  );
+}
+
+/* =========================
    HALAMAN
    ========================= */
 export default function TambahKulinerPage() {
@@ -75,9 +194,18 @@ export default function TambahKulinerPage() {
   const [daerah, setDaerah] = useState("");
   const [kategori, setKategori] = useState("");
   const [deskripsi, setDeskripsi] = useState("");
-  const [bahan, setBahan] = useState("");
   const [rasa, setRasa] = useState<string[]>([]);
-  const [harga, setHarga] = useState("");
+  const [hargaMin, setHargaMin] = useState("");
+  const [hargaMax, setHargaMax] = useState("");
+
+  /* Bahan: karbohidrat, protein, serat (checkbox + "lainnya"), dan pelengkap */
+  const [karbo, setKarbo] = useState<string[]>([]);
+  const [karboLain, setKarboLain] = useState("");
+  const [protein, setProtein] = useState<string[]>([]);
+  const [proteinLain, setProteinLain] = useState("");
+  const [serat, setSerat] = useState<string[]>([]);
+  const [seratLain, setSeratLain] = useState("");
+  const [pelengkap, setPelengkap] = useState("");
 
   const [foto, setFoto] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState("");
@@ -107,26 +235,46 @@ export default function TambahKulinerPage() {
     }
     setFotoError("");
     setFoto(file);
+    setPreviewUrl(URL.createObjectURL(file));
   };
 
   const hapusFoto = () => {
     setFoto(null);
+    setPreviewUrl("");
     setFotoError("");
     if (inputFotoRef.current) inputFotoRef.current.value = "";
   };
 
-  /* Handler checkbox rasa */
-  const toggleRasa = (value: string) => {
-    setRasa((lama) => (lama.includes(value) ? lama.filter((r) => r !== value) : [...lama, value]));
+  /* Handler checkbox */
+  const toggleItem = (setter: React.Dispatch<React.SetStateAction<string[]>>) => (value: string) => {
+    setter((lama) => (lama.includes(value) ? lama.filter((v) => v !== value) : [...lama, value]));
   };
 
-  /* Validasi */
+  /* Validasi harga */
+  const minFormatSalah = !hargaValid(hargaMin);
+  const maxFormatSalah = !hargaValid(hargaMax);
+  const rentangSalah =
+    !minFormatSalah &&
+    !maxFormatSalah &&
+    hargaMin.trim() !== "" &&
+    hargaMax.trim() !== "" &&
+    hargaKeAngka(hargaMin) > hargaKeAngka(hargaMax);
+
+  let pesanHarga = "";
+  if (minFormatSalah || maxFormatSalah) {
+    pesanHarga = "Tolong masukkan harga dalam bentuk angka saja (contoh: 15000 atau 15.000).";
+  } else if (rentangSalah) {
+    pesanHarga = "Harga minimal tidak boleh lebih besar dari harga maksimal.";
+  }
+
+  /* Validasi form (bahan bersifat opsional, jadi tidak masuk validasi) */
   const error = {
     nama: nama.trim() === "",
     daerah: daerah === "",
     kategori: kategori === "",
     deskripsi: deskripsi.trim() === "",
     foto: foto === null || fotoError !== "",
+    harga: pesanHarga !== "",
   };
   const formValid = !Object.values(error).some(Boolean);
 
@@ -136,11 +284,28 @@ export default function TambahKulinerPage() {
     setDaerah("");
     setKategori("");
     setDeskripsi("");
-    setBahan("");
     setRasa([]);
-    setHarga("");
+    setHargaMin("");
+    setHargaMax("");
+    setKarbo([]);
+    setKarboLain("");
+    setProtein([]);
+    setProteinLain("");
+    setSerat([]);
+    setSeratLain("");
+    setPelengkap("");
     hapusFoto();
     setSudahSubmit(false);
+  };
+
+  /* Gabungkan harga min & max jadi 1 string untuk disimpan */
+  const susunHarga = () => {
+    const min = hargaMin.trim();
+    const max = hargaMax.trim();
+    if (min && max) return `${formatRupiah(hargaKeAngka(min))} - ${formatRupiah(hargaKeAngka(max))}`;
+    if (min) return formatRupiah(hargaKeAngka(min));
+    if (max) return formatRupiah(hargaKeAngka(max));
+    return "";
   };
 
   /* Submit */
@@ -161,6 +326,16 @@ export default function TambahKulinerPage() {
 
     const img = foto ? await bacaFoto(foto) : "";
 
+    /* Susun data bahan per kelompok */
+    const daftarKarbo = gabungBahan(karbo, karboLain);
+    const daftarProtein = gabungBahan(protein, proteinLain);
+    const daftarSerat = gabungBahan(serat, seratLain);
+    const daftarPelengkap = pecahDaftar(pelengkap);
+
+    /* Versi gabungan (string koma) tetap disimpan di field `bahan`
+       supaya halaman admin/profil/daftar yang lama tetap berfungsi. */
+    const bahanGabungan = [...daftarKarbo, ...daftarProtein, ...daftarSerat, ...daftarPelengkap].join(", ");
+
     try {
       const lama = JSON.parse(localStorage.getItem(USULAN_KEY) ?? "[]");
       lama.push({
@@ -169,10 +344,16 @@ export default function TambahKulinerPage() {
         kategori,
         daerah: labelDaerah(daerah),
         status: "Menunggu",
-        bahan: bahan.trim(),
+        bahan: bahanGabungan,
+        bahanDetail: {
+          karbohidrat: daftarKarbo,
+          protein: daftarProtein,
+          serat: daftarSerat,
+          pelengkap: pelengkap.trim(),
+        },
         deskripsi: deskripsi.trim(),
         rasa: rasa.join(", "),
-        harga: harga.trim(),
+        harga: susunHarga(),
         pengirim: user.name,
         tanggal: new Date().toISOString().slice(0, 10),
         img,
@@ -339,21 +520,70 @@ export default function TambahKulinerPage() {
                     <div className="invalid-feedback">Mohon tuliskan deskripsi singkat kuliner.</div>
                   </div>
 
-                  {/* Bahan utama */}
+                  {/* Bahan */}
                   <div className="mb-3">
-                    <label htmlFor="bahan-utama" className="form-label small fw-semibold text-dark">
-                      Bahan Utama
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="bahan-utama"
-                      name="bahan-utama"
-                      placeholder="Misal: Beras ketan, Oncom, Santan, Serai"
-                      value={bahan}
-                      onChange={(e) => setBahan(e.target.value)}
+                    <label className="form-label small fw-semibold text-dark d-block">Bahan</label>
+                    <div className="form-text small mt-0 mb-3">
+                      Pilih bahan yang ada di kuliner ini. Jika tidak ada di pilihan, tulis di kolom &ldquo;Lainnya&rdquo;.
+                    </div>
+
+                    <KelompokBahan
+                      judul="Karbohidrat"
+                      icon="bx-bowl-hot"
+                      prefix="karbohidrat"
+                      opsi={OPSI_KARBOHIDRAT}
+                      terpilih={karbo}
+                      onToggle={toggleItem(setKarbo)}
+                      lain={karboLain}
+                      onLainChange={setKarboLain}
+                      placeholderLain="Karbohidrat lain, misal: Jagung, Talas"
                     />
-                    <div className="form-text small">Pisahkan dengan koma untuk bahan-bahan dominan.</div>
+
+                    <KelompokBahan
+                      judul="Protein"
+                      icon="bx-food-menu"
+                      prefix="protein"
+                      opsi={OPSI_PROTEIN}
+                      terpilih={protein}
+                      onToggle={toggleItem(setProtein)}
+                      lain={proteinLain}
+                      onLainChange={setProteinLain}
+                      placeholderLain="Protein lain, misal: Ikan asin, Oncom"
+                    />
+
+                    <KelompokBahan
+                      judul="Serat"
+                      icon="bx-leaf"
+                      prefix="serat"
+                      opsi={OPSI_SERAT}
+                      terpilih={serat}
+                      onToggle={toggleItem(setSerat)}
+                      lain={seratLain}
+                      onLainChange={setSeratLain}
+                      placeholderLain="Serat lain, misal: Kemangi, Kangkung"
+                    />
+
+                    {/* Pelengkap */}
+                    <div className="mb-0">
+                      <label
+                        htmlFor="pelengkap"
+                        className="form-label small fw-semibold text-dark d-flex align-items-center gap-1 mb-2"
+                      >
+                        <i className="bx bx-dish text-success fs-5"></i> Pelengkap
+                      </label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        id="pelengkap"
+                        name="pelengkap"
+                        placeholder="Misal: Bumbu kacang, Sambal, Kerupuk"
+                        value={pelengkap}
+                        onChange={(e) => setPelengkap(e.target.value)}
+                      />
+                      <div className="form-text small">
+                        Menu pendamping atau bumbu yang menyertai hidangan (opsional). Pisahkan dengan koma.
+                      </div>
+                    </div>
                   </div>
 
                   {/* Karakter rasa */}
@@ -371,7 +601,7 @@ export default function TambahKulinerPage() {
                             name="karakter-rasa"
                             value={r.value}
                             checked={rasa.includes(r.value)}
-                            onChange={() => toggleRasa(r.value)}
+                            onChange={() => toggleItem(setRasa)(r.value)}
                           />
                           <label className="taste-pill-label" htmlFor={r.id}>
                             <i className="bx bx-check-circle"></i> {r.label}
@@ -381,24 +611,63 @@ export default function TambahKulinerPage() {
                     </div>
                   </div>
 
-                  {/* Estimasi harga */}
+                  {/* Estimasi harga (min - max) */}
                   <div className="mb-0">
-                    <label htmlFor="estimasi-harga" className="form-label small fw-semibold text-dark">
+                    <label htmlFor="harga-min" className="form-label small fw-semibold text-dark">
                       Estimasi Harga Per Porsi / Kemasan
                     </label>
-                    <div className="input-group">
-                      <span className="input-group-text bg-light text-muted border-end-0">Rp</span>
-                      <input
-                        type="text"
-                        className="form-control border-start-0"
-                        id="estimasi-harga"
-                        name="estimasi-harga"
-                        placeholder="Misal: 15.000 - 25.000"
-                        value={harga}
-                        onChange={(e) => setHarga(e.target.value)}
-                      />
+
+                    <div className="d-flex align-items-center gap-2">
+                      {/* Harga minimal */}
+                      <div className="input-group flex-grow-1">
+                        <span className="input-group-text bg-light text-muted border-end-0">Rp</span>
+                        <input
+                          type="text"
+                          inputMode="numeric"
+                          className={`form-control border-start-0 ${
+                            minFormatSalah || rentangSalah ? "is-invalid" : ""
+                          }`}
+                          id="harga-min"
+                          name="harga-min"
+                          placeholder="Harga minimal"
+                          aria-label="Harga minimal"
+                          value={hargaMin}
+                          onChange={(e) => setHargaMin(e.target.value)}
+                        />
+                      </div>
+
+                      {/* Strip pemisah */}
+                      <span className="fw-bold text-muted fs-5">&ndash;</span>
+
+                      {/* Harga maksimal */}
+                      <div className="input-group flex-grow-1">
+                        <span className="input-group-text bg-light text-muted border-end-0">Rp</span>
+                        <input
+                          type="text"
+                          inputMode="numeric"
+                          className={`form-control border-start-0 ${
+                            maxFormatSalah || rentangSalah ? "is-invalid" : ""
+                          }`}
+                          id="harga-max"
+                          name="harga-max"
+                          placeholder="Harga maksimal"
+                          aria-label="Harga maksimal"
+                          value={hargaMax}
+                          onChange={(e) => setHargaMax(e.target.value)}
+                        />
+                      </div>
                     </div>
-                    <div className="form-text small">Tulis perkiraan kisaran harga pasaran lokal.</div>
+
+                    {/* Pesan error merah */}
+                    {pesanHarga && (
+                      <div className="invalid-feedback d-block" id="feedback-harga">
+                        {pesanHarga}
+                      </div>
+                    )}
+
+                    <div className="form-text small">
+                      Tulis perkiraan kisaran harga pasaran lokal (angka saja, contoh: 15000 atau 15.000).
+                    </div>
                   </div>
                 </div>
               </div>
@@ -409,7 +678,10 @@ export default function TambahKulinerPage() {
               <div className="card border-0 shadow-sm rounded-4 mb-4">
                 <div className="card-header bg-white border-0 pt-4 px-4 pb-0">
                   <h5 className="fw-bold text-dark mb-0 d-flex align-items-center gap-2">
-                    <i className="bx bx-image-add text-success fs-4"></i> Foto Kuliner
+                    <i className="bx bx-image-add text-success fs-4"></i>
+                    <span>
+                      Foto Kuliner <span className="text-danger">*</span>
+                    </span>
                   </h5>
                 </div>
                 <div className="card-body p-4">
@@ -432,7 +704,7 @@ export default function TambahKulinerPage() {
                       type="file"
                       id="foto-kuliner"
                       name="foto-kuliner"
-                      accept="image/*"
+                      accept="image/jpeg,image/png,image/webp"
                       className="d-none"
                       ref={inputFotoRef}
                       onChange={(e) => prosesFile(e.target.files?.[0])}
