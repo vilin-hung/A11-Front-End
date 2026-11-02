@@ -111,6 +111,7 @@ model ContactMessage {
   subjek    String
   pesan     String
   status    String   @default("BARU")
+  isFaqReference  Boolean  @default(false)
   faqId     String?
   faq       FAQ?     @relation(fields: [faqId], references: [id], onDelete: SetNull)
   createdAt DateTime @default(now())
@@ -118,4 +119,5 @@ model ContactMessage {
   @@index([status])
   @@index([createdAt])
   @@index([faqId])
+  @@index([isFaqReference])
 }

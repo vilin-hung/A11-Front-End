@@ -17,6 +17,13 @@ export default function FAQPage() {
   const [openId, setOpenId] = useState<string | null>(null);
   const [faqData, setFaqData] = useState<FAQItem[]>([]);
   const [error, setError] = useState('');
+  const [showContact, setShowContact] = useState(false);
+  const [email, setEmail] = useState('');
+  const [subjek, setSubjek] = useState('');
+  const [pesan, setPesan] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [contactError, setContactError] = useState('');
+  const [contactSuccess, setContactSuccess] = useState(false);
 
   useEffect(() => {
     const fetchFAQ = async () => {
@@ -40,6 +47,44 @@ export default function FAQPage() {
 
   const toggleFAQ = (id: string) => {
     setOpenId((prev) => (prev === id ? null : id));
+  };
+
+  const handleContactSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setContactError('');
+    setContactSuccess(false);
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', },
+        body: JSON.stringify({
+          email,
+          subjek,
+          pesan,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Gagal mengirim pesan.');
+      }
+
+      setContactSuccess(true);
+      setEmail('');
+      setSubjek('');
+      setPesan('');
+    } catch (error) {
+      setContactError(
+        error instanceof Error
+          ? error.message
+          : 'Terjadi kesalahan. Silakan coba lagi.'
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -162,19 +207,124 @@ export default function FAQPage() {
                   Jika pertanyaan Anda belum terjawab di atas, silakan hubungi tim
                   kami langsung.
                 </p>
-                <a
-                  href="mailto:halo@jelajahrasajabar.id?subject=Pertanyaan%20Jelajah%20Rasa%20Jawa%20Barat&body=Halo%20Tim%20Jelajah%20Rasa,%0A%0ASaya%20ingin%20bertanya%20mengenai..."
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <button
+                  type="button"
                   className="faq-contact-btn"
+                  onClick={() => {
+                    setShowContact(true);
+                    setContactError('');
+                    setContactSuccess(false);
+                  }}
                 >
                   <i className="bx bx-envelope"></i> Hubungi Kami
-                </a>
+                </button>
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      {showContact && (
+        <div
+          className="contact-modal-overlay"
+          onClick={() => setShowContact(false)}
+        >
+          <div
+            className="contact-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="contact-modal-title"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              className="contact-modal-close"
+              onClick={() => setShowContact(false)}
+              aria-label="Tutup popup"
+            >
+              <i className="bx bx-x"></i>
+            </button>
+
+            <div className="contact-modal-header">
+              <i className="bx bx-message-rounded-dots"></i>
+              <h3 id="contact-modal-title">Hubungi Kami</h3>
+              <p>
+                Ada pertanyaan atau masukan? Kirimkan pesan kepada tim kami.
+              </p>
+            </div>
+
+            {contactSuccess ? (
+              <div className="contact-success">
+                <i className="bx bx-check-circle"></i>
+                <h4>Pesan Berhasil Dikirim!</h4>
+                <p>Terima kasih sudah menghubungi kami.</p>
+
+                <button
+                  type="button"
+                  className="faq-contact-btn"
+                  onClick={() => setShowContact(false)}
+                >
+                  Tutup
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={handleContactSubmit}>
+                <div className="contact-form-group">
+                  <label htmlFor="contact-email">Email</label>
+                  <input
+                    id="contact-email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Masukkan email kamu"
+                    required
+                  />
+                </div>
+
+                <div className="contact-form-group">
+                  <label htmlFor="contact-subject">Subjek</label>
+                  <input
+                    id="contact-subject"
+                    type="text"
+                    value={subjek}
+                    onChange={(e) => setSubjek(e.target.value)}
+                    placeholder="Masukkan subjek pesan"
+                    required
+                    maxLength={150}
+                  />
+                </div>
+
+                <div className="contact-form-group">
+                  <label htmlFor="contact-message">Pesan</label>
+                  <textarea
+                    id="contact-message"
+                    value={pesan}
+                    onChange={(e) => setPesan(e.target.value)}
+                    placeholder="Tuliskan pesan kamu..."
+                    rows={5}
+                    required
+                    maxLength={2000}
+                  />
+                </div>
+
+                {contactError && (
+                  <p className="contact-error">{contactError}</p>
+                )}
+
+                <button
+                  type="submit"
+                  className="faq-contact-btn contact-submit-btn"
+                  disabled={isSubmitting}
+                >
+                  <i className="bx bx-send"></i>
+                  {isSubmitting ? 'Mengirim...' : 'Kirim Pesan'}
+                </button>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
+
     </main>
   );
 }

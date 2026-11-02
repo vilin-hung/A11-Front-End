@@ -1159,6 +1159,7 @@ export const ContactMessageScalarFieldEnum = {
   subjek: 'subjek',
   pesan: 'pesan',
   status: 'status',
+  isFaqReference: 'isFaqReference',
   faqId: 'faqId',
   createdAt: 'createdAt'
 } as const
