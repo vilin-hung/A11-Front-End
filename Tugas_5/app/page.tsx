@@ -3,8 +3,17 @@ import "./home.css";
 import Link from "next/link";
 import PetaRasa from "./components/PetaRasa";
 import UlasanSection from "./components/UlasanSection";
+import { prisma } from "../lib/prisma";
 
-export default function HomePage() {
+export const instant = false;
+
+export default async function HomePage() {
+  const jumlahKuliner = await prisma.kuliner.count({
+    where: {
+      status: "APPROVED",
+    }
+  });
+
   return (
     <main id="main-content" className="main-content">
       {/* Hero Section */}
@@ -17,7 +26,7 @@ export default function HomePage() {
               </span>
               <h1 className="hero-title">Jelajah Rasa Jawa Barat</h1>
               <p className="hero-description">
-                Temukan 200+ cita rasa otentik yang tersebar dari pusat kota
+                Temukan {jumlahKuliner.toLocaleString("id-ID")} cita rasa otentik yang tersebar dari pusat kota
                 hingga sudut Pasundan.
               </p>
               <div className="hero-action-buttons">
@@ -99,7 +108,7 @@ export default function HomePage() {
         <div className="stats-container">
           <div className="stats-grid">
             <div className="stat-card">
-              <h5 className="stat-number">200+</h5>
+              <h5 className="stat-number">    {jumlahKuliner.toLocaleString("id-ID")}</h5>
               <small className="stat-label">Kuliner</small>
             </div>
             <div className="stat-card">

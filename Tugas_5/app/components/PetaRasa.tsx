@@ -1,68 +1,103 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 
+type MapRegion = {
+  id: string;
+  nama: string;
+  daerah: string;
+  deskripsi: string;
+  posisiX: number;
+  posisiY: number;
+};
+
 export default function PetaRasa() {
+  const [regions, setRegions] = useState<MapRegion[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    async function fetchRegions() {
+      try {
+        const response = await fetch("/api/map-regions");
+
+        if (!response.ok) {
+          throw new Error("Gagal mengambil data daerah");
+        }
+
+        const data: { regions: MapRegion[] } = await response.json();
+        setRegions(data.regions);
+      } catch (error) {
+        console.error("Gagal memuat daerah peta:", error);
+        setError(true);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchRegions();
+  }, []);
+
   const [skalaPeta, setSkalaPeta] = useState(1);
   const [lokasiAktif, setLokasiAktif] = useState<string | null>(null);
-  const lokasiKuliner = [
-    {
-      nama: "Kota Bandung",
-      className: "pin-kota-bandung",
-      deskripsi: "Dominan Gurih, Olahan Tapioka, Herbal & Dingin Segar.",
-    },
-    {
-      nama: "Kota Bogor",
-      className: "pin-kota-bogor",
-      deskripsi: "Segar Asam-Manis, Olahan Fermentasi (Asinan/Toge Goreng)",
-    },
-    {
-      nama: "Kota Cirebon",
-      className: "pin-kota-cirebon",
-      deskripsi: "Gurih Asin, Kuah Rempah Daging, & Olahan Hasil Laut",
-    },
-    {
-      nama: "Kota Tasikmalaya",
-      className: "pin-kota-tasikmalaya",
-      deskripsi: "Gurih Pedas, Oncom Fermentasi, & Olahan Bakso.",
-    },
-    {
-      nama: "Kab. Sumedang",
-      className: "pin-kab-sumedang",
-      deskripsi: "Gurih Renyah (Tahu) & Manis Alami (Ubi Cilembu).",
-    },
-    {
-      nama: "Kab. Garut",
-      className: "pin-kab-garut",
-      deskripsi: "Manis Legit (Dodol), Gurih Pedas, & Es Goyobod.",
-    },
-    {
-      nama: "Kab. Subang",
-      className: "pin-kab-subang",
-      deskripsi: "Manis Asam Segar (Nanas Madu Subang)",
-    },
-    {
-      nama: "Kab. Karawang",
-      className: "pin-kab-karawang",
-      deskripsi: "Manis Pandan (Sorabi Hijau) & Opak Ketan.",
-    },
-    {
-      nama: "Kab. Pangandaran",
-      className: "pin-kab-pangandaran",
-      deskripsi: "Asam Gurih Pindang Gunung & Seafood Segar.",
-    },
-    {
-      nama: "Kab. Bekasi",
-      className: "pin-kab-bekasi",
-      deskripsi: "Gurih Gabus Pucung & Sayur Asem Khas.",
-    },
-    {
-      nama: "Kab. Cirebon",
-      className: "pin-kab-cirebon",
-      deskripsi: "Asam Manis Gurih (Tahu Gejrot) & Es Doger.",
-    },
-  ]
+  // const lokasiKuliner = [
+  //   {
+  //     nama: "Kota Bandung",
+  //     className: "pin-kota-bandung",
+  //     deskripsi: "Dominan Gurih, Olahan Tapioka, Herbal & Dingin Segar.",
+  //   },
+  //   {
+  //     nama: "Kota Bogor",
+  //     className: "pin-kota-bogor",
+  //     deskripsi: "Segar Asam-Manis, Olahan Fermentasi (Asinan/Toge Goreng)",
+  //   },
+  //   {
+  //     nama: "Kota Cirebon",
+  //     className: "pin-kota-cirebon",
+  //     deskripsi: "Gurih Asin, Kuah Rempah Daging, & Olahan Hasil Laut",
+  //   },
+  //   {
+  //     nama: "Kota Tasikmalaya",
+  //     className: "pin-kota-tasikmalaya",
+  //     deskripsi: "Gurih Pedas, Oncom Fermentasi, & Olahan Bakso.",
+  //   },
+  //   {
+  //     nama: "Kab. Sumedang",
+  //     className: "pin-kab-sumedang",
+  //     deskripsi: "Gurih Renyah (Tahu) & Manis Alami (Ubi Cilembu).",
+  //   },
+  //   {
+  //     nama: "Kab. Garut",
+  //     className: "pin-kab-garut",
+  //     deskripsi: "Manis Legit (Dodol), Gurih Pedas, & Es Goyobod.",
+  //   },
+  //   {
+  //     nama: "Kab. Subang",
+  //     className: "pin-kab-subang",
+  //     deskripsi: "Manis Asam Segar (Nanas Madu Subang)",
+  //   },
+  //   {
+  //     nama: "Kab. Karawang",
+  //     className: "pin-kab-karawang",
+  //     deskripsi: "Manis Pandan (Sorabi Hijau) & Opak Ketan.",
+  //   },
+  //   {
+  //     nama: "Kab. Pangandaran",
+  //     className: "pin-kab-pangandaran",
+  //     deskripsi: "Asam Gurih Pindang Gunung & Seafood Segar.",
+  //   },
+  //   {
+  //     nama: "Kab. Bekasi",
+  //     className: "pin-kab-bekasi",
+  //     deskripsi: "Gurih Gabus Pucung & Sayur Asem Khas.",
+  //   },
+  //   {
+  //     nama: "Kab. Cirebon",
+  //     className: "pin-kab-cirebon",
+  //     deskripsi: "Asam Manis Gurih (Tahu Gejrot) & Es Doger.",
+  //   },
+  // ]
 
   function zoomIn() {
     setSkalaPeta((skala) => Math.min(skala + 0.1, 2));
@@ -147,29 +182,33 @@ export default function PetaRasa() {
               />
 
               {/* DESKRIPSI PIN */}
-              {lokasiKuliner.map((lokasi) => (
+              {regions.map((region) => (
                 <div
-                  key={lokasi.nama}
-                  className={`peta-pin-item ${lokasi.className}`}
-                  onMouseEnter={() => setLokasiAktif(lokasi.nama)}
+                  key={region.id}
+                  className={"peta-pin-item"}
+                  style={{
+                    left: `${region.posisiX}%`,
+                    top: `${region.posisiY}%`,
+                  }}
+                  onMouseEnter={() => setLokasiAktif(region.nama)}
                   onMouseLeave={() => setLokasiAktif(null)}
                 >
                   <button
                     className="btn-pin"
                     type="button"
-                    aria-label={lokasi.nama}
-                    onFocus={() => setLokasiAktif(lokasi.nama)}
+                    aria-label={region.nama}
+                    onFocus={() => setLokasiAktif(region.nama)}
                     onBlur={() => setLokasiAktif(null)}
                   >
                     <i className="bx bx-map-pin"></i>
                   </button>
 
-                  <span className="pin-label">{lokasi.nama}</span>
+                  <span className="pin-label">{region.nama}</span>
 
-                  {lokasiAktif === lokasi.nama && (
+                  {lokasiAktif === region.nama && (
                     <div className="peta-tooltip" role="tooltip">
-                      <div className="peta-tooltip-header">{lokasi.nama}</div>
-                      <div className="peta-tooltip-body">{lokasi.deskripsi}</div>
+                      <div className="peta-tooltip-header">{region.nama}</div>
+                      <div className="peta-tooltip-body">{region.deskripsi}</div>
                     </div>
                   )}
                 </div>

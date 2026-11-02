@@ -20,6 +20,12 @@ export default function SiteLayout({
     pathname === "/register" ||
     pathname === "/daftar";
 
+  const isAdminDashboard = pathname.startsWith("/admin-dashboard");
+
+  if (isAdminDashboard) {
+    return <>{children}</>;
+  }
+  
   return (
     <>
       {/* Header dan sidebar hanya ditampilkan pada halaman biasa */}
