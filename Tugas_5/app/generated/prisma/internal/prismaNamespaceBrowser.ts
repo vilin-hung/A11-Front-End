@@ -57,7 +57,8 @@ export const ModelName = {
   Review: 'Review',
   FAQ: 'FAQ',
   SiteMetadata: 'SiteMetadata',
-  MapRegion: 'MapRegion'
+  MapRegion: 'MapRegion',
+  ContactMessage: 'ContactMessage'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -172,6 +173,19 @@ export const MapRegionScalarFieldEnum = {
 } as const
 
 export type MapRegionScalarFieldEnum = (typeof MapRegionScalarFieldEnum)[keyof typeof MapRegionScalarFieldEnum]
+
+
+export const ContactMessageScalarFieldEnum = {
+  id: 'id',
+  email: 'email',
+  subjek: 'subjek',
+  pesan: 'pesan',
+  status: 'status',
+  faqId: 'faqId',
+  createdAt: 'createdAt'
+} as const
+
+export type ContactMessageScalarFieldEnum = (typeof ContactMessageScalarFieldEnum)[keyof typeof ContactMessageScalarFieldEnum]
 
 
 export const SortOrder = {

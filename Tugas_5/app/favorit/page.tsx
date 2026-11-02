@@ -46,7 +46,7 @@ export default function FavoritPage() {
   const ambilFavorit = useCallback(async (id: string) => {
     try {
       setError("");
-      const response = await fetch(`/api/favorit?userId=${encodeURIComponent(id)}`);
+      const response = await fetch(`/api/favorite?userId=${encodeURIComponent(id)}`);
 
       if (!response.ok) {
         throw new Error("Gagal mengambil data favorit.");
