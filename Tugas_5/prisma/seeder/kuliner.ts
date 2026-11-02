@@ -9,7 +9,7 @@ const dataKuliner = [
     sejarah: "Batagor lahir di Bandung sekitar akhir tahun 1960-an hingga 1970-an akibat ketidaksengajaan seorang perantau asal Purwokerto bernama Haji Isan. Haji Isan bekerja sebagai penjual bakso tahu atau siomay keliling di Bandung untuk menyambung hidup. Dagangannya sering tersisa dan tidak habis terjual. Ia mencoba menggoreng sisa tahu bakso tersebut lalu membagikannya atau menjualnya kembali dengan bumbu kacang.",
     kategori: "Jajanan",
     daerah: "Bandung",
-    bahan: ["ikan tenggiri", "tahu", "tepung tapioka", "kacang tanah"],
+    bahan: ["Ikan Tenggiri", "Tahu", "Tepung Tapioka", "Kacang Tanah"],
     rasa: ["gurih", "manis"],
     gambar: "/images/menu/jajanan/batagor.jpg",
     hargaMin: 10000,
@@ -125,7 +125,7 @@ const dataKuliner = [
     id: "seed-kuliner-009",
     nama: "Misro",
     deskripsi:
-      "Camilan tradisional yang terbuata dari parutan singkong dengan isian gula merah.",
+      "Camilan tradisional yang terbuat dari parutan singkong dengan isian gula merah.",
     sejarah: "Misro merupakan singkatan dari bahasa Sunda amis di jero yang artinya manis di dalam. Kudapan ini biasanya berbentuk lebih bulat atau pipih dengan isian gula merah (gula aren) yang akan mencair atau lumer saat digoreng.",
     kategori: "jajanan",
     daerah: "Kab. Bandung",
@@ -156,7 +156,7 @@ const dataKuliner = [
     nama: "Empal Gentong",
     deskripsi:
       "Gulai daging sapi dimasak dalam gentong tanah liat berkuah santan gurih.",
-    sejarah: "Makanan ini sudah ada sejak abada ke-15 pada masa awal Kesultanan Cirebon. Asal kata empal merujuk pada ptongan daging sapi atau jeroan, sedangkan gentong adalah wadah periuk atau kuali yang terbuat dari tanah liat untuk memasak.",
+    sejarah: "Makanan ini sudah ada sejak abad ke-15 pada masa awal Kesultanan Cirebon. Asal kata empal merujuk pada potongan daging sapi atau jeroan, sedangkan gentong adalah wadah periuk atau kuali yang terbuat dari tanah liat untuk memasak.",
     kategori: "Makanan",
     daerah: "Kab. Cirebon",
     bahan: ["Daging Sapi", "Jeroan", "Santan", "Bumbu Rempah Kuning", "Daun Kucai"],
@@ -280,7 +280,7 @@ const dataKuliner = [
     kategori: "Minuman",
     daerah: "Kota Bandung",
     bahan: ["Jahe Bakar", "Gula Aren", "Rempah Alami"],
-    rasa: ["hanget", "manis", "pedas"],
+    rasa: ["hangat", "manis", "pedas"],
     gambar: "/images/menu/minuman/bandrek.jpg",
     hargaMin: 5000,
     hargaMax: 12000,
@@ -336,7 +336,7 @@ const dataKuliner = [
     nama: "Es Doger",
     deskripsi:
       "Jajanan es tradisional yang berbahan dasar es serut.",
-    sejarah: " Sebagian sumber menyebutkan bahwa doger adalah akronim dari dorong gerobak. Dahulu, es ini dijajakan keliling menggunakan gerobak dorong oleh para pedagang .",
+    sejarah: "Sebagian sumber menyebutkan bahwa doger adalah akronim dari dorong gerobak. Dahulu, es ini dijajakan keliling menggunakan gerobak dorong oleh para pedagang .",
     kategori: "Minuman",
     daerah: "Kota Bandung",
     bahan: ["Es Serut", "Kental Manis", "Sirup", "Tape Singkong", "Cincau", "Pacar Cina", "Kelapa Muda", "Tape Ketan Hitam"],
@@ -369,7 +369,7 @@ const dataKuliner = [
     sejarah: "Es Oyen pertama kali dijual di Kota Bandung pada tahun 1954 oleh seorang pedagang bernama H. Basar Sudjana atau yang lebih dikenal sebagai Pak Oyen. Sebutan Oyen berasal dari nama panggilan akrab sang peracik dan penjual pertama, yaitu Pak Oyen.",
     kategori: "Minuman",
     daerah: "Kota Bandung",
-    bahan: ["Alpuket", "Nangka", "Kelapa Muda", "Kolang-kaling", "Pacar Cina", "Sirup", "Es", "Kental Manis"],
+    bahan: ["Alpukat", "Nangka", "Kelapa Muda", "Kolang-kaling", "Pacar Cina", "Sirup", "Es", "Kental Manis"],
     rasa: ["manis", "segar"],
     gambar: "/images/menu/minuman/es oyen.jpg",
     hargaMin: 10000,
@@ -471,7 +471,7 @@ const dataKuliner = [
     nama: "Peuyeum",
     deskripsi:
       "Makanan tradisional khas Jawa Barat berupa tape singkong yang dibuat melalui proses fermentasi tradisional.",
-    sejarah: "Pada masa penjajahan, beras sangat sulit didapat karena padi warga pribumi sering disita oleh penjajah. Warga menanam singkong sebagai sumber pangan utama. Warga Cimenyan berinisiatif mengawetkan singkkong melalui proses peragian atau fermentasi. Kata peuyeum sendiri berasal dari bahasa sunda meuyeum (memeram).",
+    sejarah: "Pada masa penjajahan, beras sangat sulit didapat karena padi warga pribumi sering disita oleh penjajah. Warga menanam singkong sebagai sumber pangan utama. Warga Cimenyan berinisiatif mengawetkan singkong melalui proses peragian atau fermentasi. Kata peuyeum sendiri berasal dari bahasa sunda meuyeum (memeram).",
     kategori: "Oleh-oleh Khas",
     daerah: "Kab. Bandung",
     bahan: ["Singkong", "Ragi"],
@@ -498,7 +498,7 @@ const dataKuliner = [
   },
   {
     id: "seed-kuliner-034",
-    nama: "Dodol Darut",
+    nama: "Dodol Garut",
     deskripsi:
       "Jajanan tradisional yang terkenal dengan tekstur yang kenyal, legit, dan tidak mudah lengket.",
     sejarah: "Sejarah dodol Garut bermula pada tahun 1926 ketika seorang pengusaha lokal bernama Ibu Karsinah (atau tercatat juga dirintis oleh H. Sirad dalam catatan Kemendikbud) mulai merintis dan mempopulerkan industri pembuatan dodol secara luas di Garut.",
