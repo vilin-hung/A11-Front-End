@@ -1,6 +1,7 @@
 
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { Prisma } from "@/app/generated/prisma/client";
 import { verifySession } from "@/lib/auth";
 
 async function pastikanAdmin() {
@@ -30,6 +31,36 @@ async function pastikanAdmin() {
   }
 
   return { galat: null };
+}
+
+async function aturUlangUrutanFaqAktif(
+  tx: Prisma.TransactionClient
+) {
+  const faqAktif = await tx.fAQ.findMany({
+    where: { isActive: true },
+    orderBy: { urutan: "asc" },
+    select: { id: true },
+  });
+
+  // Gunakan nomor negatif sementara untuk menghindari bentrok urutan
+  await Promise.all(
+    faqAktif.map((item, index) =>
+      tx.fAQ.update({
+        where: { id: item.id },
+        data: { urutan: -(index + 1) },
+      })
+    )
+  );
+
+  // Kembalikan urutan menjadi 1, 2, 3, dan seterusnya
+  await Promise.all(
+    faqAktif.map((item, index) =>
+      tx.fAQ.update({
+        where: { id: item.id },
+        data: { urutan: index + 1 },
+      })
+    )
+  );
 }
 
 /* GET: mengambil seluruh FAQ */
@@ -128,8 +159,8 @@ export async function POST(request: Request) {
       }
 
       // Tentukan urutan FAQ berikutnya
-      const urutanTerakhir = await tx.fAQ.aggregate({
-        _max: { urutan: true },
+      const jumlahFaqAktif = await tx.fAQ.count({
+        where: { isActive: true },
       });
 
       // Buat FAQ baru
@@ -138,9 +169,7 @@ export async function POST(request: Request) {
           pertanyaan,
           jawaban,
           slug,
-          urutan: urutanTerakhir._max.urutan !== null
-            ? urutanTerakhir._max.urutan + 1
-            : 1,
+          urutan: (body.isActive ?? true) ? jumlahFaqAktif + 1 : 0,
           iconClass: body.iconClass || "bx bx-info-circle",
           isActive: body.isActive ?? true,
         },
@@ -218,15 +247,30 @@ export async function PATCH(request: Request) {
       }
 
       await prisma.$transaction(async (tx) => {
-        const faqTersedia = await tx.fAQ.findMany({
-          where: { id: { in: faqIds } },
+        const faqAktif = await tx.fAQ.findMany({
+          where: { isActive: true },
           select: { id: true },
         });
 
-        if (faqTersedia.length !== faqIds.length) {
+        // Pastikan semua ID yang dikirim adalah FAQ aktif
+        if (
+          faqAktif.length !== faqIds.length ||
+          !faqAktif.every((item) => faqIds.includes(item.id))
+        ) {
           throw new Error("FAQ_TIDAK_VALID");
         }
 
+        // Atur ulang urutan sementara
+        await Promise.all(
+          faqIds.map((id, index) =>
+            tx.fAQ.update({
+              where: { id },
+              data: { urutan: -(index + 1) },
+            })
+          )
+        );
+
+        // Simpan urutan akhir
         await Promise.all(
           faqIds.map((id, index) =>
             tx.fAQ.update({
@@ -289,9 +333,55 @@ export async function PATCH(request: Request) {
       );
     }
 
-    const faq = await prisma.fAQ.update({
-      where: { id: body.id },
-      data,
+    const faq = await prisma.$transaction(async (tx) => {
+      const faqLama = await tx.fAQ.findUnique({
+        where: { id: body.id },
+      });
+
+      if (!faqLama) {
+        throw new Error("FAQ_TIDAK_DITEMUKAN");
+      }
+
+      const statusBerubah =
+        typeof data.isActive === "boolean" &&
+        data.isActive !== faqLama.isActive;
+
+      if (statusBerubah) {
+        if (data.isActive === true) {
+          // FAQ yang diaktifkan masuk ke urutan paling akhir
+          const jumlahFaqAktif = await tx.fAQ.count({
+            where: { isActive: true },
+          });
+
+          await tx.fAQ.update({
+            where: { id: body.id },
+            data: {
+              ...data,
+              urutan: jumlahFaqAktif + 1,
+            },
+          });
+        } else {
+          // Nonaktifkan FAQ terlebih dahulu
+          await tx.fAQ.update({
+            where: { id: body.id },
+            data: {
+              ...data,
+              urutan: 0,
+            },
+          });
+
+          await aturUlangUrutanFaqAktif(tx);
+        }
+      } else {
+        await tx.fAQ.update({
+          where: { id: body.id },
+          data,
+        });
+      }
+
+      return tx.fAQ.findUnique({
+        where: { id: body.id },
+      });
     });
 
     return NextResponse.json({
@@ -339,31 +429,7 @@ export async function DELETE(request: Request) {
         where: { id: body.id },
       });
 
-      // Ambil FAQ yang masih tersisa
-      const faqTersisa = await tx.fAQ.findMany({
-        orderBy: { urutan: "asc" },
-        select: { id: true },
-      });
-
-      // Gunakan nomor sementara agar tidak bentrok jika urutan unik
-      await Promise.all(
-        faqTersisa.map((item, index) =>
-          tx.fAQ.update({
-            where: { id: item.id },
-            data: { urutan: -(index + 1) },
-          })
-        )
-      );
-
-      // Atur ulang urutan menjadi 1, 2, 3, dan seterusnya
-      await Promise.all(
-        faqTersisa.map((item, index) =>
-          tx.fAQ.update({
-            where: { id: item.id },
-            data: { urutan: index + 1 },
-          })
-        )
-      );
+      await aturUlangUrutanFaqAktif(tx);
     });
 
     return NextResponse.json({

@@ -344,3 +344,51 @@
         height: 190px;
     }
 }
+
+.favorite-card .tag-wrapper {
+    margin-bottom: 10px;
+}
+
+/* =========================
+   BADGE KATEGORI KULINER
+   ========================= */
+
+.favorit-page .item-badge {
+    background-color: var(--deep-green-soft) !important;
+    color: var(--deep-green) !important;
+    border: 1px solid rgba(45, 90, 39, 0.2) !important;
+    font-weight: 600 !important;
+    font-size: 11px !important;
+    padding: 5px 12px !important;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    border-radius: 50px !important;
+}
+
+/* Makanan */
+.favorite-card[data-category="makanan"] .item-badge {
+    background-color: var(--label-makanan-soft) !important;
+    color: var(--label-makanan) !important;
+    border-color: rgba(214, 40, 40, 0.25) !important;
+}
+
+/* Jajanan */
+.favorite-card[data-category="jajanan"] .item-badge {
+    background-color: var(--label-jajanan-soft) !important;
+    color: var(--label-jajanan) !important;
+    border-color: rgba(232, 163, 23, 0.3) !important;
+}
+
+/* Minuman */
+.favorite-card[data-category="minuman"] .item-badge {
+    background-color: var(--label-minuman-soft) !important;
+    color: var(--label-minuman) !important;
+    border-color: rgba(52, 152, 219, 0.25) !important;
+}
+
+/* Oleh-Oleh */
+.favorite-card[data-category="oleh-oleh"] .item-badge {
+    background-color: var(--label-oleh-soft) !important;
+    color: var(--label-oleh) !important;
+    border-color: rgba(214, 51, 132, 0.25) !important;
+}

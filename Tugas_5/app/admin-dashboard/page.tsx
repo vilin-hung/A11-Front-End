@@ -1845,17 +1845,6 @@ export default function AdminDashboard() {
                     </p>
                   </div>
                   <div className="d-flex align-items-center gap-2 flex-wrap">
-                    {/* Tombol Muat Ulang */}
-                    <button
-                      type="button"
-                      className="btn btn-outline-success"
-                      onClick={() => void muatPesan()}
-                      disabled={messageLoading}
-                    >
-                      <i className="bx bx-refresh me-1" />
-                      Muat Ulang
-                    </button>
-
                     {/* Tombol Jadikan Referensi FAQ */}
                     <button
                       type="button"
@@ -2218,25 +2207,23 @@ export default function AdminDashboard() {
                                 <div className="d-flex flex-wrap gap-2">
                                   <button
                                     type="button"
-                                    className="btn btn-sm btn-outline-success"
+                                    className="btn btn-sm btn-warning"
                                     onClick={() => bukaEditFaq(item)}
                                   >
                                     <i className="bx bx-edit-alt me-1" />
                                     Edit
                                   </button>
                                   
-                                  <button
-                                    type="button"
-                                    className={`btn btn-sm ${
-                                      item.isActive
-                                        ? "btn-outline-secondary"
-                                        : "btn-outline-success"
-                                    } ms-1`}
-                                    onClick={() => void toggleStatusFaq(item)}
-                                    disabled={faqLoading}
-                                  >
-                                    {item.isActive ? "Nonaktifkan" : "Aktifkan"}
-                                  </button>
+                                   <button
+                                      type="button"
+                                      className={`btn btn-sm ${
+                                        item.isActive ? "btn-secondary" : "btn-success"
+                                      }`}
+                                      onClick={() => void toggleStatusFaq(item)}
+                                      disabled={faqLoading}
+                                    >
+                                      {item.isActive ? "Nonaktifkan" : "Aktifkan"}
+                                    </button>
 
                                   <button
                                     type="button"

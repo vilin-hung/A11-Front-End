@@ -135,7 +135,7 @@ export default function FavoritPage() {
 
         <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
           <div>
-            <h4 className="mb-1">Kuliner Favorit Saya</h4>
+            <h4 className="fav-title mb-1">Kuliner Favorit Saya</h4>
             <p className="text-muted mb-0">
               Kumpulan kuliner pilihanmu dari seluruh Jawa Barat.
             </p>
@@ -201,7 +201,10 @@ export default function FavoritPage() {
                 className="col-12 col-md-6 col-lg-4"
                 key={kuliner.id}
               >
-                <div className="card h-100 border-0 shadow-sm rounded-4 overflow-hidden">
+                <div
+                  className="card favorite-card h-100 border-0 shadow-sm rounded-4 overflow-hidden"
+                  data-category={kuliner.kategori.trim().toLowerCase()}
+                >
                   <div className="position-relative">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
@@ -223,8 +226,8 @@ export default function FavoritPage() {
                   </div>
 
                   <div className="card-body d-flex flex-column">
-                    <div className="mb-2">
-                      <span className="badge rounded-pill bg-success-subtle text-success">
+                    <div className="tag-wrapper">
+                      <span className="badge item-badge">
                         {labelKategori(kuliner.kategori)}
                       </span>
                     </div>

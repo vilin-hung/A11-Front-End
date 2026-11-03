@@ -50,6 +50,24 @@
     transition: var(--transition);
 }
 
+.body-admin .btn-outline-danger:hover {
+    background-color: transparent !important;
+    color: var(--red) !important;
+    border-color: var(--red) !important;
+}
+
+.body-admin .btn-secondary:hover {
+    background-color: transparent !important;
+    color: #6c757d !important;
+    border-color: #6c757d !important;
+}
+
+.body-admin .btn-success:hover {
+    background-color: transparent !important;
+    color: var(--deep-green) !important;
+    border-color: var(--deep-green) !important;
+}
+
 .body-admin .btn-warning:hover {
     background-color: var(--bg-white) !important;
     color: var(--warm-amber) !important;
