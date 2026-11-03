@@ -140,6 +140,20 @@ function bacaFile(file: File): Promise<string> {
   });
 }
 
+/* =========================
+   HELPER HARGA
+   ========================= */
+const POLA_HARGA = /^\d+(\.\d{3})*$/;
+
+function hargaValid(value: string) {
+  const v = value.trim();
+  return v === "" || POLA_HARGA.test(v);
+}
+
+function hargaKeAngka(value: string) {
+  return Number(value.trim().replace(/\./g, ""));
+}
+
 type FormKulinerBaru = {
   nama: string;
   kategori: string;
@@ -147,6 +161,8 @@ type FormKulinerBaru = {
   deskripsi: string;
   bahan: string;
   rasa: string;
+  hargaMin: string;
+  hargaMax: string;
 };
 
 const FORM_KULINER_KOSONG: FormKulinerBaru = {
@@ -156,6 +172,8 @@ const FORM_KULINER_KOSONG: FormKulinerBaru = {
   deskripsi: '',
   bahan: '',
   rasa: '',
+  hargaMin: '',
+  hargaMax: '',
 };
 
 type ContactMessage = {
@@ -289,6 +307,7 @@ export default function AdminDashboard() {
   const [tambahFoto, setTambahFoto] = useState('');
   const [tambahLoading, setTambahLoading] = useState(false);
   const [tambahError, setTambahError] = useState('');
+  const [hargaError, setHargaError] = useState('');
   const inputFotoTambahRef = useRef<HTMLInputElement>(null);
 
   /* notif di tab Kelola Kuliner (model sama seperti Kelola Peta) */
@@ -475,6 +494,10 @@ export default function AdminDashboard() {
   // Notifikasi metadata
   useAutoDismiss(metadataMessage, setMetadataMessage);
   useAutoDismiss(metadataError, setMetadataError);
+
+  // Notifikasi kuliner 
+  useAutoDismiss(kulinerInfo, setKulinerInfo);
+  useAutoDismiss(kulinerError, setKulinerError);
 
   /* Ambil angka ringkasan dari database. Dipisah dari effect awal
      supaya bisa dipanggil ulang setelah admin mengubah data. */
@@ -1106,6 +1129,7 @@ export default function AdminDashboard() {
     setTambahForm(FORM_KULINER_KOSONG);
     setTambahFoto('');
     setTambahError('');
+    setHargaError('');
     setKulinerInfo('');
     setKulinerError('');
     setTambahKulinerOpen(true);
@@ -1142,13 +1166,35 @@ export default function AdminDashboard() {
     if (inputFotoTambahRef.current) inputFotoTambahRef.current.value = '';
   };
 
-  const simpanKulinerBaru = async () => {
+    const simpanKulinerBaru = async () => {
     const nama = tambahForm.nama.trim();
     const daerah = tambahForm.daerah.trim();
     const deskripsi = tambahForm.deskripsi.trim();
+    const hargaMinStr = tambahForm.hargaMin.trim();
+    const hargaMaxStr = tambahForm.hargaMax.trim();
 
-    if (!nama || !tambahForm.kategori || !daerah || !deskripsi) {
-      setTambahError('Nama, kategori, asal daerah, dan deskripsi wajib diisi.');
+    // Validasi field wajib
+    if (!nama || !tambahForm.kategori || !daerah || !deskripsi || !hargaMinStr || !hargaMaxStr) {
+      setTambahError('Nama, kategori, asal daerah, deskripsi, dan rentang harga wajib diisi.');
+      return;
+    }
+
+    // Validasi format harga
+    if (!hargaValid(hargaMinStr) || !hargaValid(hargaMaxStr)) {
+      setTambahError('Format harga tidak valid (hanya angka atau titik pemisah ribuan).');
+      return;
+    }
+
+    if (hargaKeAngka(hargaMinStr) > hargaKeAngka(hargaMaxStr)) {
+    setHargaError("Harga minimal tidak boleh lebih besar dari harga maksimal.");
+    return;
+    }
+
+    const hargaMin = hargaKeAngka(hargaMinStr);
+    const hargaMax = hargaKeAngka(hargaMaxStr);
+
+    if (hargaMin > hargaMax) {
+      setTambahError('Harga minimal tidak boleh lebih besar dari harga maksimal.');
       return;
     }
 
@@ -1172,7 +1218,8 @@ export default function AdminDashboard() {
           bahan: tambahForm.bahan.trim(),
           rasa: tambahForm.rasa.trim(),
           gambar: tambahFoto,
-          /* Ditambahkan langsung oleh admin, jadi langsung tampil di katalog */
+          hargaMin, // <--- Kirim ke API
+          hargaMax, // <--- Kirim ke API
           status: 'APPROVED',
         }),
       });
@@ -1188,7 +1235,6 @@ export default function AdminDashboard() {
         );
       }
 
-      /* Berhasil: tutup form, kosongkan isian, tampilkan pop up */
       setTambahKulinerOpen(false);
       setTambahForm(FORM_KULINER_KOSONG);
       setTambahFoto('');
@@ -1840,6 +1886,9 @@ export default function AdminDashboard() {
 
           {/* Konten Utama */}
           <main className="col-md-9 col-lg-10 tab-content">
+            {/* =========================
+                TAB RINGKASAN
+                ========================= */}
             {activeTab === 'ringkasan' && (
               <section id="tab-ringkasan">
                 <h3>Ringkasan Statistik</h3>
@@ -1990,10 +2039,12 @@ export default function AdminDashboard() {
                     </table>
                   </div>
                 </div>
+              </section>
+            )}
 
-                {/* Pengaturan Hero Carousel */}
-                <div className="box-tabel border rounded bg-white p-4 mt-4">
-                  <h5>Hero Carousel</h5>
+            {/* =========================
+                TAB KELOLA KULINER
+                ========================= */}
             {activeTab === 'kuliner' && (
               <section id="tab-kelola-kuliner">
                 {/* Judul + tombol tambah (sejajar, tombol di kanan) */}
@@ -2056,242 +2107,9 @@ export default function AdminDashboard() {
               </section>
             )}
 
-                  <p className="text-muted">
-                    Pilih kuliner yang ingin ditampilkan pada Hero Carousel
-                    halaman utama. Gambar dan nama kuliner akan ditampilkan
-                    secara bergantian. Hanya kuliner yang sudah disetujui
-                    dan memiliki gambar yang tersedia.
-                  </p>
-
-                  {heroError && (
-                    <div className="alert alert-danger">
-                      {heroError}
-                    </div>
-                  )}
-
-                  {heroMessage && (
-                    <div className="alert alert-success">
-                      {heroMessage}
-                    </div>
-                  )}
-
-                  {heroLoading ? (
-                    <p className="text-muted mb-0">
-                      Memuat pilihan kuliner...
-                    </p>
-                  ) : (
-                    <>
-                      <h6 className="fw-semibold mt-3">
-                        Pilihan Kuliner
-                      </h6>
-
-                      {daftarKulinerHero.length === 0 ? (
-                        <p className="text-muted">
-                          Belum ada kuliner approved yang memiliki gambar.
-                        </p>
-                      ) : (
-                        <div className="row g-3">
-                          {daftarKulinerHero.map((kuliner) => (
-                            <div
-                              className="col-md-6"
-                              key={kuliner.id}
-                            >
-                              <label
-                                className="border rounded p-3 d-flex align-items-center gap-3 h-100"
-                                style={{ cursor: "pointer" }}
-                              >
-                                <input
-                                  type="checkbox"
-                                  className="form-check-input flex-shrink-0"
-                                  checked={heroKulinerIds.includes(
-                                    kuliner.id
-                                  )}
-                                  onChange={() =>
-                                    toggleKulinerHero(kuliner.id)
-                                  }
-                                />
-
-                                {kuliner.gambar && (
-                                  <img
-                                    src={kuliner.gambar}
-                                    alt={kuliner.nama}
-                                    style={{
-                                      width: "80px",
-                                      height: "65px",
-                                      objectFit: "cover",
-                                      borderRadius: "6px",
-                                    }}
-                                  />
-                                )}
-
-                                <div>
-                                  <div className="fw-semibold">
-                                    {kuliner.nama}
-                                  </div>
-                                  <small className="text-muted">
-                                    {kuliner.kategori} — {kuliner.daerah}
-                                  </small>
-                                </div>
-                              </label>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-
-                      <hr className="my-4" />
-
-                      <h6 className="fw-semibold">
-                        Urutan Hero Carousel
-                      </h6>
-
-                      <p className="text-muted small">
-                        Atur urutan gambar yang akan muncul. Kuliner pertama
-                        menjadi slide pertama.
-                      </p>
-
-                      {heroKulinerIds.length === 0 ? (
-                        <p className="text-muted">
-                          Belum ada kuliner yang dipilih.
-                        </p>
-                      ) : (
-                        <div className="d-flex flex-column gap-2">
-                          {heroKulinerIds.map((id, index) => {
-                            const kuliner = daftarKulinerHero.find(
-                              (item) => item.id === id
-                            );
-
-                            if (!kuliner) return null;
-
-                            return (
-                              <div
-                                key={id}
-                                className="border rounded p-2 d-flex align-items-center gap-3"
-                              >
-                                <span className="fw-semibold">
-                                  {index + 1}.
-                                </span>
-
-                                {kuliner.gambar && (
-                                  <img
-                                    src={kuliner.gambar}
-                                    alt={kuliner.nama}
-                                    style={{
-                                      width: "65px",
-                                      height: "50px",
-                                      objectFit: "cover",
-                                      borderRadius: "6px",
-                                    }}
-                                  />
-                                )}
-
-                                <div className="flex-grow-1">
-                                  <div className="fw-semibold">
-                                    {kuliner.nama}
-                                  </div>
-                                  <small className="text-muted">
-                                    {kuliner.daerah}
-                                  </small>
-                                </div>
-
-                                <div className="d-flex gap-1">
-                                  <button
-                                    type="button"
-                                    className="btn btn-outline-secondary btn-sm"
-                                    disabled={index === 0}
-                                    onClick={() =>
-                                      pindahUrutanHero(index, -1)
-                                    }
-                                    title="Geser ke atas"
-                                  >
-                                    <i className="bx bx-up-arrow-alt" />
-                                  </button>
-
-                                  <button
-                                    type="button"
-                                    className="btn btn-outline-secondary btn-sm"
-                                    disabled={
-                                      index === heroKulinerIds.length - 1
-                                    }
-                                    onClick={() =>
-                                      pindahUrutanHero(index, 1)
-                                    }
-                                    title="Geser ke bawah"
-                                  >
-                                    <i className="bx bx-down-arrow-alt" />
-                                  </button>
-                                </div>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      )}
-
-                      <div className="d-flex justify-content-end mt-4">
-                        <button
-                          type="button"
-                          className="btn btn-success"
-                          onClick={simpanHero}
-                          disabled={heroSaving || heroLoading}
-                        >
-                          {heroSaving ? (
-                            <>
-                              <span className="spinner-border spinner-border-sm me-2" />
-                              Menyimpan...
-                            </>
-                          ) : (
-                            <>
-                              <i className="bx bx-save me-1" />
-                              Simpan Hero Carousel
-                            </>
-                          )}
-                        </button>
-                      </div>
-                    </>
-                  )}
-                </div>
-              </section>
-            )}
-
-            {activeTab === 'kuliner' && (
-              <section id="tab-kelola-kuliner">
-                <h4>Daftar Semua Kuliner</h4>
-                <div className="box-tabel border rounded bg-white">
-                  <div className="table-responsive">
-                    <table className="table align-middle">
-                      <thead className="table-light">
-                        <tr>
-                          <th>Nama Kuliner</th>
-                          <th>Kategori</th>
-                          <th>Asal Daerah</th>
-                          <th>Status</th>
-                          <th className="text-center">Aksi</th>
-                        </tr>
-                      </thead>
-                      <tbody id="tabel-daftar-kuliner">
-                        {kuliner.length === 0 ? (
-                          <BarisKosong
-                            kolom={5}
-                            ikon="bx-folder-open"
-                            pesan="Belum ada data kuliner."
-                          />
-                        ) : (
-                          kuliner.map((item) => (
-                            <BarisKuliner
-                              key={item.id}
-                              item={item}
-                              onEdit={() => setEditForm(item)}
-                              onHapus={() => hapusItem(item)}
-                              onFoto={() => setGambarBesar(item)}
-                            />
-                          ))
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </section>
-            )}
-
+            {/* =========================
+                TAB KELOLA ULASAN
+                ========================= */}
             {activeTab === 'ulasan' && (
               <section id="tab-kelola-ulasan">
                 <h4>Ulasan Pengguna</h4>
@@ -2330,6 +2148,9 @@ export default function AdminDashboard() {
               </section>
             )}
 
+            {/* =========================
+                TAB KELOLA PENGGUNA
+                ========================= */}
             {activeTab === 'pengguna' && (
               <section id="tab-kelola-pengguna">
                 <h4>Kelola Pengguna</h4>
@@ -2411,6 +2232,9 @@ export default function AdminDashboard() {
               </section>
             )}
 
+            {/* =========================
+                TAB KELOLA PETA
+                ========================= */}
             {activeTab === 'peta' && (
               
               <div className="box-tabel border rounded bg-white p-4">
@@ -2579,6 +2403,10 @@ export default function AdminDashboard() {
               </div>
             )}
 
+            {/* =========================
+                TAB PENGATURAN WEBSITE
+                (metadata, rekomendasi homepage, hero carousel)
+                ========================= */}
             {activeTab === 'metadata' && (
               <section id="tab-metadata">
                 <h4>Pengaturan Website</h4>
@@ -2977,6 +2805,9 @@ export default function AdminDashboard() {
               </section>
             )}
 
+            {/* =========================
+                TAB PESAN MASUK
+                ========================= */}
             {activeTab === "pesan" && (
               <section id="tab-pesan">
                 <div className="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
@@ -3090,6 +2921,9 @@ export default function AdminDashboard() {
               </section>
             )}
 
+            {/* =========================
+                TAB KELOLA FAQ
+                ========================= */}
             {activeTab === "faq" && (
               <section id="tab-kelola-faq">
                 <div className="mb-4">
@@ -3436,6 +3270,9 @@ export default function AdminDashboard() {
         </div>
       </div>
 
+      {/* =========================
+          MODAL TAMBAH / EDIT DAERAH (PETA)
+          ========================= */}
       {regionFormOpen && (
         <div
           className="modal-region-overlay"
@@ -3617,6 +3454,10 @@ export default function AdminDashboard() {
               >
                 {regionLoading ? "Menyimpan..." : "Simpan Perubahan"}
               </button>
+            </div>
+          </div>
+        </div>
+      )}
       
       {/* Modal Tambah Kuliner (admin) */}
       {tambahKulinerOpen && (
@@ -3745,6 +3586,59 @@ export default function AdminDashboard() {
                     <small className="text-muted">Pisahkan dengan koma.</small>
                   </div>
                 </div>
+
+                <div className="row">
+                  <div className="col-md-6 mb-3">
+                    <label htmlFor="admin-kuliner-hargaMin" className="form-label fw-semibold">
+                      Harga Minimal <span className="text-danger">*</span>
+                    </label>
+                    <div className="input-group">
+                      <span className="input-group-text bg-light text-muted border-end-0">Rp</span>
+                      <input
+                        id="admin-kuliner-hargaMin"
+                        type="text"
+                        inputMode="numeric"
+                        className={`form-control border-start-0 ${hargaError ? "is-invalid" : ""}`}
+                        placeholder="Contoh: 15.000"
+                        value={tambahForm.hargaMin}
+                        onChange={(e) => {
+                          ubahTambahForm("hargaMin", e.target.value);
+                          if (hargaError) setHargaError(""); // Hilangkan error saat ngetik
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="col-md-6 mb-3">
+                    <label htmlFor="admin-kuliner-hargaMax" className="form-label fw-semibold">
+                      Harga Maksimal <span className="text-danger">*</span>
+                    </label>
+                    <div className="input-group">
+                      <span className="input-group-text bg-light text-muted border-end-0">Rp</span>
+                      <input
+                        id="admin-kuliner-hargaMax"
+                        type="text"
+                        inputMode="numeric"
+                        className={`form-control border-start-0 ${hargaError ? "is-invalid" : ""}`}
+                        placeholder="Contoh: 25.000"
+                        value={tambahForm.hargaMax}
+                        onChange={(e) => {
+                          ubahTambahForm("hargaMax", e.target.value);
+                          if (hargaError) setHargaError(""); // Hilangkan error saat ngetik
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Pesan Error Khusus Harga */}
+                {hargaError && (
+                  <div className="text-danger small mb-3" style={{ marginTop: "-10px" }}>
+                    <i className="bx bx-error-circle me-1"></i>
+                    {hargaError}
+                  </div>
+                )}
+
 
                 <div className="mb-2">
                   <label htmlFor="admin-kuliner-foto" className="form-label fw-semibold">

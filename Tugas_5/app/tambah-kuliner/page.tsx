@@ -88,6 +88,28 @@ function bacaFoto(file: File): Promise<string> {
   });
 }
 
+/* Perkecil foto (maks 1000px) dan ubah ke JPEG supaya ringan dikirim ke server */
+function kompresFoto(file: File, maxSisi = 1000, kualitas = 0.8): Promise<string> {
+  return new Promise((resolve) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      const skala = Math.min(1, maxSisi / Math.max(img.width, img.height));
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.round(img.width * skala);
+      canvas.height = Math.round(img.height * skala);
+      canvas.getContext("2d")?.drawImage(img, 0, 0, canvas.width, canvas.height);
+      URL.revokeObjectURL(url);
+      resolve(canvas.toDataURL("image/jpeg", kualitas));
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      resolve("");
+    };
+    img.src = url;
+  });
+}
+
 function labelDaerah(value: string) {
   const semua = [...OPSI_KOTA, ...OPSI_KABUPATEN];
   return semua.find((o) => o.value === value)?.label ?? value;
@@ -331,10 +353,12 @@ export default function TambahKulinerPage() {
   };
 
   /* Submit */
+  const [mengirim, setMengirim] = useState(false); // tambahkan bersama state lain di atas
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSudahSubmit(true);
-    if (!formValid) return;
+    if (!formValid || mengirim) return;
 
     /* Cek login lewat session server (cookie) */
     const user = await ambilUserAktif();
@@ -344,49 +368,61 @@ export default function TambahKulinerPage() {
       return;
     }
 
-    const img = foto ? await bacaFoto(foto) : "";
-
-    /* Susun data bahan per kelompok */
-    const daftarKarbo = gabungBahan(karbo, karboLain);
-    const daftarProtein = gabungBahan(protein, proteinLain);
-    const daftarSerat = gabungBahan(serat, seratLain);
-    const daftarPelengkap = pecahDaftar(pelengkap);
-
-    /* Versi gabungan (string koma) tetap disimpan di field `bahan`
-       supaya halaman admin/profil/daftar yang lama tetap berfungsi. */
-    const bahanGabungan = [...daftarKarbo, ...daftarProtein, ...daftarSerat, ...daftarPelengkap].join(", ");
-
+    setMengirim(true);
     try {
-      const lama = JSON.parse(localStorage.getItem(USULAN_KEY) ?? "[]");
-      lama.push({
-        id: Date.now(),
-        nama: nama.trim(),
-        kategori,
-        daerah: labelDaerah(daerah),
-        status: "Menunggu",
-        bahan: bahanGabungan,
-        bahanDetail: {
-          karbohidrat: daftarKarbo,
-          protein: daftarProtein,
-          serat: daftarSerat,
-          pelengkap: pelengkap.trim(),
-        },
-        deskripsi: deskripsi.trim(),
-        rasa: rasa.join(", "),
-        harga: susunHarga(),
-        pengirim: user.nama,
-        tanggal: new Date().toISOString().slice(0, 10),
-        img,
+      const gambar = foto ? await kompresFoto(foto) : "";
+
+      const daftarKarbo = gabungBahan(karbo, karboLain);
+      const daftarProtein = gabungBahan(protein, proteinLain);
+      const daftarSerat = gabungBahan(serat, seratLain);
+      const daftarPelengkap = pecahDaftar(pelengkap);
+
+      const bahan = [...daftarKarbo, ...daftarProtein, ...daftarSerat, ...daftarPelengkap].join(", ");
+
+      const res = await fetch("/api/kuliner", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nama: nama.trim(),
+          deskripsi: deskripsi.trim(),
+          kategori,                       // "Makanan" | "Jajanan" | "Minuman" | "Oleh-Oleh Khas"
+          daerah: labelDaerah(daerah),    // "Kota Sumedang", dst.
+          bahan,
+          rasa: rasa.join(", "),
+          gambar,
+          hargaMin: hargaMin.trim() ? hargaKeAngka(hargaMin) : undefined,
+          hargaMax: hargaMax.trim() ? hargaKeAngka(hargaMax) : undefined,
+        }),
       });
-      localStorage.setItem(USULAN_KEY, JSON.stringify(lama));
-    } catch {
-      alert("Gagal menyimpan: gambar terlalu besar. Coba pilih foto yang lebih kecil.");
-      return;
+
+      const hasil = await res.json().catch(() => ({}));
+
+      if (res.status === 401) {
+        alert("Sesi login habis. Silakan login lagi.");
+        router.push("/login");
+        return;
+      }
+
+      if (!res.ok) {
+        console.error("Gagal kirim kuliner:", hasil);
+        const detail = hasil.detail
+          ? Object.entries(hasil.detail)
+              .map(([field, pesan]) => `${field}: ${(pesan as string[]).join(", ")}`)
+              .join("\n")
+          : "";
+        alert(`${hasil.error || "Gagal mengirim rekomendasi."}${detail ? "\n" + detail : ""}`);
+        return;
+      }
+
+      setTampilModal(true); // hanya muncul jika API benar-benar sukses
+    } catch (err) {
+      console.error(err);
+      alert("Terjadi kesalahan jaringan. Coba lagi.");
+    } finally {
+      setMengirim(false);
     }
-
-    setTampilModal(true);
   };
-
+    
   const tambahLagi = () => {
     setTampilModal(false);
     resetForm();
@@ -780,8 +816,9 @@ export default function TambahKulinerPage() {
                   type="submit"
                   id="btn-submit-kuliner"
                   className="btn btn-success btn-lg fw-bold w-100 mb-2 py-2 fs-6 shadow-sm"
+                  disabled={mengirim}
                 >
-                  <i className="bx bx-send me-1"></i> Kirim Rekomendasi
+                  <i className="bx bx-send me-1"></i> {mengirim ? "Mengirim..." : "Kirim Rekomendasi"}
                 </button>
                 <Link
                   href="/daftar-kuliner"
