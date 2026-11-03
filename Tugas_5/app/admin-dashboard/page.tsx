@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Script from 'next/script';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import './admin-dashboard.css';
 import {
@@ -47,11 +48,10 @@ type User = {
 type MapRegion = {
   id: string;
   nama: string;
-  daerah: string;
   deskripsi: string;
   posisiX: number;
   posisiY: number;
-  isActive: boolean;
+  jumlahKulinerApproved: number;
 };
 
 /* Angka ringkasan yang dihitung dari database oleh /api/admin/stats */
@@ -231,11 +231,9 @@ export default function AdminDashboard() {
   const [regionFormOpen, setRegionFormOpen] = useState(false);
   const [regionForm, setRegionForm] = useState({
     nama: "",
-    daerah: "",
     deskripsi: "",
     posisiX: 50,
     posisiY: 50,
-    isActive: true,
   });
   
   /* Modal */
@@ -885,30 +883,30 @@ export default function AdminDashboard() {
   );
 
   // peta rasa
+  const pilihPosisiRegion = (
+    event: React.MouseEvent<HTMLDivElement>
+  ) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+
+    const posisiX = ((event.clientX - rect.left) / rect.width) * 100;
+    const posisiY = ((event.clientY - rect.top) / rect.height) * 100;
+
+    setRegionForm((sebelumnya) => ({
+      ...sebelumnya,
+      posisiX: Number(Math.min(100, Math.max(0, posisiX)).toFixed(2)),
+      posisiY: Number(Math.min(100, Math.max(0, posisiY)).toFixed(2)),
+    }));
+  };
+
   const bukaFormRegion = (region?: MapRegion) => {
-    if (region) {
-      setEditingRegion(region);
+    setEditingRegion(region ?? null);
 
-      setRegionForm({
-        nama: region.nama,
-        daerah: region.daerah,
-        deskripsi: region.deskripsi,
-        posisiX: region.posisiX,
-        posisiY: region.posisiY,
-        isActive: region.isActive,
-      });
-    } else {
-      setEditingRegion(null);
-
-      setRegionForm({
-        nama: "",
-        daerah: "",
-        deskripsi: "",
-        posisiX: 50,
-        posisiY: 50,
-        isActive: true,
-      });
-    }
+    setRegionForm({
+      nama: region?.nama ?? "",
+      deskripsi: region?.deskripsi ?? "",
+      posisiX: region?.posisiX ?? 50,
+      posisiY: region?.posisiY ?? 50,
+    });
 
     setRegionMessage("");
     setRegionError("");
@@ -965,6 +963,42 @@ export default function AdminDashboard() {
     }
   };
 
+  const hapusRegion = async (region: MapRegion) => {
+    const konfirmasi = window.confirm(
+      `Yakin ingin menghapus daerah "${region.nama}"?`
+    );
+
+    if (!konfirmasi) return;
+
+    try {
+      setRegionError("");
+      setRegionMessage("");
+
+      const response = await fetch(
+        `/api/admin/map-regions?id=${encodeURIComponent(region.id)}`,
+        { method: "DELETE" }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Gagal menghapus daerah.");
+      }
+
+      setRegions((sebelumnya) =>
+        sebelumnya.filter((item) => item.id !== region.id)
+      );
+
+      setRegionMessage(`Daerah "${region.nama}" berhasil dihapus.`);
+    } catch (error) {
+      setRegionError(
+        error instanceof Error
+          ? error.message
+          : "Terjadi kesalahan saat menghapus daerah."
+      );
+    }
+  };
+
   useEffect(() => {
     if (!siap || activeTab !== "peta") return;
 
@@ -972,7 +1006,7 @@ export default function AdminDashboard() {
 
     async function loadRegions() {
       try {
-        const response = await fetch("/api/map-regions", {
+        const response = await fetch("/api/admin/map-regions", {
           cache: "no-store",
         });
 
@@ -1496,84 +1530,165 @@ export default function AdminDashboard() {
               </section>
             )}
 
-            {activeTab === "peta" && (
-              <section id="tab-kelola-peta">
-                <h4>Kelola Peta Rasa</h4>
+            {activeTab === 'peta' && (
+              
+              <div className="box-tabel border rounded bg-white p-4">
+                <div className="mb-3">
+                  <h5>Data Kabupaten/Kota Jawa Barat</h5>
+                  <p className="text-muted mb-0">
+                    Kelola deskripsi wilayah dan posisi pin pada Peta Rasa.
+                  </p>
+                  <button
+                    type="button"
+                    className="btn btn-success"
+                    onClick={() => bukaFormRegion()}
+                  >
+                    <i className="bx bx-plus me-1" />
+                    Tambah Daerah
+                  </button>
+                </div>
 
-                <div className="box-tabel border rounded bg-white p-4">
-                  <div className="d-flex justify-content-between align-items-center mb-3">
-                    <div>
-                      <h5>Data Daerah</h5>
-                      <p className="text-muted mb-0">
-                        Kelola nama daerah, posisi pin, dan status tampil.
-                      </p>
-                    </div>
+                <div className="mb-4">
+                  <h5 className="fw-semibold mb-3">
+                    Preview Peta Jawa Barat
+                  </h5>
 
-                    <button
-                      type="button"
-                      className="btn btn-success"
-                      onClick={() => bukaFormRegion()}
-                    >
-                      <i className="bx bx-plus me-1" />
-                      Tambah Daerah
-                    </button>
+                  <div
+                    className="peta-admin-preview"
+                    style={{
+                      width: "100%",
+                      maxWidth: "750px",
+                    }}
+                  >
+                    <Image
+                      src="/images/homepage/peta-jabar.jpg"
+                      alt="Peta Kabupaten dan Kota Jawa Barat"
+                      width={1200}
+                      height={900}
+                      className="w-100 h-auto"
+                      style={{ display: "block" }}
+                    />
+
+                    {regions.map((region) => (
+                      <div
+                        key={region.id}
+                        className="peta-pin-item"
+                        style={{
+                          left: `${region.posisiX}%`,
+                          top: `${region.posisiY}%`,
+                        }}
+                      >
+                        <button
+                          type="button"
+                          className="btn-pin"
+                          title={`Edit ${region.nama}`}
+                          aria-label={`Edit ${region.nama}`}
+                          onClick={() => bukaFormRegion(region)}
+                        >
+                          <i className="bx bx-map-pin"></i>
+                        </button>
+
+                        <span className="pin-label">
+                          {region.nama}
+                        </span>
+                      </div>
+                    ))}
                   </div>
 
-                  {regionError && (
-                    <div className="alert alert-danger">
-                      {regionError}
-                    </div>
-                  )}
+                  <div className="d-flex flex-wrap gap-3 mt-3 small">
+                    <span>
+                      <span
+                        className="d-inline-block rounded-circle me-1"
+                        style={{
+                          width: "10px",
+                          height: "10px",
+                          backgroundColor: "#dc3545",
+                        }}
+                      />
+                      Ada kuliner approved
+                    </span>
 
-                  {regionMessage && (
-                    <div className="alert alert-success">
-                      {regionMessage}
-                    </div>
-                  )}
+                    <span>
+                      <span
+                        className="d-inline-block rounded-circle me-1"
+                        style={{
+                          width: "10px",
+                          height: "10px",
+                          backgroundColor: "#6c757d",
+                        }}
+                      />
+                      Belum ada kuliner approved
+                    </span>
+                  </div>
 
-                  {regionLoading && (
-                    <p className="text-muted">Memuat data daerah...</p>
-                  )}
+                  <p className="text-muted small mt-2 mb-0">
+                    Klik pin untuk mengedit informasi dan posisi daerah.
+                  </p>
+                </div>
+                {regionError && (
+                  <div className="alert alert-danger">{regionError}</div>
+                )}
 
-                  {!regionLoading && regions.length === 0 && (
-                    <div className="text-center text-muted py-4">
-                      <i className="bx bx-map fs-1" />
-                      <p>Belum ada data daerah di database.</p>
-                    </div>
-                  )}
+                {regionMessage && (
+                  <div className="alert alert-success">{regionMessage}</div>
+                )}
 
-                  {!regionLoading && regions.length > 0 && (
-                    <div className="table-responsive">
-                      <table className="table table-hover align-middle">
-                        <thead className="table-light">
-                          <tr>
-                            <th>Nama</th>
-                            <th>Daerah</th>
-                            <th>Posisi X</th>
-                            <th>Posisi Y</th>
-                            <th>Status</th>
-                            <th>Aksi</th>
-                          </tr>
-                        </thead>
+                {regionLoading ? (
+                  <p className="text-muted">Memuat data wilayah...</p>
+                ) : (
+                  <div className="table-responsive">
+                    <table className="table table-hover align-middle">
+                      <thead className="table-light">
+                        <tr>
+                          <th>Kabupaten/Kota</th>
+                          <th>Deskripsi</th>
+                          <th>Posisi X</th>
+                          <th>Posisi Y</th>
+                          <th>Kuliner</th>
+                          <th>Aksi</th>
+                        </tr>
+                      </thead>
 
-                        <tbody>
-                          {regions.map((region) => (
+                      <tbody>
+                        {regions.map((region) => {
+                          const jenisWilayah = region.nama.startsWith("Kota ")
+                            ? "kota"
+                            : "kab";
+
+                          const statusWilayah =
+                            region.jumlahKulinerApproved > 0
+                              ? "ada-kuliner"
+                              : "belum-ada-kuliner";
+
+                          return (
                             <tr key={region.id}>
                               <td className="fw-semibold">{region.nama}</td>
-                              <td>{region.daerah}</td>
+
+                              <td style={{ minWidth: 220, maxWidth: 350 }}>
+                                {region.deskripsi || (
+                                  <span className="text-muted">
+                                    Belum ada deskripsi
+                                  </span>
+                                )}
+                              </td>
+
                               <td>{region.posisiX}%</td>
                               <td>{region.posisiY}%</td>
+
                               <td>
                                 <span
                                   className={`badge ${
-                                    region.isActive
+                                    region.jumlahKulinerApproved > 0
                                       ? "bg-success"
                                       : "bg-secondary"
                                   }`}
                                 >
-                                  {region.isActive ? "Aktif" : "Nonaktif"}
+                                  {region.jumlahKulinerApproved > 0
+                                    ? `${region.jumlahKulinerApproved} kuliner`
+                                    : "Belum ada"}
                                 </span>
                               </td>
+
                               <td>
                                 <button
                                   type="button"
@@ -1583,157 +1698,23 @@ export default function AdminDashboard() {
                                   <i className="bx bx-edit-alt me-1" />
                                   Edit
                                 </button>
+                                <button
+                                  type="button"
+                                  className="btn btn-sm btn-outline-danger"
+                                  onClick={() => hapusRegion(region)}
+                                >
+                                  <i className="bx bx-trash me-1"></i>
+                                  Hapus
+                                </button>
                               </td>
                             </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  )}
-                </div>
-
-                {regionFormOpen && (
-                  <div className="box-tabel border rounded bg-white p-4 mt-4">
-                    <h5>
-                      {editingRegion ? "Edit Daerah" : "Tambah Daerah"}
-                    </h5>
-
-                    <div className="mb-3">
-                      <label className="form-label">Nama</label>
-                      <input
-                        className="form-control"
-                        value={regionForm.nama}
-                        onChange={(e) =>
-                          setRegionForm({
-                            ...regionForm,
-                            nama: e.target.value,
-                          })
-                        }
-                        placeholder="Contoh: Bandung"
-                      />
-                    </div>
-
-                    <div className="mb-3">
-                      <label className="form-label">Daerah</label>
-                      <input
-                        className="form-control"
-                        value={regionForm.daerah}
-                        onChange={(e) =>
-                          setRegionForm({
-                            ...regionForm,
-                            daerah: e.target.value,
-                          })
-                        }
-                        placeholder="Contoh: Kota Bandung"
-                      />
-                    </div>
-
-                    <div className="mb-3">
-                      <label className="form-label">Deskripsi</label>
-                      <textarea
-                        className="form-control"
-                        rows={3}
-                        value={regionForm.deskripsi}
-                        onChange={(e) =>
-                          setRegionForm({
-                            ...regionForm,
-                            deskripsi: e.target.value,
-                          })
-                        }
-                      />
-                    </div>
-
-                    <div className="row">
-                      <div className="col-md-6 mb-3">
-                        <label className="form-label">Posisi X (%)</label>
-                        <input
-                          type="number"
-                          className="form-control"
-                          min="0"
-                          max="100"
-                          value={regionForm.posisiX}
-                          onChange={(e) =>
-                            setRegionForm({
-                              ...regionForm,
-                              posisiX: Number(e.target.value),
-                            })
-                          }
-                        />
-                      </div>
-
-                      <div className="col-md-6 mb-3">
-                        <label className="form-label">Posisi Y (%)</label>
-                        <input
-                          type="number"
-                          className="form-control"
-                          min="0"
-                          max="100"
-                          value={regionForm.posisiY}
-                          onChange={(e) =>
-                            setRegionForm({
-                              ...regionForm,
-                              posisiY: Number(e.target.value),
-                            })
-                          }
-                        />
-                      </div>
-                    </div>
-
-                    <div className="form-check mb-4">
-                      <input
-                        type="checkbox"
-                        className="form-check-input"
-                        id="region-active"
-                        checked={regionForm.isActive}
-                        onChange={(e) =>
-                          setRegionForm({
-                            ...regionForm,
-                            isActive: e.target.checked,
-                          })
-                        }
-                      />
-                      <label
-                        className="form-check-label"
-                        htmlFor="region-active"
-                      >
-                        Tampilkan daerah pada Peta Rasa
-                      </label>
-                    </div>
-
-                    <div className="d-flex justify-content-end gap-2">
-                      <button
-                        type="button"
-                        className="btn btn-outline-secondary"
-                        onClick={() => {
-                          setRegionFormOpen(false);
-                          setEditingRegion(null);
-                        }}
-                        disabled={regionLoading}
-                      >
-                        Batal
-                      </button>
-
-                      <button
-                        type="button"
-                        className="btn btn-success"
-                        onClick={simpanRegion}
-                        disabled={
-                          regionLoading ||
-                          !regionForm.nama.trim() ||
-                          !regionForm.daerah.trim() ||
-                          !regionForm.deskripsi.trim() ||
-                          regionForm.posisiX < 0 ||
-                          regionForm.posisiX > 100 ||
-                          regionForm.posisiY < 0 ||
-                          regionForm.posisiY > 100
-                        }
-                      >
-                        {regionLoading ? "Menyimpan..." : "Simpan Perubahan"}
-                      </button>
-                    </div>
+                          );
+                        })}
+                      </tbody>
+                    </table>
                   </div>
                 )}
-              </section>
+              </div>
             )}
 
             {activeTab === 'metadata' && (
@@ -2261,7 +2242,193 @@ export default function AdminDashboard() {
           </main>
         </div>
       </div>
-      
+
+      {regionFormOpen && (
+        <div
+          className="modal-region-overlay"
+          onClick={() => {
+            setRegionFormOpen(false);
+            setEditingRegion(null);
+          }}
+        >
+          <div
+            className="modal-region-content"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="d-flex justify-content-between align-items-center mb-3">
+              <div>
+                <h5 className="mb-1">
+                  {editingRegion ? `Edit ${editingRegion.nama}` : "Tambah Daerah"}
+                </h5>
+                <p className="text-muted mb-0">
+                  Atur deskripsi dan posisi pin wilayah.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                className="btn-close"
+                onClick={() => {
+                  setRegionFormOpen(false);
+                  setEditingRegion(null);
+                }}
+              />
+            </div>
+
+            <div className="mb-3">
+              <label className="form-label">Nama Kabupaten/Kota</label>
+              <input
+                type="text"
+                className="form-control"
+                value={regionForm.nama}
+                onChange={(event) =>
+                  setRegionForm({
+                    ...regionForm,
+                    nama: event.target.value,
+                  })
+                }
+                placeholder="Contoh: Kabupaten Bandung"
+                disabled={!!editingRegion}
+              />
+            </div>
+            <div className="mb-3">
+              <label className="form-label">Deskripsi Wilayah</label>
+              <textarea
+                className="form-control"
+                rows={3}
+                value={regionForm.deskripsi}
+                onChange={(event) =>
+                  setRegionForm({
+                    ...regionForm,
+                    deskripsi: event.target.value,
+                  })
+                }
+                placeholder="Masukkan deskripsi wilayah..."
+              />
+            </div>
+
+            <div className="mb-3">
+              <label className="form-label">
+                Posisi Pin pada Peta
+              </label>
+
+              <div
+                className="peta-admin-picker"
+                onClick={pilihPosisiRegion}
+              >
+                <Image
+                  src="/images/homepage/peta-jabar.jpg"
+                  alt="Peta Jawa Barat"
+                  width={1200}
+                  height={900}
+                  className="peta-admin-image"
+                />
+
+                <div
+                  className={`peta-pin-item ${
+                    regionForm.nama.startsWith("Kota ")
+                      ? "pin-kota-region"
+                      : "pin-kabupaten-region"
+                  }`}
+                  style={{
+                    left: `${regionForm.posisiX}%`,
+                    top: `${regionForm.posisiY}%`,
+                    pointerEvents: "none",
+                  }}
+                >
+                  <button
+                    type="button"
+                    className="btn-pin"
+                    tabIndex={-1}
+                    aria-hidden="true"
+                  >
+                    <i className="bx bx-map-pin" />
+                  </button>
+
+                  <span className="pin-label">
+                    {regionForm.nama || "Pilih daerah"}
+                  </span>
+                </div>
+              </div>
+
+              <small className="text-muted">
+                Klik pada peta untuk menentukan posisi pin.
+              </small>
+            </div>
+
+            <div className="row">
+              <div className="col-md-6 mb-3">
+                <label className="form-label">Posisi X (%)</label>
+                <input
+                  type="number"
+                  className="form-control"
+                  min="0"
+                  max="100"
+                  value={regionForm.posisiX}
+                  onChange={(event) =>
+                    setRegionForm({
+                      ...regionForm,
+                      posisiX: Number(event.target.value),
+                    })
+                  }
+                />
+              </div>
+
+              <div className="col-md-6 mb-3">
+                <label className="form-label">Posisi Y (%)</label>
+                <input
+                  type="number"
+                  className="form-control"
+                  min="0"
+                  max="100"
+                  value={regionForm.posisiY}
+                  onChange={(event) =>
+                    setRegionForm({
+                      ...regionForm,
+                      posisiY: Number(event.target.value),
+                    })
+                  }
+                />
+              </div>
+            </div>
+
+            {regionError && (
+              <div className="alert alert-danger">{regionError}</div>
+            )}
+
+            <div className="d-flex justify-content-end gap-2">
+              <button
+                type="button"
+                className="btn btn-outline-secondary"
+                onClick={() => {
+                  setRegionFormOpen(false);
+                  setEditingRegion(null);
+                }}
+                disabled={regionLoading}
+              >
+                Batal
+              </button>
+
+              <button
+                type="button"
+                className="btn btn-success"
+                onClick={simpanRegion}
+                disabled={
+                  regionLoading ||
+                  !regionForm.deskripsi.trim() ||
+                  regionForm.posisiX < 0 ||
+                  regionForm.posisiX > 100 ||
+                  regionForm.posisiY < 0 ||
+                  regionForm.posisiY > 100
+                }
+              >
+                {regionLoading ? "Menyimpan..." : "Simpan Perubahan"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {faqToDelete && (
         <div
           className="modal fade show d-block"
