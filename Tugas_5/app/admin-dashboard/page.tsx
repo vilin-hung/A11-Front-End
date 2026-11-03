@@ -180,6 +180,18 @@ const METADATA_AWAL: SiteMetadata[] = [
   { key: "footer_text", value: "© 2026 JelajahRasa" },
 ];
 
+/* Menghilangkan notifikasi otomatis setelah 5 detik */
+function useAutoDismiss(
+  message: string,
+  setMessage: (value: string) => void
+) {
+  useEffect(() => {
+    if (!message) return;
+    const timer = setTimeout(() => { setMessage(""); }, 5000);
+    return () => clearTimeout(timer);
+  }, [message, setMessage]);
+}
+
 /* =========================
    HALAMAN
    ========================= */
@@ -216,7 +228,11 @@ export default function AdminDashboard() {
     slug: "",
     messageIds: [] as string[],
   });
-
+  const [faqTouched, setFaqTouched] = useState({
+    pertanyaan: false,
+    jawaban: false,
+    slug: false,
+  });
   /* Ringkasan dari database; null berarti belum berhasil dimuat */
   const [statistik, setStatistik] = useState<StatistikAdmin | null>(null);
 
@@ -267,6 +283,22 @@ export default function AdminDashboard() {
   const [metadataSaving, setMetadataSaving] = useState(false);
   const [metadataError, setMetadataError] = useState("");
   const [metadataMessage, setMetadataMessage] = useState("");
+
+  // Notifikasi pesan masuk
+  useAutoDismiss(messageInfo, setMessageInfo);
+  useAutoDismiss(messageError, setMessageError);
+
+  // Notifikasi FAQ
+  useAutoDismiss(faqInfo, setFaqInfo);
+  useAutoDismiss(faqError, setFaqError);
+
+  // Notifikasi peta
+  useAutoDismiss(regionMessage, setRegionMessage);
+  useAutoDismiss(regionError, setRegionError);
+
+  // Notifikasi metadata
+  useAutoDismiss(metadataMessage, setMetadataMessage);
+  useAutoDismiss(metadataError, setMetadataError);
 
   /* Ambil angka ringkasan dari database. Dipisah dari effect awal
      supaya bisa dipanggil ulang setelah admin mengubah data. */
@@ -1973,7 +2005,11 @@ export default function AdminDashboard() {
                     <label className="form-label">Pertanyaan</label>
                     <input
                       type="text"
-                      className="form-control"
+                      className={`form-control ${
+                        faqTouched.pertanyaan && !faqForm.pertanyaan.trim()
+                          ? "is-invalid"
+                          : ""
+                      }`}
                       value={faqForm.pertanyaan}
                       onChange={(e) =>
                         setFaqForm({
@@ -1981,15 +2017,27 @@ export default function AdminDashboard() {
                           pertanyaan: e.target.value,
                         })
                       }
+                      onBlur={() =>
+                        setFaqTouched((prev) => ({ ...prev, pertanyaan: true }))
+                      }
                       placeholder="Masukkan pertanyaan FAQ"
                     />
+
+                    {faqTouched.pertanyaan && !faqForm.pertanyaan.trim() && (
+                      <div className="invalid-feedback">
+                        Pertanyaan harus diisi.
+                      </div>
+                    )}
                   </div>
 
                   <div className="mb-3">
                     <label className="form-label">Jawaban</label>
                     <textarea
-                      className="form-control"
-                      rows={4}
+                      className={`form-control ${
+                        faqTouched.jawaban && !faqForm.jawaban.trim()
+                          ? "is-invalid"
+                          : ""
+                      }`}
                       value={faqForm.jawaban}
                       onChange={(e) =>
                         setFaqForm({
@@ -1997,15 +2045,29 @@ export default function AdminDashboard() {
                           jawaban: e.target.value,
                         })
                       }
+                      onBlur={() =>
+                        setFaqTouched((prev) => ({ ...prev, jawaban: true }))
+                      }
                       placeholder="Masukkan jawaban FAQ"
+                      rows={4}
                     />
+
+                    {faqTouched.jawaban && !faqForm.jawaban.trim() && (
+                      <div className="invalid-feedback">
+                        Jawaban harus diisi.
+                      </div>
+                    )}
                   </div>
 
                   <div className="mb-3">
                     <label className="form-label">Slug</label>
                     <input
                       type="text"
-                      className="form-control"
+                      className={`form-control ${
+                        faqTouched.slug && !faqForm.slug.trim()
+                          ? "is-invalid"
+                          : ""
+                      }`}
                       value={faqForm.slug}
                       onChange={(e) =>
                         setFaqForm({
@@ -2013,8 +2075,18 @@ export default function AdminDashboard() {
                           slug: e.target.value,
                         })
                       }
-                      placeholder="Contoh: cara-menggunakan-website"
+                      onBlur={() =>
+                        setFaqTouched((prev) => ({ ...prev, slug: true }))
+                      }
+                      placeholder="Masukkan slug FAQ"
                     />
+
+                    {faqTouched.slug && !faqForm.slug.trim() && (
+                      <div className="invalid-feedback">
+                        Slug harus diisi.
+                      </div>
+                    )}
+
                     <small className="text-muted">
                       Gunakan huruf kecil dan tanda hubung.
                     </small>
@@ -2091,7 +2163,7 @@ export default function AdminDashboard() {
                   {editingFaq && (
                     <button
                       type="button"
-                      className="btn btn-outline-secondary ms-2"
+                      className="btn btn-batal-edit rounded-pill ms-2"
                       onClick={() => {
                         setEditingFaq(null);
                         setFaqForm({
@@ -2099,6 +2171,11 @@ export default function AdminDashboard() {
                           jawaban: "",
                           slug: "",
                           messageIds: [],
+                        });
+                        setFaqTouched({
+                          pertanyaan: false,
+                          jawaban: false,
+                          slug: false,
                         });
                         setFaqError("");
                         setFaqInfo("");
