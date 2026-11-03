@@ -308,6 +308,12 @@ export default function AdminDashboard() {
   const [tolakItem, setTolakItem] = useState<ItemAdmin | null>(null);
   const [gambarBesar, setGambarBesar] = useState<ItemAdmin | null>(null);
   const [peringkatTerbuka, setPeringkatTerbuka] = useState(false);
+  
+  const [roleDialog, setRoleDialog] = useState<{
+    user: User;
+    role: string;
+  } | null>(null);
+  const [roleLoading, setRoleLoading] = useState(false);
 
   const menu: {
     id: TabType;
@@ -389,6 +395,64 @@ export default function AdminDashboard() {
       setUlasan((data.ulasan ?? []).map(keUlasan));
     } catch (error) {
       console.error('Gagal mengambil daftar ulasan:', error);
+    }
+  };
+
+  /* daftar pengguna dari database */
+  const muatUsers = async () => {
+    try {
+      const response = await fetch('/api/admin/users', { cache: 'no-store' });
+
+      if (!response.ok) return;
+
+      const data = (await response.json()) as { users?: User[] };
+      setUsers(data.users ?? []);
+    } catch (error) {
+      console.error('Gagal mengambil daftar pengguna:', error);
+    }
+  };
+
+  /* buka pop up konfirmasi ubah role pengguna */
+  const mintaUbahRole = (user: User, role: string) => {
+    if (role === user.role) return;
+
+    setRoleDialog({ user, role });
+  };
+
+  /* simpan perubahan role setelah konfirmasi */
+  const simpanRole = async () => {
+    if (!roleDialog) return;
+
+    setRoleLoading(true);
+
+    try {
+      const response = await fetch('/api/admin/users', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: roleDialog.user.id,
+          role: roleDialog.role,
+        }),
+      });
+
+      const data = (await response.json().catch(() => ({}))) as {
+        message?: string;
+      };
+
+      if (!response.ok) {
+        alert(data.message ?? 'Role pengguna belum berhasil diubah.');
+        return;
+      }
+
+      setRoleDialog(null);
+
+      await muatUsers();
+      await muatStatistik();
+    } catch (error) {
+      console.error('Gagal mengubah role pengguna:', error);
+      alert('Tidak dapat menghubungi server. Silakan coba lagi.');
+    } finally {
+      setRoleLoading(false);
     }
   };
 
@@ -742,15 +806,7 @@ export default function AdminDashboard() {
         /* Seluruh data diambil dari database lewat API admin */
         setAdmin(data.user);
 
-        const userResponse = await fetch('/api/admin/users', {
-          cache: 'no-store',
-        });
-
-        if (userResponse.ok) {
-          const userData = await userResponse.json();
-          setUsers(userData.users || []);
-        }
-
+        await muatUsers();
         await muatKuliner();
         await muatUlasan();
         await muatStatistik();
@@ -1701,13 +1757,14 @@ export default function AdminDashboard() {
                           <th>Email</th>
                           <th>Kota</th>
                           <th>Role</th>
+                          <th className="text-center">Aksi</th>
                         </tr>
                       </thead>
 
                       <tbody>
                         {users.length === 0 ? (
                           <BarisKosong
-                            kolom={4}
+                            kolom={5}
                             ikon="bx-user"
                             pesan="Belum ada data pengguna."
                           />
@@ -1728,6 +1785,32 @@ export default function AdminDashboard() {
                                   {user.role}
                                 </span>
                               </td>
+                              <td className="text-center text-nowrap">
+                                {user.id === admin?.id ? (
+                                  <span className="text-muted small">
+                                    Akun Anda
+                                  </span>
+                                ) : (
+                                  <button
+                                    type="button"
+                                    className={
+                                      user.role === 'ADMIN'
+                                        ? 'btn btn-outline-danger btn-sm'
+                                        : 'btn btn-success btn-sm'
+                                    }
+                                    onClick={() =>
+                                      mintaUbahRole(
+                                        user,
+                                        user.role === 'ADMIN' ? 'USER' : 'ADMIN'
+                                      )
+                                    }
+                                  >
+                                    {user.role === 'ADMIN'
+                                      ? 'Jadikan User'
+                                      : 'Jadikan Admin'}
+                                  </button>
+                                )}
+                              </td>
                             </tr>
                           ))
                         )}
@@ -1737,7 +1820,7 @@ export default function AdminDashboard() {
                 </div>
 
                 <small className="text-muted d-block mt-3">
-                  Role hanya dapat diubah oleh developer melalui database.
+                  Hanya admin yang dapat mengubah role pengguna dari dashboard.
                 </small>
               </section>
             )}
@@ -2915,6 +2998,69 @@ export default function AdminDashboard() {
 
       {gambarBesar && (
         <ModalGambar item={gambarBesar} onTutup={() => setGambarBesar(null)} />
+      )}
+
+      {/* pop up konfirmasi ubah role pengguna */}
+      {roleDialog && (
+        <div
+          className="modal fade show d-block"
+          tabIndex={-1}
+          role="dialog"
+          aria-modal="true"
+          style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
+        >
+          <div className="modal-dialog modal-dialog-centered modal-sm">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Ubah Role Akun</h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  aria-label="Tutup"
+                  onClick={() => setRoleDialog(null)}
+                  disabled={roleLoading}
+                />
+              </div>
+
+              <div className="modal-body">
+                <p className="mb-2">
+                  Ubah role akun ini menjadi{" "}
+                  <strong>
+                    {roleDialog.role === "ADMIN" ? "Admin" : "User"}
+                  </strong>
+                  ?
+                </p>
+                <p className="text-muted small mb-0">
+                  {roleDialog.user.nama} ({roleDialog.user.email})
+                </p>
+              </div>
+
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-outline-secondary"
+                  onClick={() => setRoleDialog(null)}
+                  disabled={roleLoading}
+                >
+                  Batal
+                </button>
+
+                <button
+                  type="button"
+                  className={
+                    roleDialog.role === "ADMIN"
+                      ? "btn btn-success"
+                      : "btn btn-danger"
+                  }
+                  onClick={simpanRole}
+                  disabled={roleLoading}
+                >
+                  {roleLoading ? "Menyimpan..." : "Ya, Ubah"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

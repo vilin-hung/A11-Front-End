@@ -52,7 +52,7 @@ const dataKuliner = [
     deskripsi:
       "Makanan yang terbuat dari kerupuk direbus dengan kuah berbumbu kencur.",
     sejarah: "Berawal dari tradisi mengolah kerupuk sisa atau kerupuk lemas agar tidak terbuang. Konon, hidangan ini lahir saat terjadi krisis pangan pada masa penjajahan, di mana warga memanfaatkan stok kerupuk lama yang keras dengan cara direbus dan dibumbui sederhana.",
-    kategori: "jajanan",
+    kategori: "Jajanan",
     daerah: "Bandung",
     bahan: ["Kerupuk", "Mie", "Sayur", "Bumbu Kencur", "Air", "Telur"],
     rasa: ["gurih", "pedas"],
@@ -67,7 +67,7 @@ const dataKuliner = [
     deskripsi:
       "Gorengan khas sunda yang berisi oncom.",
     sejarah: "Combro merupakan singkatan dari bahasa Sunda (oncom di jero) yang artinya oncom di dalam. Kudapan ini berbentuk lonjong dengan isian oncom berbumbu pedas, kencur, dan cabai, sehingga menghasilkan rasa yang gurih dan pedas.",
-    kategori: "jajanan",
+    kategori: "Jajanan",
     daerah: "Jawa Barat",
     bahan: ["Singkong", "Kelapa Parut", "Oncom", "Tepung Terigu"],
     rasa: ["gurih", "pedas"],
@@ -82,7 +82,7 @@ const dataKuliner = [
     deskripsi:
       "Makanan tradisional khas Sunda yang memiliki aroma dan citra asli yang gurih.",
     sejarah: "Bandros adalah jajanan tradisional khas Sunda, Jawa Barat, yang konon sudah ada sejak awal abad ke-20 atau era kolonial Belanda sekitar tahun 1900-an.",
-    kategori: "jajanan",
+    kategori: "Jajanan",
     daerah: "Jawa Barat",
     bahan: ["Singkong", "Kelapa Parut", "Oncom", "Tepung Terigu"],
     rasa: ["gurih", "pedas"],
@@ -97,7 +97,7 @@ const dataKuliner = [
     deskripsi:
       "Kue tradisional khas Jawa Barat yang memiliki tekstur yang padat di luar namun lembut didalam.",
     sejarah: "Awalnya, kue bertekstur padat ini disukai para bangsawan dan orang Belanda. Mereka memilih kue balok karena dianggap lebih mengenyangkan daripada roti biasa. Seiring berjalannya waktu, resep sederhana ini diadopsi oleh warga lokal.",
-    kategori: "jajanan",
+    kategori: "Jajanan",
     daerah: "Kab. Bandung",
     bahan: ["Tepung Terigu", "Telur", "Gula Pasir", "Susu", "Margarin", "Bubuk Cokelat"],
     rasa: ["gurih", "manis"],
@@ -112,7 +112,7 @@ const dataKuliner = [
     deskripsi:
       "Jajann tradisional khas berupa es beku berbentuk silinder panjang yang dibungkus plastik bening.",
     sejarah: "Es lilin pertama kali diperkenalkan di Bandung pada tahun 1950 sebagai jajanan tradisional berbahan dasar santan, gula, dan perisa yang dicetak dan dibekukan secara manual menggunakan es balok dan garam.",
-    kategori: "jajanan",
+    kategori: "Jajanan",
     daerah: "Kab. Bandung",
     bahan: ["Santan", "Gula", "Perisa"],
     rasa: ["gurih", "manis"],
@@ -127,7 +127,7 @@ const dataKuliner = [
     deskripsi:
       "Camilan tradisional yang terbuat dari parutan singkong dengan isian gula merah.",
     sejarah: "Misro merupakan singkatan dari bahasa Sunda amis di jero yang artinya manis di dalam. Kudapan ini biasanya berbentuk lebih bulat atau pipih dengan isian gula merah (gula aren) yang akan mencair atau lumer saat digoreng.",
-    kategori: "jajanan",
+    kategori: "Jajanan",
     daerah: "Kab. Bandung",
     bahan: ["Singkong", "Gula Merah", "Kelapa Parut", "Garam"],
     rasa: ["gurih", "manis"],
@@ -412,7 +412,7 @@ const dataKuliner = [
     deskripsi:
       "Tahu goreng khas Sumedang yang renyah dan gurih di luar namun sangat lembut di dalam, nikmat disajikan hangat bersama cabai rawit.",
     sejarah: "Sejarah Tahu Sumedang berawal dari kisah cinta seorang imigran asal Tiongkok bernama Ong Kino yang membuat tahu untuk mengobati kerinduan istrinya pada makanan kampung halaman sekitar tahun 1900-an.",
-    kategori: "Oleh-oleh Khas",
+    kategori: "Oleh-Oleh Khas",
     daerah: "Kota Sumedang",
     bahan: ["Kedelai", "Garam", "Bumbu Tradisional", "Cabai Rawit"],
     rasa: ["gurih", "lembut", "renyah"],
@@ -427,7 +427,7 @@ const dataKuliner = [
     deskripsi:
       "Ali Agrem biasa dikenal juga sebagai kue cincin adalah makanan tradisional yang berbentuk seperti donat, namun teksturnya lebih padat.",
     sejarah: "Kata (ali) berarti cincin dan (agrem) berarti melingkar. Kue ini berasal dari Karawang dan Sukabumi.",
-    kategori: "Oleh-oleh Khas",
+    kategori: "Oleh-Oleh Khas",
     daerah: "Kab. Karawang",
     bahan: ["Tepung Beras", "Gula Merah", "Gula Pasir", "Minyak Goreng", "Air", "Kelapa Sangrai"],
     rasa: ["padat", "manis", "legit"],
@@ -442,7 +442,7 @@ const dataKuliner = [
     deskripsi:
       "Kue basah tradisional yang bertekstur lembut dan kenyal, dengan cita rasa manis legit atau gurih.",
     sejarah: "Makanan ini bermula dari tradisi syukuran desa atau ruwat bumi. Dahulu, saat warga hendak membuat dodol untuk acara syukuran tetapi bahan ketan tidak mencukupi, mereka mengakalinya menggunakan beras biasa dicampur gula aren. Nama “papaes” (artinya menghias) disematkan, yang kemudian oleh lidah orang Belanda disebut sebagai papais.",
-    kategori: "Oleh-oleh Khas",
+    kategori: "Oleh-Oleh Khas",
     daerah: "Kab. Subang",
     bahan: ["Tepung Beras", "Tepung Ketan", "Santan", "Pisang"],
     rasa: ["lembut", "manis", "kenyal"],
@@ -457,7 +457,7 @@ const dataKuliner = [
     deskripsi:
       "Jajanan tradisional yang terkenal di kawasan Puncak dan sekitar Bogor.",
     sejarah: "Gemblong sangat lekat dengan kebudayaan masyarakat Sunda, Jawa, dan Betawi. Nama gemblong dipercaya berasal dari bentuknya yang bulat lonjong atau kata gembul dalam bahasa Jawa. Penganan ini tercatat dalam naskah budaya Jawa garapan para pujangga Keraton Surakarta pimpinan Sunan Pakubuwono V. Gemblong disajikan sebagai bagian dari hidangan.",
-    kategori: "Oleh-oleh Khas",
+    kategori: "Oleh-Oleh Khas",
     daerah: "Kab. Bogor",
     bahan: ["Tepung Ketan Putih", "Santan", "Kelapa Parut", "Gula Jawa"],
     rasa: ["legit", "gurih", "kenyal"],
@@ -472,7 +472,7 @@ const dataKuliner = [
     deskripsi:
       "Makanan tradisional khas Jawa Barat berupa tape singkong yang dibuat melalui proses fermentasi tradisional.",
     sejarah: "Pada masa penjajahan, beras sangat sulit didapat karena padi warga pribumi sering disita oleh penjajah. Warga menanam singkong sebagai sumber pangan utama. Warga Cimenyan berinisiatif mengawetkan singkong melalui proses peragian atau fermentasi. Kata peuyeum sendiri berasal dari bahasa sunda meuyeum (memeram).",
-    kategori: "Oleh-oleh Khas",
+    kategori: "Oleh-Oleh Khas",
     daerah: "Kab. Bandung",
     bahan: ["Singkong", "Ragi"],
     rasa: ["manis", "asam"],
@@ -487,7 +487,7 @@ const dataKuliner = [
     deskripsi:
       "Kudapan tradisional khas dari kecamatan Cililin.",
     sejarah: "Pada tahun 1916, bermula dari kelebihan hasil panen beras ketan milik petani setempat. Dua bersaudara, Uti dan Juwita, berinisiatif mengolah ketan tersebut dengan kelapa dan gula aren menjadi makanan yang awalnya disebut warga sebagai ketan digulaan.",
-    kategori: "Oleh-oleh Khas",
+    kategori: "Oleh-Oleh Khas",
     daerah: "Kab. Bandung Barat",
     bahan: ["Beras Ketan", "Gula Aren", "Kelapa Tua"],
     rasa: ["manis", "legit"],
@@ -502,7 +502,7 @@ const dataKuliner = [
     deskripsi:
       "Jajanan tradisional yang terkenal dengan tekstur yang kenyal, legit, dan tidak mudah lengket.",
     sejarah: "Sejarah dodol Garut bermula pada tahun 1926 ketika seorang pengusaha lokal bernama Ibu Karsinah (atau tercatat juga dirintis oleh H. Sirad dalam catatan Kemendikbud) mulai merintis dan mempopulerkan industri pembuatan dodol secara luas di Garut.",
-    kategori: "Oleh-oleh Khas",
+    kategori: "Oleh-Oleh Khas",
     daerah: "Kab. Garut",
     bahan: ["Tepung Beras Ketan", "Santan Kelapa", "Gula Merah", "Gula Putih"],
     rasa: ["manis", "legit"],
@@ -517,7 +517,7 @@ const dataKuliner = [
     deskripsi:
       "Kue tradisional surabi yang disajikan dengan siraman kuah manis kental (kinca)",
     sejarah: "Sejarah makanan ini sudah dicatat dalam naskah kuno Serat Centhini (ditulis 1814-1823 pada masa Kerajaan Mataram Islam) sebagai sajian kudapan atau sesaji dalam acara adat dan pernikahan.",
-    kategori: "Oleh-oleh Khas",
+    kategori: "Oleh-Oleh Khas",
     daerah: "Kab. Bandung",
     bahan: ["Tepung Beras", "Tepung Terigu", "Santan", "Ragi", "Gula", "Garam", "Gula Merah", "Daun Pandan"],
     rasa: ["manis", "legit"],
@@ -532,7 +532,7 @@ const dataKuliner = [
     deskripsi:
       "Jajanan tradisional yang dimasak dengan cara dikukus atau dipanggang, biasa disajikan dengan kinca.",
     sejarah: "Sejarah kue apem di Cirebon sangat lekat dengan Tradisi Ngapem dan Tradisi Apeman di Keraton Kasepuhan yang sudah berjalan ratusan tahun sejak masa Sunan Gunung Jati. ",
-    kategori: "Oleh-oleh Khas",
+    kategori: "Oleh-Oleh Khas",
     daerah: "Kab. Cirebon",
     bahan: ["Tepung Beras", "Tape Singkong", "Ragi", "Santan", "Gula Merah", "Kelapa Parut"],
     rasa: ["manis", "legit"],
@@ -547,7 +547,21 @@ export async function seedKuliner(prisma: PrismaClient) {
   for (const item of dataKuliner) {
     await prisma.kuliner.upsert({
       where: { id: item.id },
-      update: { gambar: item.gambar, sejarah: item.sejarah },
+      /* kategori ikut diperbarui supaya ejaan lama di database
+         (mis. "jajanan") ikut tersamakan saat seed dijalankan ulang */
+      update: {
+        gambar: item.gambar,
+        sejarah: item.sejarah,
+        kategori: item.kategori,
+        daerah: item.daerah,
+        nama: item.nama,
+        deskripsi: item.deskripsi,
+        bahan: item.bahan,
+        rasa: item.rasa,
+        hargaMin: item.hargaMin,
+        hargaMax: item.hargaMax,
+        status: item.status,
+      },
       create: { ...item },
     });
   }
