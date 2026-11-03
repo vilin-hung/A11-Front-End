@@ -1,0 +1,18 @@
+[33m03bc429[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfeli-marmar[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{0}: pull origin main: Fast-forward
+[33mbaba4eb[m[33m ([m[1;31morigin/feli-marmar[m[33m)[m HEAD@{1}: reset: moving to HEAD
+[33mbaba4eb[m[33m ([m[1;31morigin/feli-marmar[m[33m)[m HEAD@{2}: commit: feat: memperbaiki hal yang berhubungan dengan kuliner
+[33maee26cc[m HEAD@{3}: reset: moving to HEAD
+[33maee26cc[m HEAD@{4}: pull origin main: Fast-forward
+[33mcd230ea[m HEAD@{5}: commit: feat: mengubah kuliner.ts dan mengubah page tambah-kuliner
+[33mc05b7b7[m HEAD@{6}: pull origin main: Merge made by the 'ort' strategy.
+[33mb0b3d8f[m HEAD@{7}: reset: moving to HEAD
+[33mb0b3d8f[m HEAD@{8}: commit (merge): merge remote changes
+[33mb8b118e[m HEAD@{9}: commit (merge): resolve conflict
+[33mba6a513[m HEAD@{10}: commit: feat: add daftar-kuliner database and edit daftar-kuliner page
+[33mbc82cc2[m HEAD@{11}: pull origin main: Fast-forward
+[33m4264d2b[m HEAD@{12}: reset: moving to HEAD
+[33m4264d2b[m HEAD@{13}: pull origin main: Fast-forward
+[33m144b48e[m HEAD@{14}: pull origin main: Fast-forward
+[33m0ed5de3[m HEAD@{15}: commit: feat: add daftar-kuliner and tambah-kuliner
+[33m831b0e6[m[33m ([m[1;32mmain[m[33m)[m HEAD@{16}: checkout: moving from main to feli-marmar
+[33m831b0e6[m[33m ([m[1;32mmain[m[33m)[m HEAD@{17}: clone: from https://github.com/vilin-hung/A11-Front-End.git

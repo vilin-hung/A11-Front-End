@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { verifySession } from "@/lib/auth";
 import { kulinerSchema } from "@/lib/validations/kuliner";
 
 // GET /api/kuliner?q=...&kategori=...&daerah=...
@@ -40,6 +41,14 @@ export async function GET(req: NextRequest) {
 // POST /api/kuliner
 // Status SELALU PENDING, tidak boleh ditentukan dari client
 export async function POST(req: NextRequest) {
+  const session = await verifySession();
+  if (!session) {
+    return NextResponse.json(
+      { error: "Silakan login terlebih dahulu" },
+      { status: 401 }
+    );
+  }
+
   let body: unknown;
   try {
     body = await req.json();
@@ -50,7 +59,7 @@ export async function POST(req: NextRequest) {
   const parsed = kulinerSchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json(
-      { error: "Validasi gagal", details: parsed.error.flatten().fieldErrors },
+      { error: "Validasi gagal", detail: parsed.error.flatten().fieldErrors },
       { status: 400 }
     );
   }
@@ -71,7 +80,7 @@ export async function POST(req: NextRequest) {
         hargaMin,
         hargaMax,
         status: "PENDING", // dipaksa di server
-        // catatanAdmin dan submittedBy sengaja tidak diambil dari client
+        submittedBy: session.userId,
       },
     });
 

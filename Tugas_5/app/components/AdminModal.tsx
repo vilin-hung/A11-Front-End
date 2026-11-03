@@ -172,7 +172,7 @@ export function ModalEditKuliner({
             <button
               type="submit"
               form="form-edit-kuliner"
-              className="btn btn-warning text-white"
+              className="btn btn-success text-white"
             >
               Perbarui Data
             </button>
