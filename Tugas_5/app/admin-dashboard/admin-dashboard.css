@@ -709,12 +709,30 @@
     white-space: nowrap;
 }
 
-/* Warna default berdasarkan jenis wilayah */
-.pin-kota-ada-kuliner .btn-pin {
+/* Warna pin berdasarkan jenis wilayah */
+.pin-kota .btn-pin {
     background-color: var(--warm-amber);
 }
 
-.pin-kab-ada-kuliner .btn-pin {
+.pin-kabupaten .btn-pin {
+    background-color: var(--deep-green);
+}
+
+/* Warna pin pada modal edit posisi */
+.peta-admin-picker .pin-kota-region .btn-pin {
+    background-color: var(--warm-amber);
+}
+
+.peta-admin-picker .pin-kabupaten-region .btn-pin {
+    background-color: var(--deep-green);
+}
+
+/* Warna pin berdasarkan jenis wilayah */
+.peta-admin-preview .pin-kota .btn-pin {
+    background-color: var(--warm-amber);
+}
+
+.peta-admin-preview .pin-kabupaten .btn-pin {
     background-color: var(--deep-green);
 }
 
