@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import Script from 'next/script';
 import { useRouter } from 'next/navigation';
@@ -24,6 +24,10 @@ import {
 
 const CHART_URL =
   'https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js';
+
+/* Aturan foto untuk form tambah kuliner (sama dengan halaman publik) */
+const FORMAT_FOTO = ['image/jpeg', 'image/png', 'image/webp'];
+const MAKS_UKURAN_FOTO = 5 * 1024 * 1024;
 
 type TabType = 
   | 'ringkasan'
@@ -126,6 +130,34 @@ function keUlasan(item: UlasanDb): Ulasan {
   };
 }
 
+/* Foto diubah jadi dataURL supaya bisa dikirim lewat JSON ke API */
+function bacaFile(file: File): Promise<string> {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result ?? ''));
+    reader.onerror = () => resolve('');
+    reader.readAsDataURL(file);
+  });
+}
+
+type FormKulinerBaru = {
+  nama: string;
+  kategori: string;
+  daerah: string;
+  deskripsi: string;
+  bahan: string;
+  rasa: string;
+};
+
+const FORM_KULINER_KOSONG: FormKulinerBaru = {
+  nama: '',
+  kategori: '',
+  daerah: '',
+  deskripsi: '',
+  bahan: '',
+  rasa: '',
+};
+
 type ContactMessage = {
   id: string;
   email: string;
@@ -193,6 +225,23 @@ export default function AdminDashboard() {
   const [kuliner, setKuliner] = useState<ItemAdmin[]>([]);
   const [ulasan, setUlasan] = useState<Ulasan[]>([]);
   const [users, setUsers] = useState<User[]>([]);
+
+  /* state tambah kuliner oleh admin */
+  const [tambahKulinerOpen, setTambahKulinerOpen] = useState(false);
+  const [tambahForm, setTambahForm] =
+    useState<FormKulinerBaru>(FORM_KULINER_KOSONG);
+  const [tambahFoto, setTambahFoto] = useState('');
+  const [tambahLoading, setTambahLoading] = useState(false);
+  const [tambahError, setTambahError] = useState('');
+  const inputFotoTambahRef = useRef<HTMLInputElement>(null);
+
+  /* notif di tab Kelola Kuliner (model sama seperti Kelola Peta) */
+  const [kulinerInfo, setKulinerInfo] = useState('');
+  const [kulinerError, setKulinerError] = useState('');
+
+  /* notif pop up setelah kuliner berhasil ditambahkan */
+  const [popupTambahOpen, setPopupTambahOpen] = useState(false);
+  const [popupTambahNama, setPopupTambahNama] = useState('');
 
   /* state pesan masuk */
   const [messages, setMessages] = useState<ContactMessage[]>([]);
@@ -774,6 +823,9 @@ export default function AdminDashboard() {
   const hapusItem = async (item: ItemAdmin) => {
     if (!confirm(`Hapus "${item.nama}" dari daftar kuliner?`)) return;
 
+    setKulinerInfo('');
+    setKulinerError('');
+
     try {
       const response = await fetch('/api/admin/kuliner', {
         method: 'DELETE',
@@ -791,7 +843,12 @@ export default function AdminDashboard() {
     await muatStatistik();
   };
 
+  /* Simpan hasil edit kuliner. Hasilnya ditampilkan sebagai notif
+     di atas tabel (model sama seperti notif di Kelola Peta). */
   const simpanEdit = async (itemBaru: ItemAdmin) => {
+    setKulinerInfo('');
+    setKulinerError('');
+
     try {
       const response = await fetch('/api/admin/kuliner', {
         method: 'PATCH',
@@ -808,16 +865,142 @@ export default function AdminDashboard() {
         }),
       });
 
-      if (!response.ok) return;
+      const data = (await response.json().catch(() => ({}))) as {
+        message?: string;
+      };
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Gagal menyimpan perubahan kuliner.');
+      }
+
+      setEditForm(null);
+      setKulinerInfo(`Data kuliner "${itemBaru.nama}" berhasil diperbarui.`);
+
+      await muatKuliner();
+      await muatStatistik();
     } catch (error) {
       console.error('Gagal menyimpan perubahan kuliner:', error);
+
+      setEditForm(null);
+      setKulinerError(
+        error instanceof Error
+          ? error.message
+          : 'Terjadi kesalahan saat menyimpan perubahan kuliner.'
+      );
+    }
+  };
+
+  /* =========================
+     TAMBAH KULINER (ADMIN)
+     ========================= */
+  const bukaTambahKuliner = () => {
+    setTambahForm(FORM_KULINER_KOSONG);
+    setTambahFoto('');
+    setTambahError('');
+    setKulinerInfo('');
+    setKulinerError('');
+    setTambahKulinerOpen(true);
+  };
+
+  const tutupTambahKuliner = () => {
+    if (tambahLoading) return;
+    setTambahKulinerOpen(false);
+  };
+
+  const ubahTambahForm = (field: keyof FormKulinerBaru, value: string) => {
+    setTambahForm((sebelumnya) => ({ ...sebelumnya, [field]: value }));
+  };
+
+  const pilihFotoTambah = async (file?: File) => {
+    if (!file) return;
+
+    if (!FORMAT_FOTO.includes(file.type)) {
+      setTambahError('Format foto harus JPG, PNG, atau WEBP.');
       return;
     }
 
-    setEditForm(null);
+    if (file.size > MAKS_UKURAN_FOTO) {
+      setTambahError('Ukuran foto maksimal 5MB.');
+      return;
+    }
 
-    await muatKuliner();
-    await muatStatistik();
+    setTambahError('');
+    setTambahFoto(await bacaFile(file));
+  };
+
+  const hapusFotoTambah = () => {
+    setTambahFoto('');
+    if (inputFotoTambahRef.current) inputFotoTambahRef.current.value = '';
+  };
+
+  const simpanKulinerBaru = async () => {
+    const nama = tambahForm.nama.trim();
+    const daerah = tambahForm.daerah.trim();
+    const deskripsi = tambahForm.deskripsi.trim();
+
+    if (!nama || !tambahForm.kategori || !daerah || !deskripsi) {
+      setTambahError('Nama, kategori, asal daerah, dan deskripsi wajib diisi.');
+      return;
+    }
+
+    if (!tambahFoto) {
+      setTambahError('Foto kuliner wajib diunggah.');
+      return;
+    }
+
+    setTambahLoading(true);
+    setTambahError('');
+
+    try {
+      const response = await fetch('/api/admin/kuliner', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nama,
+          kategori: tambahForm.kategori,
+          daerah,
+          deskripsi,
+          bahan: tambahForm.bahan.trim(),
+          rasa: tambahForm.rasa.trim(),
+          gambar: tambahFoto,
+          /* Ditambahkan langsung oleh admin, jadi langsung tampil di katalog */
+          status: 'APPROVED',
+        }),
+      });
+
+      const data = (await response.json().catch(() => ({}))) as {
+        message?: string;
+      };
+
+      if (!response.ok) {
+        throw new Error(
+          data.message ||
+            `Gagal menambahkan kuliner (kode ${response.status}).`
+        );
+      }
+
+      /* Berhasil: tutup form, kosongkan isian, tampilkan pop up */
+      setTambahKulinerOpen(false);
+      setTambahForm(FORM_KULINER_KOSONG);
+      setTambahFoto('');
+      if (inputFotoTambahRef.current) inputFotoTambahRef.current.value = '';
+
+      setPopupTambahNama(nama);
+      setPopupTambahOpen(true);
+
+      await muatKuliner();
+      await muatStatistik();
+    } catch (error) {
+      console.error('Gagal menambahkan kuliner:', error);
+
+      setTambahError(
+        error instanceof Error
+          ? error.message
+          : 'Terjadi kesalahan saat menambahkan kuliner.'
+      );
+    } finally {
+      setTambahLoading(false);
+    }
   };
 
   const toggleUlasan = async (id: string) => {
@@ -883,6 +1066,11 @@ export default function AdminDashboard() {
   const pesanReferensi = messages.filter(
     (item) => item.isFaqReference && !item.faqId
   );
+
+  /* Saran asal daerah untuk form tambah kuliner (dari data yang sudah ada) */
+  const daerahTersedia = Array.from(
+    new Set(kuliner.map((item) => item.daerah).filter(Boolean))
+  ).sort();
 
   // peta rasa
   const bukaFormRegion = (region?: MapRegion) => {
@@ -1169,6 +1357,10 @@ export default function AdminDashboard() {
                     activeTab === item.id ? 'active' : ''
                   }`}
                   onClick={() => {
+                    /* notif kuliner dibersihkan setiap pindah menu */
+                    setKulinerInfo('');
+                    setKulinerError('');
+
                     if (item.id === "peta") {
                       setRegionLoading(true);
                       setRegionError("");
@@ -1366,7 +1558,29 @@ export default function AdminDashboard() {
 
             {activeTab === 'kuliner' && (
               <section id="tab-kelola-kuliner">
-                <h4>Daftar Semua Kuliner</h4>
+                {/* Judul + tombol tambah (sejajar, tombol di kanan) */}
+                <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                  <h4 className="mb-0">Daftar Semua Kuliner</h4>
+
+                  <button
+                    type="button"
+                    className="btn btn-success"
+                    onClick={bukaTambahKuliner}
+                  >
+                    <i className="bx bx-plus me-1" />
+                    Tambah Kuliner
+                  </button>
+                </div>
+
+                {/* Notif (model sama seperti Kelola Peta) */}
+                {kulinerError && (
+                  <div className="alert alert-danger">{kulinerError}</div>
+                )}
+
+                {kulinerInfo && (
+                  <div className="alert alert-success">{kulinerInfo}</div>
+                )}
+
                 <div className="box-tabel border rounded bg-white">
                   <div className="table-responsive">
                     <table className="table align-middle">
@@ -2262,6 +2476,255 @@ export default function AdminDashboard() {
         </div>
       </div>
       
+      {/* Modal Tambah Kuliner (admin) */}
+      {tambahKulinerOpen && (
+        <div
+          className="modal fade show d-block"
+          tabIndex={-1}
+          role="dialog"
+          aria-modal="true"
+          style={{ backgroundColor: "rgba(0, 0, 0, 0.5)", overflowY: "auto" }}
+        >
+          <div className="modal-dialog modal-lg modal-dialog-centered">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">
+                  <i className="bx bx-plus-circle me-2" />
+                  Tambah Kuliner Baru
+                </h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={tutupTambahKuliner}
+                  disabled={tambahLoading}
+                />
+              </div>
+
+              <div className="modal-body">
+                <div className="mb-3">
+                  <label htmlFor="admin-kuliner-nama" className="form-label fw-semibold">
+                    Nama Kuliner <span className="text-danger">*</span>
+                  </label>
+                  <input
+                    id="admin-kuliner-nama"
+                    type="text"
+                    className="form-control"
+                    placeholder="Contoh: Nasi Tutug Oncom"
+                    value={tambahForm.nama}
+                    onChange={(e) => ubahTambahForm("nama", e.target.value)}
+                  />
+                </div>
+
+                <div className="row">
+                  <div className="col-md-6 mb-3">
+                    <label htmlFor="admin-kuliner-kategori" className="form-label fw-semibold">
+                      Kategori <span className="text-danger">*</span>
+                    </label>
+                    <select
+                      id="admin-kuliner-kategori"
+                      className="form-select"
+                      value={tambahForm.kategori}
+                      onChange={(e) => ubahTambahForm("kategori", e.target.value)}
+                    >
+                      <option value="" disabled>
+                        -- Pilih kategori --
+                      </option>
+                      {KATEGORI.map((item) => (
+                        <option key={item.id} value={item.nama}>
+                          {item.nama}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="col-md-6 mb-3">
+                    <label htmlFor="admin-kuliner-daerah" className="form-label fw-semibold">
+                      Asal Daerah <span className="text-danger">*</span>
+                    </label>
+                    <input
+                      id="admin-kuliner-daerah"
+                      type="text"
+                      className="form-control"
+                      list="daftar-daerah-kuliner"
+                      placeholder="Contoh: Kab. Garut"
+                      value={tambahForm.daerah}
+                      onChange={(e) => ubahTambahForm("daerah", e.target.value)}
+                    />
+                    <datalist id="daftar-daerah-kuliner">
+                      {daerahTersedia.map((daerah) => (
+                        <option key={daerah} value={daerah} />
+                      ))}
+                    </datalist>
+                  </div>
+                </div>
+
+                <div className="mb-3">
+                  <label htmlFor="admin-kuliner-deskripsi" className="form-label fw-semibold">
+                    Deskripsi <span className="text-danger">*</span>
+                  </label>
+                  <textarea
+                    id="admin-kuliner-deskripsi"
+                    className="form-control"
+                    rows={3}
+                    placeholder="Ceritakan keunikan rasa dan cara penyajiannya..."
+                    value={tambahForm.deskripsi}
+                    onChange={(e) => ubahTambahForm("deskripsi", e.target.value)}
+                  />
+                </div>
+
+                <div className="row">
+                  <div className="col-md-6 mb-3">
+                    <label htmlFor="admin-kuliner-bahan" className="form-label fw-semibold">
+                      Bahan
+                    </label>
+                    <input
+                      id="admin-kuliner-bahan"
+                      type="text"
+                      className="form-control"
+                      placeholder="Nasi, Oncom, Ikan asin"
+                      value={tambahForm.bahan}
+                      onChange={(e) => ubahTambahForm("bahan", e.target.value)}
+                    />
+                    <small className="text-muted">Pisahkan dengan koma.</small>
+                  </div>
+
+                  <div className="col-md-6 mb-3">
+                    <label htmlFor="admin-kuliner-rasa" className="form-label fw-semibold">
+                      Karakter Rasa
+                    </label>
+                    <input
+                      id="admin-kuliner-rasa"
+                      type="text"
+                      className="form-control"
+                      placeholder="Gurih, Pedas"
+                      value={tambahForm.rasa}
+                      onChange={(e) => ubahTambahForm("rasa", e.target.value)}
+                    />
+                    <small className="text-muted">Pisahkan dengan koma.</small>
+                  </div>
+                </div>
+
+                <div className="mb-2">
+                  <label htmlFor="admin-kuliner-foto" className="form-label fw-semibold">
+                    Foto Kuliner <span className="text-danger">*</span>
+                  </label>
+                  <input
+                    id="admin-kuliner-foto"
+                    type="file"
+                    className="form-control"
+                    accept="image/jpeg,image/png,image/webp"
+                    ref={inputFotoTambahRef}
+                    onChange={(e) => void pilihFotoTambah(e.target.files?.[0])}
+                  />
+                  <small className="text-muted">
+                    Format JPG, PNG, atau WEBP (maks. 5MB).
+                  </small>
+
+                  {tambahFoto && (
+                    <div className="mt-3 d-flex align-items-center gap-3">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={tambahFoto}
+                        alt="Preview foto kuliner"
+                        className="rounded border"
+                        style={{ width: 120, height: 90, objectFit: "cover" }}
+                      />
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-outline-danger"
+                        onClick={hapusFotoTambah}
+                        disabled={tambahLoading}
+                      >
+                        <i className="bx bx-trash me-1" />
+                        Hapus Foto
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                <small className="text-muted d-block mt-3">
+                  Kuliner yang ditambahkan admin langsung berstatus Aktif dan
+                  tampil di katalog.
+                </small>
+              </div>
+
+              <div className="modal-footer">
+                {/* Pesan error ditaruh di footer supaya selalu terlihat
+                    di dekat tombol Simpan (tidak ikut tergulung ke atas) */}
+                {tambahError && (
+                  <div className="alert alert-danger w-100 mb-2">
+                    {tambahError}
+                  </div>
+                )}
+
+                <button
+                  type="button"
+                  className="btn btn-outline-secondary"
+                  onClick={tutupTambahKuliner}
+                  disabled={tambahLoading}
+                >
+                  Batal
+                </button>
+
+                <button
+                  type="button"
+                  className="btn btn-success"
+                  onClick={() => void simpanKulinerBaru()}
+                  disabled={tambahLoading}
+                >
+                  {tambahLoading ? (
+                    <>
+                      <span className="spinner-border spinner-border-sm me-2" />
+                      Menyimpan...
+                    </>
+                  ) : (
+                    <>
+                      <i className="bx bx-save me-1" />
+                      Simpan Kuliner
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Pop up notif: kuliner berhasil ditambahkan */}
+      {popupTambahOpen && (
+        <div
+          className="modal fade show d-block"
+          tabIndex={-1}
+          role="dialog"
+          aria-modal="true"
+          style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
+        >
+          <div className="modal-dialog modal-dialog-centered modal-sm">
+            <div className="modal-content text-center">
+              <div className="modal-body py-4">
+                <i
+                  className="bx bx-check-circle text-success"
+                  style={{ fontSize: 64 }}
+                />
+                <h5 className="mt-2 mb-2">Kuliner berhasil ditambahkan</h5>
+                <p className="text-muted mb-0">
+                  &quot;{popupTambahNama}&quot; sudah tampil di daftar kuliner.
+                </p>
+              </div>
+              <div className="modal-footer justify-content-center border-0 pt-0">
+                <button
+                  type="button"
+                  className="btn btn-success px-4"
+                  onClick={() => setPopupTambahOpen(false)}
+                >
+                  OK
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {faqToDelete && (
         <div
           className="modal fade show d-block"

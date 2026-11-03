@@ -52,7 +52,30 @@ const FORMAT_FOTO = ["image/jpeg", "image/png", "image/webp"];
 const MAKS_UKURAN_FOTO = 5 * 1024 * 1024;
 
 const USULAN_KEY = "jelajahRasaUsulan";
-const CURRENT_USER_KEY = "jelajahRasaCurrentUser";
+
+/* =========================
+   HELPER LOGIN
+   (hanya satu definisi, di luar komponen)
+   ========================= */
+type UserAktif = { nama: string };
+
+/* Baca user yang sedang login dari session server (cookie),
+   sama seperti yang dipakai halaman login. */
+async function ambilUserAktif(): Promise<UserAktif | null> {
+  try {
+    const res = await fetch("/api/auth/me", { cache: "no-store" });
+    if (!res.ok) return null;
+
+    const data = (await res.json().catch(() => ({}))) as {
+      user?: { nama?: string } | null;
+    };
+
+    if (!data.user || !data.user.nama) return null;
+    return { nama: data.user.nama };
+  } catch {
+    return null;
+  }
+}
 
 /* Foto disimpan sebagai dataURL supaya bisa ditampilkan di halaman
    admin & profil tanpa server penyimpanan file. */
@@ -116,7 +139,6 @@ function buatId(prefix: string, value: string) {
 
 /* =========================
    KOMPONEN KELOMPOK BAHAN
-   (dibuat di luar halaman supaya input tidak kehilangan fokus saat mengetik)
    ========================= */
 type KelompokBahanProps = {
   judul: string;
@@ -314,12 +336,10 @@ export default function TambahKulinerPage() {
     setSudahSubmit(true);
     if (!formValid) return;
 
-    const user = JSON.parse(
-      localStorage.getItem(CURRENT_USER_KEY) ?? "null"
-    ) as { name: string } | null;
-
+    /* Cek login lewat session server (cookie) */
+    const user = await ambilUserAktif();
     if (!user) {
-      alert("Silakan login terlebih dahulu untuk mengirim rekomendasi kuliner.");
+      alert("Kamu harus login dulu sebelum mengirim rekomendasi kuliner.");
       router.push("/login");
       return;
     }
@@ -354,7 +374,7 @@ export default function TambahKulinerPage() {
         deskripsi: deskripsi.trim(),
         rasa: rasa.join(", "),
         harga: susunHarga(),
-        pengirim: user.name,
+        pengirim: user.nama,
         tanggal: new Date().toISOString().slice(0, 10),
         img,
       });
