@@ -5,6 +5,7 @@ import { seedFaq } from "./seeder/faq";
 import { seedRegions } from "./seeder/regions";
 import { seedMetadata } from "./seeder/metadata";
 import { seedKuliner } from "./seeder/kuliner";
+import { seedUsers } from "./seeder/users";
 
 const adapter = new PrismaPg({
   connectionString: process.env.DATABASE_URL!,
@@ -13,6 +14,7 @@ const adapter = new PrismaPg({
 const prisma = new PrismaClient({ adapter });
 
 async function main() {
+  await seedUsers(prisma);
   await seedFaq(prisma);
   await seedRegions(prisma);
   await seedMetadata(prisma);
@@ -21,7 +23,7 @@ async function main() {
 
 main()
   .catch((error) => {
-    console.error("Gagal memasukkan data FAQ:", error);
+    console.error("Gagal memasukkan data seed:", error);
     process.exitCode = 1;
   })
   .finally(async () => {
