@@ -9,6 +9,14 @@ const ALLOWED_KEYS = [
   "site_phone",
   "site_address",
   "footer_text",
+
+  "hero_tagline",
+  "hero_title",
+  "hero_description",
+
+  "social_instagram",
+  "social_tiktok",
+  "social_youtube"
 ] as const;
 
 async function isAdmin() {
@@ -94,13 +102,14 @@ export async function PUT(request: Request) {
       keys.add(item.key);
     }
 
-    if (metadata.length !== ALLOWED_KEYS.length ||
-        ALLOWED_KEYS.some((key) => !keys.has(key))) {
-      return NextResponse.json(
-        { message: "Semua field metadata wajib dikirim." },
-        { status: 400 }
-      );
-    }
+    // kalau mau mewajibkan semua field diisi
+    // if (metadata.length !== ALLOWED_KEYS.length ||
+    //     ALLOWED_KEYS.some((key) => !keys.has(key))) {
+    //   return NextResponse.json(
+    //     { message: "Semua field metadata wajib dikirim." },
+    //     { status: 400 }
+    //   );
+    // }
 
     await prisma.$transaction(
       metadata.map((item) =>

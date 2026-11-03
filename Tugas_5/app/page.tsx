@@ -8,11 +8,67 @@ import { prisma } from "../lib/prisma";
 export const instant = false;
 
 export default async function HomePage() {
-  const jumlahKuliner = await prisma.kuliner.count({
+  const [jumlahKuliner, heroMetadata] = await Promise.all([
+    prisma.kuliner.count({
+      where: {
+        status: "APPROVED",
+      },
+    }),
+    prisma.siteMetadata.findUnique({
+      where: {
+        key: "hero_kuliner_ids",
+      },
+      select: {
+        value: true,
+      },
+    }),
+  ]);
+
+  let heroIds: string[] = [];
+  try {
+    const parsed = JSON.parse(heroMetadata?.value ?? "[]");
+
+    if (Array.isArray(parsed)) {
+      heroIds = parsed.filter(
+        (id): id is string => typeof id === "string"
+      );
+    }
+  } catch {
+    heroIds = [];
+  }
+
+    const dataHero = await prisma.kuliner.findMany({
     where: {
       status: "APPROVED",
-    }
+      gambar: {
+        not: null,
+      },
+      ...(heroIds.length > 0
+        ? {
+            id: {
+              in: heroIds,
+            },
+          }
+        : {}),
+    },
+    select: {
+      id: true,
+      nama: true,
+      gambar: true,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+    take: heroIds.length > 0 ? heroIds.length : 3,
   });
+
+  // Pertahankan urutan pilihan admin.
+  const heroSlides =
+    heroIds.length > 0
+      ? heroIds
+          .map((id) => dataHero.find((item) => item.id === id))
+          .filter((item) => item !== undefined)
+      : dataHero;
 
   return (
     <main id="main-content" className="main-content">
@@ -55,47 +111,24 @@ export default async function HomePage() {
                 data-bs-interval="3500"
               >
                 <div className="carousel-inner">
-                  <div className="carousel-item active">
-                    <img
-                      id="img-hero-1"
-                      className="carousel-image"
-                      src="../images/menu/makanan/nasi tutug oncom.jpg"
-                      alt="Nasi Tutug Oncom"
-                    />
-                    <div className="carousel-caption-overlay">
-                      <h6 className="carousel-caption-title">
-                        Nasi Tutug Oncom Tasikmalaya
-                      </h6>
-                    </div>
-                  </div>
+                  {heroSlides.map((item, index) => (
+                    <div
+                      key={item.id}
+                      className={`carousel-item ${index === 0 ? "active" : ""}`}
+                    >
+                      <img
+                        className="carousel-image"
+                        src={item.gambar ?? ""}
+                        alt={item.nama}
+                      />
 
-                  <div className="carousel-item">
-                    <img
-                      id="img-hero-2"
-                      className="carousel-image"
-                      src="../images/menu/jajanan/batagor.jpg"
-                      alt="Batagor Bandung"
-                    />
-                    <div className="carousel-caption-overlay">
-                      <h6 className="carousel-caption-title">
-                        Batagor Bandung
-                      </h6>
+                      <div className="carousel-caption-overlay">
+                        <h6 className="carousel-caption-title">
+                          {item.nama}
+                        </h6>
+                      </div>
                     </div>
-                  </div>
-
-                  <div className="carousel-item">
-                    <img
-                      id="img-hero-3"
-                      className="carousel-image"
-                      src="../images/menu/minuman/es goyobod.jpg"
-                      alt="Es Goyobod Garut"
-                    />
-                    <div className="carousel-caption-overlay">
-                      <h6 className="carousel-caption-title">
-                        Es Goyobod Garut
-                      </h6>
-                    </div>
-                  </div>
+                  ))}
                 </div>
               </div>
             </div>

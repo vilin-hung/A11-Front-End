@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import Script from 'next/script';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import './admin-dashboard.css';
 import {
@@ -51,11 +52,10 @@ type User = {
 type MapRegion = {
   id: string;
   nama: string;
-  daerah: string;
   deskripsi: string;
   posisiX: number;
   posisiY: number;
-  isActive: boolean;
+  jumlahKulinerApproved: number;
 };
 
 /* Angka ringkasan yang dihitung dari database oleh /api/admin/stats */
@@ -210,8 +210,52 @@ const METADATA_AWAL: SiteMetadata[] = [
   { key: "site_phone", value: "" },
   { key: "site_address", value: "Jawa Barat, Indonesia" },
   { key: "footer_text", value: "© 2026 JelajahRasa" },
+  { key: "social_instagram", value: "" },
+  { key: "social_tiktok", value: "" },
+  { key: "social_youtube", value: "" },
+  { key: "social_facebook", value: "" },
 ];
 
+type KategoriRekomendasi =
+  | "makanan"
+  | "jajanan"
+  | "minuman"
+  | "oleh_oleh";
+
+type KulinerPilihan = {
+  id: string;
+  nama: string;
+  kategori: string;
+  daerah: string;
+};
+
+type HeroKuliner = {
+  id: string;
+  nama: string;
+  kategori: string;
+  daerah: string;
+  gambar: string | null;
+};
+
+type DataRekomendasi = Record<KategoriRekomendasi, string>;
+
+const PILIHAN_REKOMENDASI: {
+  key: KategoriRekomendasi;
+  label: string;
+  kategori: string;
+}[] = [
+  { key: "makanan", label: "Makanan", kategori: "Makanan" },
+  { key: "jajanan", label: "Jajanan", kategori: "Jajanan" },
+  { key: "minuman", label: "Minuman", kategori: "Minuman" },
+  { key: "oleh_oleh", label: "Oleh-oleh", kategori: "Oleh-oleh Khas" },
+];
+
+const REKOMENDASI_AWAL: DataRekomendasi = {
+  makanan: "",
+  jajanan: "",
+  minuman: "",
+  oleh_oleh: "",
+};
 /* Menghilangkan notifikasi otomatis setelah 5 detik */
 function useAutoDismiss(
   message: string,
@@ -296,11 +340,9 @@ export default function AdminDashboard() {
   const [regionFormOpen, setRegionFormOpen] = useState(false);
   const [regionForm, setRegionForm] = useState({
     nama: "",
-    daerah: "",
     deskripsi: "",
     posisiX: 50,
     posisiY: 50,
-    isActive: true,
   });
   
   /* Modal */
@@ -327,7 +369,7 @@ export default function AdminDashboard() {
     { id: "peta", icon: "bx-map", label: "Kelola Peta" },
     { id: "pesan", icon: "bx-envelope", label: "Pesan Masuk" },
     { id: "faq", icon: "bx-question-mark", label: "Kelola FAQ" },
-    { id: "metadata", icon: "bx-cog", label: "Metadata Website" },
+    { id: "metadata", icon: "bx-cog", label: "Pengaturan Website" },
   ];
 
   // state untuk metadata website
@@ -339,6 +381,85 @@ export default function AdminDashboard() {
   const [metadataError, setMetadataError] = useState("");
   const [metadataMessage, setMetadataMessage] = useState("");
 
+  // State untuk rekomendasi homepage
+  const [daftarKulinerRekomendasi, setDaftarKulinerRekomendasi] =
+    useState<KulinerPilihan[]>([]);
+
+  const [rekomendasi, setRekomendasi] =
+    useState<DataRekomendasi>(REKOMENDASI_AWAL);
+
+  const [rekomendasiLoading, setRekomendasiLoading] = useState(false);
+  const [rekomendasiSaving, setRekomendasiSaving] = useState(false);
+  const [rekomendasiError, setRekomendasiError] = useState("");
+  const [rekomendasiMessage, setRekomendasiMessage] = useState("");
+
+  // State untuk Hero Carousel
+  const [daftarKulinerHero, setDaftarKulinerHero] =
+    useState<HeroKuliner[]>([]);
+
+  const [heroKulinerIds, setHeroKulinerIds] =
+    useState<string[]>([]);
+
+  const [heroLoading, setHeroLoading] = useState(false);
+  const [heroSaving, setHeroSaving] = useState(false);
+  const [heroError, setHeroError] = useState("");
+  const [heroMessage, setHeroMessage] = useState("");
+
+  // Otomatis menghilangkan notifikasi setelah 5 detik
+  // useEffect(() => {
+  //   if (!messageError && !messageInfo) return;
+
+  //   const timer = setTimeout(() => {
+  //     setMessageError("");
+  //     setMessageInfo("");
+  //   }, 5000);
+
+  //   return () => clearTimeout(timer);
+  // }, [messageError, messageInfo]);
+
+  // useEffect(() => {
+  //   if (!faqError && !faqInfo) return;
+
+  //   const timer = setTimeout(() => {
+  //     setFaqError("");
+  //     setFaqInfo("");
+  //   }, 5000);
+
+  //   return () => clearTimeout(timer);
+  // }, [faqError, faqInfo]);
+
+  useEffect(() => {
+    if (!regionError && !regionMessage) return;
+
+    const timer = setTimeout(() => {
+      setRegionError("");
+      setRegionMessage("");
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }, [regionError, regionMessage]);
+
+  useEffect(() => {
+    if (!metadataError && !metadataMessage) return;
+
+    const timer = setTimeout(() => {
+      setMetadataError("");
+      setMetadataMessage("");
+    }, 8000);
+
+    return () => clearTimeout(timer);
+  }, [metadataError, metadataMessage]);
+
+  useEffect(() => {
+    if (!rekomendasiError && !rekomendasiMessage) return;
+
+    const timer = setTimeout(() => {
+      setRekomendasiError("");
+      setRekomendasiMessage("");
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }, [rekomendasiError, rekomendasiMessage]);
   // Notifikasi pesan masuk
   useAutoDismiss(messageInfo, setMessageInfo);
   useAutoDismiss(messageError, setMessageError);
@@ -1161,30 +1282,30 @@ export default function AdminDashboard() {
   ).sort();
 
   // peta rasa
+  const pilihPosisiRegion = (
+    event: React.MouseEvent<HTMLDivElement>
+  ) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+
+    const posisiX = ((event.clientX - rect.left) / rect.width) * 100;
+    const posisiY = ((event.clientY - rect.top) / rect.height) * 100;
+
+    setRegionForm((sebelumnya) => ({
+      ...sebelumnya,
+      posisiX: Number(Math.min(100, Math.max(0, posisiX)).toFixed(2)),
+      posisiY: Number(Math.min(100, Math.max(0, posisiY)).toFixed(2)),
+    }));
+  };
+
   const bukaFormRegion = (region?: MapRegion) => {
-    if (region) {
-      setEditingRegion(region);
+    setEditingRegion(region ?? null);
 
-      setRegionForm({
-        nama: region.nama,
-        daerah: region.daerah,
-        deskripsi: region.deskripsi,
-        posisiX: region.posisiX,
-        posisiY: region.posisiY,
-        isActive: region.isActive,
-      });
-    } else {
-      setEditingRegion(null);
-
-      setRegionForm({
-        nama: "",
-        daerah: "",
-        deskripsi: "",
-        posisiX: 50,
-        posisiY: 50,
-        isActive: true,
-      });
-    }
+    setRegionForm({
+      nama: region?.nama ?? "",
+      deskripsi: region?.deskripsi ?? "",
+      posisiX: region?.posisiX ?? 50,
+      posisiY: region?.posisiY ?? 50,
+    });
 
     setRegionMessage("");
     setRegionError("");
@@ -1241,6 +1362,42 @@ export default function AdminDashboard() {
     }
   };
 
+  const hapusRegion = async (region: MapRegion) => {
+    const konfirmasi = window.confirm(
+      `Yakin ingin menghapus daerah "${region.nama}"?`
+    );
+
+    if (!konfirmasi) return;
+
+    try {
+      setRegionError("");
+      setRegionMessage("");
+
+      const response = await fetch(
+        `/api/admin/map-regions?id=${encodeURIComponent(region.id)}`,
+        { method: "DELETE" }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Gagal menghapus daerah.");
+      }
+
+      setRegions((sebelumnya) =>
+        sebelumnya.filter((item) => item.id !== region.id)
+      );
+
+      setRegionMessage(`Daerah "${region.nama}" berhasil dihapus.`);
+    } catch (error) {
+      setRegionError(
+        error instanceof Error
+          ? error.message
+          : "Terjadi kesalahan saat menghapus daerah."
+      );
+    }
+  };
+
   useEffect(() => {
     if (!siap || activeTab !== "peta") return;
 
@@ -1248,7 +1405,7 @@ export default function AdminDashboard() {
 
     async function loadRegions() {
       try {
-        const response = await fetch("/api/map-regions", {
+        const response = await fetch("/api/admin/map-regions", {
           cache: "no-store",
         });
 
@@ -1329,6 +1486,191 @@ export default function AdminDashboard() {
     }
   };
 
+  // Mengubah pilihan rekomendasi
+  const ubahRekomendasi = (
+    key: KategoriRekomendasi,
+    value: string
+  ) => {
+    setRekomendasi((sebelumnya) => ({
+      ...sebelumnya,
+      [key]: value,
+    }));
+
+    setRekomendasiMessage("");
+  };
+
+  // Memuat daftar Kuliner dan pilihan rekomendasi
+  const loadRekomendasi = async () => {
+    try {
+      const response = await fetch("/api/admin/rekomendasi", {
+        cache: "no-store",
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.message || "Gagal mengambil data rekomendasi."
+        );
+      }
+
+      setDaftarKulinerRekomendasi(data.kuliner ?? []);
+      setRekomendasi({
+        ...REKOMENDASI_AWAL,
+        ...data.rekomendasi,
+      });
+
+    } catch (error) {
+      setRekomendasiError(
+        error instanceof Error
+          ? error.message
+          : "Terjadi kesalahan saat mengambil rekomendasi."
+      );
+    } finally {
+      setRekomendasiLoading(false);
+    }
+  };
+
+  // Menyimpan pilihan rekomendasi ke database
+  const simpanRekomendasi = async () => {
+    setRekomendasiSaving(true);
+    setRekomendasiError("");
+    setRekomendasiMessage("");
+
+    try {
+      const response = await fetch("/api/admin/rekomendasi", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ rekomendasi }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.message || "Gagal menyimpan rekomendasi."
+        );
+      }
+
+      setRekomendasi({
+        ...REKOMENDASI_AWAL,
+        ...data.rekomendasi,
+      });
+
+      setRekomendasiMessage(
+        data.message || "Rekomendasi berhasil diperbarui."
+      );
+    } catch (error) {
+      setRekomendasiError(
+        error instanceof Error
+          ? error.message
+          : "Terjadi kesalahan saat menyimpan rekomendasi."
+      );
+    } finally {
+      setRekomendasiSaving(false);
+    }
+  };
+
+  // Memuat daftar Kuliner dan pilihan Hero
+  const loadHero = async () => {
+    setHeroLoading(true);
+    setHeroError("");
+
+    try {
+      const response = await fetch("/api/admin/hero", {
+        cache: "no-store",
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Gagal mengambil data Hero.");
+      }
+
+      setDaftarKulinerHero(data.kuliner ?? []);
+      setHeroKulinerIds(data.heroKulinerIds ?? []);
+    } catch (error) {
+      setHeroError(
+        error instanceof Error
+          ? error.message
+          : "Terjadi kesalahan saat mengambil data Hero."
+      );
+    } finally {
+      setHeroLoading(false);
+    }
+  };
+
+  // Mengubah pilihan Kuliner Hero
+  const toggleKulinerHero = (id: string) => {
+    setHeroKulinerIds((sebelumnya) =>
+      sebelumnya.includes(id)
+        ? sebelumnya.filter((item) => item !== id)
+        : [...sebelumnya, id]
+    );
+
+    setHeroMessage("");
+    setHeroError("");
+  };
+
+  // Mengatur ulang urutan slide
+  const pindahUrutanHero = (index: number, arah: -1 | 1) => {
+    setHeroKulinerIds((sebelumnya) => {
+      const tujuan = index + arah;
+
+      if (tujuan < 0 || tujuan >= sebelumnya.length) {
+        return sebelumnya;
+      }
+
+      const hasil = [...sebelumnya];
+      [hasil[index], hasil[tujuan]] = [
+        hasil[tujuan],
+        hasil[index],
+      ];
+
+      return hasil;
+    });
+
+    setHeroMessage("");
+  };
+
+  // Menyimpan pilihan Hero ke database
+  const simpanHero = async () => {
+    setHeroSaving(true);
+    setHeroError("");
+    setHeroMessage("");
+
+    try {
+      const response = await fetch("/api/admin/hero", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ heroKulinerIds }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Gagal menyimpan Hero.");
+      }
+
+      setHeroKulinerIds(data.heroKulinerIds ?? []);
+
+      setHeroMessage(
+        data.message || "Hero Carousel berhasil diperbarui."
+      );
+    } catch (error) {
+      setHeroError(
+        error instanceof Error
+          ? error.message
+          : "Terjadi kesalahan saat menyimpan Hero."
+      );
+    } finally {
+      setHeroSaving(false);
+    }
+  };
 
   useEffect(() => {
     if (!siap || activeTab !== "metadata") return;
@@ -1377,11 +1719,18 @@ export default function AdminDashboard() {
 
     void loadMetadata();
 
+    void Promise.resolve().then(() => {
+      void loadRekomendasi();
+    });
+
+    void Promise.resolve().then(() => {
+      void loadHero();
+    });
+
     return () => {
       masihAktif = false;
     };
   }, [siap, activeTab]);
-
 
   if (!siap || !admin) {
     return (
@@ -1641,9 +1990,10 @@ export default function AdminDashboard() {
                     </table>
                   </div>
                 </div>
-              </section>
-            )}
 
+                {/* Pengaturan Hero Carousel */}
+                <div className="box-tabel border rounded bg-white p-4 mt-4">
+                  <h5>Hero Carousel</h5>
             {activeTab === 'kuliner' && (
               <section id="tab-kelola-kuliner">
                 {/* Judul + tombol tambah (sejajar, tombol di kanan) */}
@@ -1669,6 +2019,242 @@ export default function AdminDashboard() {
                   <div className="alert alert-success">{kulinerInfo}</div>
                 )}
 
+                <div className="box-tabel border rounded bg-white">
+                  <div className="table-responsive">
+                    <table className="table align-middle">
+                      <thead className="table-light">
+                        <tr>
+                          <th>Nama Kuliner</th>
+                          <th>Kategori</th>
+                          <th>Asal Daerah</th>
+                          <th>Status</th>
+                          <th className="text-center">Aksi</th>
+                        </tr>
+                      </thead>
+                      <tbody id="tabel-daftar-kuliner">
+                        {kuliner.length === 0 ? (
+                          <BarisKosong
+                            kolom={5}
+                            ikon="bx-folder-open"
+                            pesan="Belum ada data kuliner."
+                          />
+                        ) : (
+                          kuliner.map((item) => (
+                            <BarisKuliner
+                              key={item.id}
+                              item={item}
+                              onEdit={() => setEditForm(item)}
+                              onHapus={() => hapusItem(item)}
+                              onFoto={() => setGambarBesar(item)}
+                            />
+                          ))
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </section>
+            )}
+
+                  <p className="text-muted">
+                    Pilih kuliner yang ingin ditampilkan pada Hero Carousel
+                    halaman utama. Gambar dan nama kuliner akan ditampilkan
+                    secara bergantian. Hanya kuliner yang sudah disetujui
+                    dan memiliki gambar yang tersedia.
+                  </p>
+
+                  {heroError && (
+                    <div className="alert alert-danger">
+                      {heroError}
+                    </div>
+                  )}
+
+                  {heroMessage && (
+                    <div className="alert alert-success">
+                      {heroMessage}
+                    </div>
+                  )}
+
+                  {heroLoading ? (
+                    <p className="text-muted mb-0">
+                      Memuat pilihan kuliner...
+                    </p>
+                  ) : (
+                    <>
+                      <h6 className="fw-semibold mt-3">
+                        Pilihan Kuliner
+                      </h6>
+
+                      {daftarKulinerHero.length === 0 ? (
+                        <p className="text-muted">
+                          Belum ada kuliner approved yang memiliki gambar.
+                        </p>
+                      ) : (
+                        <div className="row g-3">
+                          {daftarKulinerHero.map((kuliner) => (
+                            <div
+                              className="col-md-6"
+                              key={kuliner.id}
+                            >
+                              <label
+                                className="border rounded p-3 d-flex align-items-center gap-3 h-100"
+                                style={{ cursor: "pointer" }}
+                              >
+                                <input
+                                  type="checkbox"
+                                  className="form-check-input flex-shrink-0"
+                                  checked={heroKulinerIds.includes(
+                                    kuliner.id
+                                  )}
+                                  onChange={() =>
+                                    toggleKulinerHero(kuliner.id)
+                                  }
+                                />
+
+                                {kuliner.gambar && (
+                                  <img
+                                    src={kuliner.gambar}
+                                    alt={kuliner.nama}
+                                    style={{
+                                      width: "80px",
+                                      height: "65px",
+                                      objectFit: "cover",
+                                      borderRadius: "6px",
+                                    }}
+                                  />
+                                )}
+
+                                <div>
+                                  <div className="fw-semibold">
+                                    {kuliner.nama}
+                                  </div>
+                                  <small className="text-muted">
+                                    {kuliner.kategori} — {kuliner.daerah}
+                                  </small>
+                                </div>
+                              </label>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      <hr className="my-4" />
+
+                      <h6 className="fw-semibold">
+                        Urutan Hero Carousel
+                      </h6>
+
+                      <p className="text-muted small">
+                        Atur urutan gambar yang akan muncul. Kuliner pertama
+                        menjadi slide pertama.
+                      </p>
+
+                      {heroKulinerIds.length === 0 ? (
+                        <p className="text-muted">
+                          Belum ada kuliner yang dipilih.
+                        </p>
+                      ) : (
+                        <div className="d-flex flex-column gap-2">
+                          {heroKulinerIds.map((id, index) => {
+                            const kuliner = daftarKulinerHero.find(
+                              (item) => item.id === id
+                            );
+
+                            if (!kuliner) return null;
+
+                            return (
+                              <div
+                                key={id}
+                                className="border rounded p-2 d-flex align-items-center gap-3"
+                              >
+                                <span className="fw-semibold">
+                                  {index + 1}.
+                                </span>
+
+                                {kuliner.gambar && (
+                                  <img
+                                    src={kuliner.gambar}
+                                    alt={kuliner.nama}
+                                    style={{
+                                      width: "65px",
+                                      height: "50px",
+                                      objectFit: "cover",
+                                      borderRadius: "6px",
+                                    }}
+                                  />
+                                )}
+
+                                <div className="flex-grow-1">
+                                  <div className="fw-semibold">
+                                    {kuliner.nama}
+                                  </div>
+                                  <small className="text-muted">
+                                    {kuliner.daerah}
+                                  </small>
+                                </div>
+
+                                <div className="d-flex gap-1">
+                                  <button
+                                    type="button"
+                                    className="btn btn-outline-secondary btn-sm"
+                                    disabled={index === 0}
+                                    onClick={() =>
+                                      pindahUrutanHero(index, -1)
+                                    }
+                                    title="Geser ke atas"
+                                  >
+                                    <i className="bx bx-up-arrow-alt" />
+                                  </button>
+
+                                  <button
+                                    type="button"
+                                    className="btn btn-outline-secondary btn-sm"
+                                    disabled={
+                                      index === heroKulinerIds.length - 1
+                                    }
+                                    onClick={() =>
+                                      pindahUrutanHero(index, 1)
+                                    }
+                                    title="Geser ke bawah"
+                                  >
+                                    <i className="bx bx-down-arrow-alt" />
+                                  </button>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+
+                      <div className="d-flex justify-content-end mt-4">
+                        <button
+                          type="button"
+                          className="btn btn-success"
+                          onClick={simpanHero}
+                          disabled={heroSaving || heroLoading}
+                        >
+                          {heroSaving ? (
+                            <>
+                              <span className="spinner-border spinner-border-sm me-2" />
+                              Menyimpan...
+                            </>
+                          ) : (
+                            <>
+                              <i className="bx bx-save me-1" />
+                              Simpan Hero Carousel
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </section>
+            )}
+
+            {activeTab === 'kuliner' && (
+              <section id="tab-kelola-kuliner">
+                <h4>Daftar Semua Kuliner</h4>
                 <div className="box-tabel border rounded bg-white">
                   <div className="table-responsive">
                     <table className="table align-middle">
@@ -1825,249 +2411,177 @@ export default function AdminDashboard() {
               </section>
             )}
 
-            {activeTab === "peta" && (
-              <section id="tab-kelola-peta">
-                <h4>Kelola Peta Rasa</h4>
+            {activeTab === 'peta' && (
+              
+              <div className="box-tabel border rounded bg-white p-4">
+                <div className="mb-3">
+                  <h5>Data Kabupaten/Kota Jawa Barat</h5>
+                  <p className="text-muted mb-0">
+                    Kelola deskripsi wilayah dan posisi pin pada Peta Rasa.
+                  </p>
+                  <button
+                    type="button"
+                    className="btn btn-success"
+                    onClick={() => bukaFormRegion()}
+                  >
+                    <i className="bx bx-plus me-1" />
+                    Tambah Daerah
+                  </button>
+                </div>
 
-                <div className="box-tabel border rounded bg-white p-4">
-                  <div className="d-flex justify-content-between align-items-center mb-3">
-                    <div>
-                      <h5>Data Daerah</h5>
-                      <p className="text-muted mb-0">
-                        Kelola nama daerah, posisi pin, dan status tampil.
-                      </p>
-                    </div>
+                <div className="mb-4">
+                  <h5 className="fw-semibold mb-3">
+                    Preview Peta Jawa Barat
+                  </h5>
 
-                    <button
-                      type="button"
-                      className="btn btn-success"
-                      onClick={() => bukaFormRegion()}
-                    >
-                      <i className="bx bx-plus me-1" />
-                      Tambah Daerah
-                    </button>
+                  <div
+                    className="peta-admin-preview"
+                    style={{
+                      width: "100%",
+                      maxWidth: "750px",
+                    }}
+                  >
+                    <Image
+                      src="/images/homepage/peta-jabar.jpg"
+                      alt="Peta Kabupaten dan Kota Jawa Barat"
+                      width={1200}
+                      height={900}
+                      className="w-100 h-auto"
+                      style={{ display: "block" }}
+                    />
+
+                    {regions.map((region) => {
+                      const jenisWilayah = region.nama.startsWith("Kota ")
+                      ? "kota"
+                      : "kabupaten";
+                      return(
+                        <div
+                          key={region.id}
+                          className={`peta-pin-item pin-${jenisWilayah}`}
+                          style={{
+                            left: `${region.posisiX}%`,
+                            top: `${region.posisiY}%`,
+                          }}
+                        >
+                          <button
+                            type="button"
+                            className="btn-pin"
+                            title={`Edit ${region.nama}`}
+                            aria-label={`Edit ${region.nama}`}
+                            onClick={() => bukaFormRegion(region)}
+                          >
+                            <i className="bx bx-map-pin"></i>
+                          </button>
+
+                          <span className="pin-label">
+                            {region.nama}
+                          </span>
+                        </div>
+                      );
+                    })}
                   </div>
 
-                  {regionError && (
-                    <div className="alert alert-danger">
-                      {regionError}
-                    </div>
-                  )}
+                  <p className="text-muted small mt-2 mb-0">
+                    Klik pin untuk mengedit informasi dan posisi daerah.
+                  </p>
+                </div>
+                {regionError && (
+                  <div className="alert alert-danger">{regionError}</div>
+                )}
 
-                  {regionMessage && (
-                    <div className="alert alert-success">
-                      {regionMessage}
-                    </div>
-                  )}
+                {regionMessage && (
+                  <div className="alert alert-success">{regionMessage}</div>
+                )}
 
-                  {regionLoading && (
-                    <p className="text-muted">Memuat data daerah...</p>
-                  )}
+                {regionLoading ? (
+                  <p className="text-muted">Memuat data wilayah...</p>
+                ) : (
+                  <div className="table-responsive">
+                    <table className="table table-hover align-middle">
+                      <thead className="table-light">
+                        <tr>
+                          <th>Kabupaten/Kota</th>
+                          <th>Deskripsi</th>
+                          <th>Posisi X</th>
+                          <th>Posisi Y</th>
+                          <th>Kuliner</th>
+                          <th>Aksi</th>
+                        </tr>
+                      </thead>
 
-                  {!regionLoading && regions.length === 0 && (
-                    <div className="text-center text-muted py-4">
-                      <i className="bx bx-map fs-1" />
-                      <p>Belum ada data daerah di database.</p>
-                    </div>
-                  )}
+                      <tbody>
+                        {regions.map((region) => {
+                          const jenisWilayah = region.nama.startsWith("Kota ")
+                            ? "kota"
+                            : "kab";
 
-                  {!regionLoading && regions.length > 0 && (
-                    <div className="table-responsive">
-                      <table className="table table-hover align-middle">
-                        <thead className="table-light">
-                          <tr>
-                            <th>Nama</th>
-                            <th>Daerah</th>
-                            <th>Posisi X</th>
-                            <th>Posisi Y</th>
-                            <th>Status</th>
-                            <th>Aksi</th>
-                          </tr>
-                        </thead>
+                          const statusWilayah =
+                            region.jumlahKulinerApproved > 0
+                              ? "ada-kuliner"
+                              : "belum-ada-kuliner";
 
-                        <tbody>
-                          {regions.map((region) => (
+                          return (
                             <tr key={region.id}>
-                              <td className="fw-semibold">{region.nama}</td>
-                              <td>{region.daerah}</td>
+                              <td>
+                                <div className="fw-semibold">{region.nama}</div>
+                                </td>
+
+                              <td style={{ minWidth: 220, maxWidth: 350 }}>
+                                {region.deskripsi || (
+                                  <span className="text-muted">
+                                    Belum ada deskripsi
+                                  </span>
+                                )}
+                              </td>
+
                               <td>{region.posisiX}%</td>
                               <td>{region.posisiY}%</td>
+
                               <td>
                                 <span
                                   className={`badge ${
-                                    region.isActive
+                                    region.jumlahKulinerApproved > 0
                                       ? "bg-success"
                                       : "bg-secondary"
                                   }`}
                                 >
-                                  {region.isActive ? "Aktif" : "Nonaktif"}
+                                  {region.jumlahKulinerApproved > 0
+                                    ? `${region.jumlahKulinerApproved} kuliner`
+                                    : "Belum ada"}
                                 </span>
                               </td>
+
                               <td>
-                                <button
-                                  type="button"
-                                  className="btn btn-sm btn-outline-success"
-                                  onClick={() => bukaFormRegion(region)}
-                                >
-                                  <i className="bx bx-edit-alt me-1" />
-                                  Edit
-                                </button>
+                                <div className="d-flex gap-2">
+                                  <button
+                                    type="button"
+                                    className="btn btn-sm btn-warning"
+                                    onClick={() => bukaFormRegion(region)}
+                                  >
+                                    Edit
+                                  </button>
+                                  <button
+                                    type="button"
+                                    className="btn btn-sm btn-outline-danger"
+                                    onClick={() => hapusRegion(region)}
+                                  >
+                                    Hapus
+                                  </button>
+                                </div>
                               </td>
                             </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  )}
-                </div>
-
-                {regionFormOpen && (
-                  <div className="box-tabel border rounded bg-white p-4 mt-4">
-                    <h5>
-                      {editingRegion ? "Edit Daerah" : "Tambah Daerah"}
-                    </h5>
-
-                    <div className="mb-3">
-                      <label className="form-label">Nama</label>
-                      <input
-                        className="form-control"
-                        value={regionForm.nama}
-                        onChange={(e) =>
-                          setRegionForm({
-                            ...regionForm,
-                            nama: e.target.value,
-                          })
-                        }
-                        placeholder="Contoh: Bandung"
-                      />
-                    </div>
-
-                    <div className="mb-3">
-                      <label className="form-label">Daerah</label>
-                      <input
-                        className="form-control"
-                        value={regionForm.daerah}
-                        onChange={(e) =>
-                          setRegionForm({
-                            ...regionForm,
-                            daerah: e.target.value,
-                          })
-                        }
-                        placeholder="Contoh: Kota Bandung"
-                      />
-                    </div>
-
-                    <div className="mb-3">
-                      <label className="form-label">Deskripsi</label>
-                      <textarea
-                        className="form-control"
-                        rows={3}
-                        value={regionForm.deskripsi}
-                        onChange={(e) =>
-                          setRegionForm({
-                            ...regionForm,
-                            deskripsi: e.target.value,
-                          })
-                        }
-                      />
-                    </div>
-
-                    <div className="row">
-                      <div className="col-md-6 mb-3">
-                        <label className="form-label">Posisi X (%)</label>
-                        <input
-                          type="number"
-                          className="form-control"
-                          min="0"
-                          max="100"
-                          value={regionForm.posisiX}
-                          onChange={(e) =>
-                            setRegionForm({
-                              ...regionForm,
-                              posisiX: Number(e.target.value),
-                            })
-                          }
-                        />
-                      </div>
-
-                      <div className="col-md-6 mb-3">
-                        <label className="form-label">Posisi Y (%)</label>
-                        <input
-                          type="number"
-                          className="form-control"
-                          min="0"
-                          max="100"
-                          value={regionForm.posisiY}
-                          onChange={(e) =>
-                            setRegionForm({
-                              ...regionForm,
-                              posisiY: Number(e.target.value),
-                            })
-                          }
-                        />
-                      </div>
-                    </div>
-
-                    <div className="form-check mb-4">
-                      <input
-                        type="checkbox"
-                        className="form-check-input"
-                        id="region-active"
-                        checked={regionForm.isActive}
-                        onChange={(e) =>
-                          setRegionForm({
-                            ...regionForm,
-                            isActive: e.target.checked,
-                          })
-                        }
-                      />
-                      <label
-                        className="form-check-label"
-                        htmlFor="region-active"
-                      >
-                        Tampilkan daerah pada Peta Rasa
-                      </label>
-                    </div>
-
-                    <div className="d-flex justify-content-end gap-2">
-                      <button
-                        type="button"
-                        className="btn btn-outline-secondary"
-                        onClick={() => {
-                          setRegionFormOpen(false);
-                          setEditingRegion(null);
-                        }}
-                        disabled={regionLoading}
-                      >
-                        Batal
-                      </button>
-
-                      <button
-                        type="button"
-                        className="btn btn-success"
-                        onClick={simpanRegion}
-                        disabled={
-                          regionLoading ||
-                          !regionForm.nama.trim() ||
-                          !regionForm.daerah.trim() ||
-                          !regionForm.deskripsi.trim() ||
-                          regionForm.posisiX < 0 ||
-                          regionForm.posisiX > 100 ||
-                          regionForm.posisiY < 0 ||
-                          regionForm.posisiY > 100
-                        }
-                      >
-                        {regionLoading ? "Menyimpan..." : "Simpan Perubahan"}
-                      </button>
-                    </div>
+                          );
+                        })}
+                      </tbody>
+                    </table>
                   </div>
                 )}
-              </section>
+              </div>
             )}
 
             {activeTab === 'metadata' && (
               <section id="tab-metadata">
-                <h4>Metadata Website</h4>
+                <h4>Pengaturan Website</h4>
 
                 <p className="text-muted">
                   Kelola informasi umum yang ditampilkan pada website JelajahRasa.
@@ -2076,7 +2590,7 @@ export default function AdminDashboard() {
                 <div className="box-tabel border rounded bg-white p-4">
                   {metadataLoading ? (
                     <p className="text-muted mb-0">
-                      Memuat metadata website...
+                      Memuat pengaturan website...
                     </p>
                   ) : (
                     <>
@@ -2100,6 +2614,11 @@ export default function AdminDashboard() {
                           site_phone: "Nomor Telepon",
                           site_address: "Alamat",
                           footer_text: "Teks Footer",
+
+                          social_instagram: "URL Instagram",
+                          social_tiktok: "URL TikTok",
+                          social_youtube: "URL YouTube",
+                          social_facebook: "URL Facebook",
                         };
 
                         return (
@@ -2154,6 +2673,300 @@ export default function AdminDashboard() {
                             <>
                               <i className="bx bx-save me-1" />
                               Simpan Perubahan
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    </>
+                  )}
+                </div>
+
+                {/* Rekomendasi Homepage */}
+                <div className="box-tabel border rounded bg-white p-4 mt-4">
+                  <h5>Rekomendasi Homepage</h5>
+
+                  <p className="text-muted">
+                    Pilih satu kuliner untuk setiap kategori yang akan ditampilkan pada bagian rekomendasi di halaman utama. Hanya kuliner yang sudah disetujui yang tersedia.
+                  </p>
+
+                  {rekomendasiError && (
+                    <div className="alert alert-danger">
+                      {rekomendasiError}
+                    </div>
+                  )}
+
+                  {rekomendasiMessage && (
+                    <div className="alert alert-success">
+                      {rekomendasiMessage}
+                    </div>
+                  )}
+
+                  {rekomendasiLoading ? (
+                    <p className="text-muted mb-0">
+                      Memuat pilihan kuliner...
+                    </p>
+                  ) : (
+                    <>
+                    <div className="row g-6">
+                      {PILIHAN_REKOMENDASI.map((item) => {
+                        const daftarSesuai = daftarKulinerRekomendasi.filter(
+                          (kuliner) =>
+                            kuliner.kategori.trim().toLowerCase() ===
+                            item.kategori.toLowerCase()
+                        );
+
+                        return (
+                          <div className="col-md-6" key={item.key}>
+                            <label
+                              htmlFor={`rekomendasi-${item.key}`}
+                              className="form-label fw-semibold"
+                            >
+                              {item.label}
+                            </label>
+
+                            <select
+                              id={`rekomendasi-${item.key}`}
+                              className="form-select"
+                              value={rekomendasi[item.key]}
+                              onChange={(event) =>
+                                ubahRekomendasi(
+                                  item.key,
+                                  event.target.value
+                                )
+                              }
+                            >
+                              <option value="">
+                                -- Tidak dipilih --
+                              </option>
+
+                              {daftarSesuai.map((kuliner) => (
+                                <option
+                                  key={kuliner.id}
+                                  value={kuliner.id}
+                                >
+                                  {kuliner.nama} — {kuliner.daerah}
+                                </option>
+                              ))}
+                            </select>
+
+                            {daftarSesuai.length === 0 && (
+                              <small className="text-muted">
+                                Belum ada kuliner approved untuk kategori ini.
+                              </small>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                      <div className="d-flex justify-content-end mt-4">
+                        <button
+                          type="button"
+                          className="btn btn-success"
+                          onClick={simpanRekomendasi}
+                          disabled={rekomendasiSaving}
+                        >
+                          {rekomendasiSaving ? (
+                            <>
+                              <span className="spinner-border spinner-border-sm me-2" />
+                              Menyimpan...
+                            </>
+                          ) : (
+                            <>
+                              <i className="bx bx-save me-1" />
+                              Simpan Rekomendasi
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    </>
+                  )}
+                </div>
+
+                {/* Hero Carousel */}
+                <div className="box-tabel border rounded bg-white p-4 mt-4">
+                  <h5>Hero Carousel</h5>
+
+                  <p className="text-muted">
+                    Pilih beberapa kuliner yang akan ditampilkan secara
+                    bergantian pada Hero Carousel halaman utama. Gambar dan
+                    nama kuliner akan diambil dari database.
+                  </p>
+
+                  {heroError && (
+                    <div className="alert alert-danger">
+                      {heroError}
+                    </div>
+                  )}
+
+                  {heroMessage && (
+                    <div className="alert alert-success">
+                      {heroMessage}
+                    </div>
+                  )}
+
+                  {heroLoading ? (
+                    <p className="text-muted mb-0">
+                      Memuat pilihan kuliner...
+                    </p>
+                  ) : (
+                    <>
+                      <h6 className="fw-semibold mt-3">
+                        Pilih Kuliner
+                      </h6>
+
+                      {daftarKulinerHero.length === 0 ? (
+                        <p className="text-muted">
+                          Belum ada kuliner approved yang memiliki gambar.
+                        </p>
+                      ) : (
+                        <div className="row g-3">
+                          {daftarKulinerHero.map((kuliner) => (
+                            <div className="col-md-6" key={kuliner.id}>
+                              <label
+                                className="border rounded p-3 d-flex align-items-center gap-3 h-100"
+                                style={{ cursor: "pointer" }}
+                              >
+                                <input
+                                  type="checkbox"
+                                  className="form-check-input flex-shrink-0"
+                                  checked={heroKulinerIds.includes(kuliner.id)}
+                                  onChange={() =>
+                                    toggleKulinerHero(kuliner.id)
+                                  }
+                                />
+
+                                {kuliner.gambar && (
+                                  <img
+                                    src={kuliner.gambar}
+                                    alt={kuliner.nama}
+                                    style={{
+                                      width: "80px",
+                                      height: "65px",
+                                      objectFit: "cover",
+                                      borderRadius: "6px",
+                                    }}
+                                  />
+                                )}
+
+                                <div>
+                                  <div className="fw-semibold">
+                                    {kuliner.nama}
+                                  </div>
+                                  <small className="text-muted">
+                                    {kuliner.kategori} — {kuliner.daerah}
+                                  </small>
+                                </div>
+                              </label>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      <hr className="my-4" />
+
+                      <h6 className="fw-semibold">
+                        Urutan Slide
+                      </h6>
+
+                      <p className="text-muted small">
+                        Atur urutan kemunculan gambar. Slide pertama akan
+                        menjadi gambar pertama yang ditampilkan.
+                      </p>
+
+                      {heroKulinerIds.length === 0 ? (
+                        <p className="text-muted">
+                          Belum ada kuliner yang dipilih.
+                        </p>
+                      ) : (
+                        <div className="d-flex flex-column gap-2">
+                          {heroKulinerIds.map((id, index) => {
+                            const kuliner = daftarKulinerHero.find(
+                              (item) => item.id === id
+                            );
+
+                            if (!kuliner) return null;
+
+                            return (
+                              <div
+                                key={id}
+                                className="border rounded p-2 d-flex align-items-center gap-3"
+                              >
+                                <span className="fw-semibold">
+                                  {index + 1}.
+                                </span>
+
+                                {kuliner.gambar && (
+                                  <img
+                                    src={kuliner.gambar}
+                                    alt={kuliner.nama}
+                                    style={{
+                                      width: "65px",
+                                      height: "50px",
+                                      objectFit: "cover",
+                                      borderRadius: "6px",
+                                    }}
+                                  />
+                                )}
+
+                                <div className="flex-grow-1">
+                                  <div className="fw-semibold">
+                                    {kuliner.nama}
+                                  </div>
+                                  <small className="text-muted">
+                                    {kuliner.daerah}
+                                  </small>
+                                </div>
+
+                                <div className="d-flex gap-1">
+                                  <button
+                                    type="button"
+                                    className="btn btn-outline-secondary btn-sm"
+                                    disabled={index === 0}
+                                    onClick={() =>
+                                      pindahUrutanHero(index, -1)
+                                    }
+                                    title="Geser ke atas"
+                                  >
+                                    <i className="bx bx-up-arrow-alt" />
+                                  </button>
+
+                                  <button
+                                    type="button"
+                                    className="btn btn-outline-secondary btn-sm"
+                                    disabled={
+                                      index === heroKulinerIds.length - 1
+                                    }
+                                    onClick={() =>
+                                      pindahUrutanHero(index, 1)
+                                    }
+                                    title="Geser ke bawah"
+                                  >
+                                    <i className="bx bx-down-arrow-alt" />
+                                  </button>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+
+                      <div className="d-flex justify-content-end mt-4">
+                        <button
+                          type="button"
+                          className="btn btn-success"
+                          onClick={simpanHero}
+                          disabled={heroSaving || heroLoading}
+                        >
+                          {heroSaving ? (
+                            <>
+                              <span className="spinner-border spinner-border-sm me-2" />
+                              Menyimpan...
+                            </>
+                          ) : (
+                            <>
+                              <i className="bx bx-save me-1" />
+                              Simpan Hero Carousel
                             </>
                           )}
                         </button>
@@ -2622,6 +3435,188 @@ export default function AdminDashboard() {
           </main>
         </div>
       </div>
+
+      {regionFormOpen && (
+        <div
+          className="modal-region-overlay"
+          onClick={() => {
+            setRegionFormOpen(false);
+            setEditingRegion(null);
+          }}
+        >
+          <div
+            className="modal-region-content"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="d-flex justify-content-between align-items-center mb-3">
+              <div>
+                <h5 className="mb-1">
+                  {editingRegion ? `Edit ${editingRegion.nama}` : "Tambah Daerah"}
+                </h5>
+                <p className="text-muted mb-0">
+                  Atur deskripsi dan posisi pin wilayah.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                className="btn-close"
+                onClick={() => {
+                  setRegionFormOpen(false);
+                  setEditingRegion(null);
+                }}
+              />
+            </div>
+
+            <div className="mb-3">
+              <label className="form-label">Nama Kabupaten/Kota</label>
+              <input
+                type="text"
+                className="form-control"
+                value={regionForm.nama}
+                onChange={(event) =>
+                  setRegionForm({
+                    ...regionForm,
+                    nama: event.target.value,
+                  })
+                }
+                placeholder="Contoh: Kabupaten Bandung"
+                disabled={!!editingRegion}
+              />
+            </div>
+            <div className="mb-3">
+              <label className="form-label">Deskripsi Wilayah</label>
+              <textarea
+                className="form-control"
+                rows={3}
+                value={regionForm.deskripsi}
+                onChange={(event) =>
+                  setRegionForm({
+                    ...regionForm,
+                    deskripsi: event.target.value,
+                  })
+                }
+                placeholder="Masukkan deskripsi wilayah..."
+              />
+            </div>
+
+            <div className="mb-3">
+              <label className="form-label">
+                Posisi Pin pada Peta
+              </label>
+
+              <div
+                className="peta-admin-picker"
+                onClick={pilihPosisiRegion}
+              >
+                <Image
+                  src="/images/homepage/peta-jabar.jpg"
+                  alt="Peta Jawa Barat"
+                  width={1200}
+                  height={900}
+                  className="peta-admin-image"
+                />
+
+                <div
+                  className={`peta-pin-item ${
+                    regionForm.nama.startsWith("Kota ")
+                      ? "pin-kota-region"
+                      : "pin-kabupaten-region"
+                  }`}
+                  style={{
+                    left: `${regionForm.posisiX}%`,
+                    top: `${regionForm.posisiY}%`,
+                    pointerEvents: "none",
+                  }}
+                >
+                  <button
+                    type="button"
+                    className="btn-pin"
+                    tabIndex={-1}
+                    aria-hidden="true"
+                  >
+                    <i className="bx bx-map-pin" />
+                  </button>
+
+                  <span className="pin-label">
+                    {regionForm.nama || "Pilih daerah"}
+                  </span>
+                </div>
+              </div>
+
+              <small className="text-muted">
+                Klik pada peta untuk menentukan posisi pin.
+              </small>
+            </div>
+
+            <div className="row">
+              <div className="col-md-6 mb-3">
+                <label className="form-label">Posisi X (%)</label>
+                <input
+                  type="number"
+                  className="form-control"
+                  min="0"
+                  max="100"
+                  value={regionForm.posisiX}
+                  onChange={(event) =>
+                    setRegionForm({
+                      ...regionForm,
+                      posisiX: Number(event.target.value),
+                    })
+                  }
+                />
+              </div>
+
+              <div className="col-md-6 mb-3">
+                <label className="form-label">Posisi Y (%)</label>
+                <input
+                  type="number"
+                  className="form-control"
+                  min="0"
+                  max="100"
+                  value={regionForm.posisiY}
+                  onChange={(event) =>
+                    setRegionForm({
+                      ...regionForm,
+                      posisiY: Number(event.target.value),
+                    })
+                  }
+                />
+              </div>
+            </div>
+
+            {regionError && (
+              <div className="alert alert-danger">{regionError}</div>
+            )}
+
+            <div className="d-flex justify-content-end gap-2">
+              <button
+                type="button"
+                className="btn btn-outline-secondary"
+                onClick={() => {
+                  setRegionFormOpen(false);
+                  setEditingRegion(null);
+                }}
+                disabled={regionLoading}
+              >
+                Batal
+              </button>
+
+              <button
+                type="button"
+                className="btn btn-success"
+                onClick={simpanRegion}
+                disabled={
+                  regionLoading ||
+                  !regionForm.deskripsi.trim() ||
+                  regionForm.posisiX < 0 ||
+                  regionForm.posisiX > 100 ||
+                  regionForm.posisiY < 0 ||
+                  regionForm.posisiY > 100
+                }
+              >
+                {regionLoading ? "Menyimpan..." : "Simpan Perubahan"}
+              </button>
       
       {/* Modal Tambah Kuliner (admin) */}
       {tambahKulinerOpen && (

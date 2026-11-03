@@ -182,37 +182,42 @@ export default function PetaRasa() {
               />
 
               {/* DESKRIPSI PIN */}
-              {regions.map((region) => (
-                <div
-                  key={region.id}
-                  className={"peta-pin-item"}
-                  style={{
+              {regions.map((region) => {
+                const jenisWilayah = region.nama.startsWith("Kota ")
+                  ? "pin-kota"
+                  : "pin-kabupaten";
+
+                return (
+                  <div
+                    key={region.id}
+                    className={`peta-pin-item ${jenisWilayah}`}                  style={{
                     left: `${region.posisiX}%`,
                     top: `${region.posisiY}%`,
-                  }}
-                  onMouseEnter={() => setLokasiAktif(region.nama)}
-                  onMouseLeave={() => setLokasiAktif(null)}
-                >
-                  <button
-                    className="btn-pin"
-                    type="button"
-                    aria-label={region.nama}
-                    onFocus={() => setLokasiAktif(region.nama)}
-                    onBlur={() => setLokasiAktif(null)}
+                    }}
+                    onMouseEnter={() => setLokasiAktif(region.nama)}
+                    onMouseLeave={() => setLokasiAktif(null)}
                   >
-                    <i className="bx bx-map-pin"></i>
-                  </button>
+                    <button
+                      className="btn-pin"
+                      type="button"
+                      aria-label={region.nama}
+                      onFocus={() => setLokasiAktif(region.nama)}
+                      onBlur={() => setLokasiAktif(null)}
+                    >
+                      <i className="bx bx-map-pin"></i>
+                    </button>
 
-                  <span className="pin-label">{region.nama}</span>
+                    <span className="pin-label">{region.nama}</span>
 
-                  {lokasiAktif === region.nama && (
-                    <div className="peta-tooltip" role="tooltip">
-                      <div className="peta-tooltip-header">{region.nama}</div>
-                      <div className="peta-tooltip-body">{region.deskripsi}</div>
-                    </div>
-                  )}
-                </div>
-              ))}
+                    {lokasiAktif === region.nama && (
+                      <div className="peta-tooltip" role="tooltip">
+                        <div className="peta-tooltip-header">{region.nama}</div>
+                        <div className="peta-tooltip-body">{region.deskripsi}</div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>

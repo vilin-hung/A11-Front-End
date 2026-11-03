@@ -12,17 +12,27 @@ type SiteMetadata = {
   site_description: string;
   site_email: string;
   site_phone: string;
+  site_address: string;
   footer_text: string;
+
+  social_instagram: string;
+  social_tiktok: string;
+  social_youtube: string;
 };
 
 export default function Footer({ variant = "full" }: FooterProps) {
   const [metadata, setMetadata] = useState<SiteMetadata>({
-    site_name: "JelajahRasa",
+    site_name: "",
     site_description:
-      "Platform direktori kuliner yang merangkum kekayaan rasa dari berbagai kota dan kabupaten di Jawa Barat.",
-    site_email: "halo@jelajahrasajabar.id",
-    site_phone: "+62 812-1326-3927",
-    footer_text: "© 2026 Jelajah Rasa Jawa Barat. All Rights Reserved.",
+      "",
+    site_email: "",
+    site_phone: "",
+    site_address: "",
+    footer_text: "",
+
+    social_instagram: "",
+    social_tiktok: "",
+    social_youtube: "",
   });
 
   useEffect(() => {
@@ -83,7 +93,7 @@ export default function Footer({ variant = "full" }: FooterProps) {
         <div className="footer-container">
           <div className="footer-copyright">
             <p id="copyright-text" className="copyright-text">
-              &copy; 2026 Jelajah Rasa Jawa Barat. All Rights Reserved.
+              {metadata.footer_text}
             </p>
           </div>
         </div>
@@ -150,17 +160,56 @@ export default function Footer({ variant = "full" }: FooterProps) {
                 {metadata.site_phone}
               </p>
             )}
-            <div className="social-links-wrapper">
-              <a href="#" id="link-instagram" className="social-link">
-                <i className="bx bxl-instagram"></i>
-              </a>
-              <a href="#" id="link-facebook" className="social-link">
-                <i className="bx bxl-facebook"></i>
-              </a>
-              <a href="#" id="link-youtube" className="social-link">
-                <i className="bx bxl-youtube"></i>
-              </a>
-            </div>
+            {metadata.site_address && (
+              <p className="contact-item">
+                <i className="bx bx-map icon-contact"></i>{" "}
+                {metadata.site_address}
+              </p>
+            )}
+            {(metadata.social_instagram ||
+              metadata.social_tiktok ||
+              metadata.social_youtube) && (
+              <div className="social-links-wrapper">
+                {metadata.social_instagram && (
+                  <a
+                    href={metadata.social_instagram}
+                    id="link-instagram"
+                    className="social-link"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Instagram"
+                  >
+                    <i className="bx bxl-instagram"></i>
+                  </a>
+                )}
+
+                {metadata.social_tiktok && (
+                  <a
+                    href={metadata.social_tiktok}
+                    id="link-tiktok"
+                    className="social-link"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="TikTok"
+                  >
+                    <i className="bx bxl-tiktok"></i>
+                  </a>
+                )}
+
+                {metadata.social_youtube && (
+                  <a
+                    href={metadata.social_youtube}
+                    id="link-youtube"
+                    className="social-link"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="YouTube"
+                  >
+                    <i className="bx bxl-youtube"></i>
+                  </a>
+                )}
+              </div>
+            )}
           </div>
         </div>
 
@@ -168,7 +217,7 @@ export default function Footer({ variant = "full" }: FooterProps) {
 
         <div className="footer-copyright">
           <p id="copyright-text" className="copyright-text">
-            &copy; 2026 Jelajah Rasa Jawa Barat. All Rights Reserved.
+            {metadata.footer_text}
           </p>
         </div>
       </div>

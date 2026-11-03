@@ -630,6 +630,246 @@
     background-color: var(--deep-green-soft);
 }
 
+/* Modal Kelola Peta */
+.modal-region-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1050;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  overflow-y: auto;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.modal-region-content {
+  width: 100%;
+  max-width: 700px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 24px;
+  border-radius: 12px;
+  background: var(--bg-white);
+  box-shadow: var(--border-color);
+  border-radius: 8px;
+}
+
+.peta-admin-picker {
+  position: relative;
+  width: 100%;
+  cursor: crosshair;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+}
+
+.peta-admin-image {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* Pin preview pada modal admin */
+.peta-admin-picker .peta-pin-item {
+    position: absolute;
+    z-index: 5;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    pointer-events: none;
+}
+
+/* Lingkaran pin */
+.peta-admin-picker .peta-pin-item .btn-pin {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 26px;
+    height: 26px;
+    min-width: 26px;
+    min-height: 26px;
+    padding: 0;
+    margin: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background-color: var(--deep-green);
+    color: var(--bg-white);
+    border: 3px solid var(--bg-white);
+    border-radius: 50%;
+
+    font-size: 14px;
+    line-height: 1;
+    box-shadow: 0 2px 6px var(--deep-green-shadow);
+}
+
+/* Ikon di dalam pin */
+.peta-admin-picker .peta-pin-item .btn-pin i {
+    font-size: 14px;
+    line-height: 1;
+    margin: 0;
+}
+
+/* Label nama daerah */
+.peta-admin-picker .peta-pin-item .pin-label {
+    display: block;
+    width: max-content;
+    max-width: 180px;
+    padding: 4px 10px;
+
+    background-color: var(--bg-white);
+    color: var(--deep-green);
+    border: 1px solid #d8ded8;
+    border-radius: 30px;
+
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.4;
+    text-align: center;
+    white-space: nowrap;
+}
+
+/* Warna pin berdasarkan jenis wilayah */
+.pin-kota .btn-pin {
+    background-color: var(--warm-amber);
+}
+
+.pin-kabupaten .btn-pin {
+    background-color: var(--deep-green);
+}
+
+/* Warna pin pada modal edit posisi */
+.peta-admin-picker .pin-kota-region .btn-pin {
+    background-color: var(--warm-amber);
+}
+
+.peta-admin-picker .pin-kabupaten-region .btn-pin {
+    background-color: var(--deep-green);
+}
+
+/* Warna pin berdasarkan jenis wilayah */
+.peta-admin-preview .pin-kota .btn-pin {
+    background-color: var(--warm-amber);
+}
+
+.peta-admin-preview .pin-kabupaten .btn-pin {
+    background-color: var(--deep-green);
+}
+
+/* Belum ada kuliner: abu-abu */
+.pin-kota-belum-ada-kuliner .btn-pin,
+.pin-kab-belum-ada-kuliner .btn-pin {
+    background-color: #9ca3af;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* Pin lokasi pada preview peta admin */
+.pin-admin-map {
+  position: absolute;
+  left: var(--pin-x);
+  top: var(--pin-y);
+  width: 18px;
+  height: 18px;
+  border: 2px solid white;
+  border-radius: 50% 50% 50% 0;
+  transform: translate(-50%, -75%) rotate(-45deg);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  z-index: 2;
+}
+
+.pin-admin-map-active {
+  background-color: #e85d5d;
+}
+
+.pin-admin-map-empty {
+  background-color: #7b858b;
+}
+
+.pin-admin-map:hover {
+  transform: translate(-50%, -75%) rotate(-45deg) scale(1.2);
+  z-index: 3;
+}
+
+/* Preview peta admin */
+.peta-admin-preview {
+  position: relative;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+}
+
+.peta-admin-preview > img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* Posisi pin dan label */
+.peta-admin-preview .peta-pin-item {
+  position: absolute;
+  z-index: 5;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Lingkaran pin */
+.peta-admin-preview .btn-pin {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 26px;
+  height: 26px;
+  min-width: 26px;
+  min-height: 26px;
+  padding: 0;
+  margin: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background-color: var(--deep-green);
+  color: var(--bg-white);
+  border: 3px solid var(--bg-white);
+  border-radius: 50%;
+
+  font-size: 14px;
+  line-height: 1;
+  box-shadow: 0 2px 6px var(--deep-green-shadow);
+  cursor: pointer;
+}
+
+.peta-admin-preview .btn-pin i {
+  font-size: 14px;
+  line-height: 1;
+}
+
+/* Label daerah */
+.peta-admin-preview .pin-label {
+  display: block;
+  width: max-content;
+  max-width: 180px;
+  padding: 4px 10px;
+
+  background-color: var(--bg-white);
+  color: var(--deep-green);
+  border: 1px solid #d8ded8;
+  border-radius: 30px;
+
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+  text-align: center;
+  white-space: nowrap;
+}
+
 /* =========================
    TABLET (≤992px)
    ========================= */
@@ -860,5 +1100,3 @@
         padding: 10px 12px;
     }
 }
-
-/* vilin: admin-dashboard + js auth, favorit, map, ulasan */
