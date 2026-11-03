@@ -24,7 +24,11 @@ export default function FAQPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [contactError, setContactError] = useState('');
   const [contactSuccess, setContactSuccess] = useState(false);
-
+  const [contactTouched, setContactTouched] = useState({
+    email: false,
+    subjek: false,
+    pesan: false,
+  });
   useEffect(() => {
     const fetchFAQ = async () => {
       try {
@@ -76,6 +80,12 @@ export default function FAQPage() {
       setEmail('');
       setSubjek('');
       setPesan('');
+
+      setContactTouched({
+        email: false,
+        subjek: false,
+        pesan: false,
+      });
     } catch (error) {
       setContactError(
         error instanceof Error
@@ -245,27 +255,11 @@ export default function FAQPage() {
               <i className="bx bx-x"></i>
             </button>
 
-            <div className="contact-modal-header">
-              <i className="bx bx-message-rounded-dots"></i>
-              <h3 id="contact-modal-title">Hubungi Kami</h3>
-              <p>
-                Ada pertanyaan atau masukan? Kirimkan pesan kepada tim kami.
-              </p>
-            </div>
-
             {contactSuccess ? (
               <div className="contact-success">
                 <i className="bx bx-check-circle"></i>
                 <h4>Pesan Berhasil Dikirim!</h4>
                 <p>Terima kasih sudah menghubungi kami.</p>
-
-                <button
-                  type="button"
-                  className="faq-contact-btn"
-                  onClick={() => setShowContact(false)}
-                >
-                  Tutup
-                </button>
               </div>
             ) : (
               <form onSubmit={handleContactSubmit}>
@@ -274,11 +268,23 @@ export default function FAQPage() {
                   <input
                     id="contact-email"
                     type="email"
+                    className={
+                      contactTouched.email && !email.trim() ? 'input-invalid' : ''
+                    }
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                    onBlur={() =>
+                      setContactTouched((prev) => ({ ...prev, email: true }))
+                    }
                     placeholder="Masukkan email kamu"
                     required
                   />
+
+                  {contactTouched.email && !email.trim() && (
+                    <small className="contact-field-error">
+                      Email harus diisi.
+                    </small>
+                  )}
                 </div>
 
                 <div className="contact-form-group">
@@ -286,25 +292,49 @@ export default function FAQPage() {
                   <input
                     id="contact-subject"
                     type="text"
+                    className={
+                      contactTouched.subjek && !subjek.trim() ? 'input-invalid' : ''
+                    }
                     value={subjek}
                     onChange={(e) => setSubjek(e.target.value)}
+                    onBlur={() =>
+                      setContactTouched((prev) => ({ ...prev, subjek: true }))
+                    }
                     placeholder="Masukkan subjek pesan"
                     required
                     maxLength={150}
                   />
+
+                  {contactTouched.subjek && !subjek.trim() && (
+                    <small className="contact-field-error">
+                      Subjek harus diisi.
+                    </small>
+                  )}
                 </div>
 
                 <div className="contact-form-group">
                   <label htmlFor="contact-message">Pesan</label>
                   <textarea
                     id="contact-message"
+                    className={
+                      contactTouched.pesan && !pesan.trim() ? 'input-invalid' : ''
+                    }
                     value={pesan}
                     onChange={(e) => setPesan(e.target.value)}
+                    onBlur={() =>
+                      setContactTouched((prev) => ({ ...prev, pesan: true }))
+                    }
                     placeholder="Tuliskan pesan kamu..."
                     rows={5}
                     required
                     maxLength={2000}
                   />
+
+                  {contactTouched.pesan && !pesan.trim() && (
+                    <small className="contact-field-error">
+                      Pesan harus diisi.
+                    </small>
+                  )}
                 </div>
 
                 {contactError && (
