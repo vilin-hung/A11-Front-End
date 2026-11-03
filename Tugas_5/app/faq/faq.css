@@ -394,6 +394,18 @@
   border-color: #e09b45;
 }
 
+.contact-form-group input.input-invalid,
+.contact-form-group textarea.input-invalid {
+  border: 1px solid #dc3545;
+}
+
+.contact-field-error {
+  display: block;
+  color: #dc3545;
+  font-size: 0.8rem;
+  margin-top: 5px;
+}
+
 .contact-form-group textarea {
   resize: vertical;
 }
@@ -467,6 +479,22 @@
 .contact-form-group textarea:focus {
     border-color: var(--deep-green);
     box-shadow: 0 0 0 3px var(--deep-green-soft);
+}
+
+/* =========================
+   CONTACT SUCCESS
+   ========================= */
+.contact-success-btn {
+    background-color: var(--deep-green);
+    color: var(--bg-white);
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+}
+
+.contact-success-btn:hover {
+    background-color: var(--warm-amber);
+    color: var(--bg-white);
 }
 
 .contact-submit-btn {
