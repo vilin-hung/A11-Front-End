@@ -51,6 +51,9 @@ const OPSI_SERAT = ["Tauge", "Timun", "Sawi", "Kol"];
 const FORMAT_FOTO = ["image/jpeg", "image/png", "image/webp"];
 const MAKS_UKURAN_FOTO = 5 * 1024 * 1024;
 
+/* Batas minimal karakter deskripsi (harus sama dengan aturan di API) */
+const MIN_DESKRIPSI = 10;
+
 const USULAN_KEY = "jelajahRasaUsulan";
 
 /* =========================
@@ -260,6 +263,10 @@ export default function TambahKulinerPage() {
   const [sudahSubmit, setSudahSubmit] = useState(false);
   const [tampilModal, setTampilModal] = useState(false);
 
+  /* Pesan error deskripsi yang datang dari server (cadangan kalau validasi
+     di server menolak, supaya tetap tampil sebagai tulisan merah, bukan alert) */
+  const [errorDeskripsiServer, setErrorDeskripsiServer] = useState("");
+
   useEffect(() => {
     return () => {
       if (previewUrl) URL.revokeObjectURL(previewUrl);
@@ -311,16 +318,29 @@ export default function TambahKulinerPage() {
     pesanHarga = "Harga minimal tidak boleh lebih besar dari harga maksimal.";
   }
 
+  /* Validasi deskripsi: wajib diisi & minimal MIN_DESKRIPSI karakter */
+  const panjangDeskripsi = deskripsi.trim().length;
+  let pesanDeskripsi = "";
+  if (panjangDeskripsi === 0) {
+    pesanDeskripsi = "Mohon tuliskan deskripsi singkat kuliner.";
+  } else if (panjangDeskripsi < MIN_DESKRIPSI) {
+    pesanDeskripsi = `Deskripsi minimal ${MIN_DESKRIPSI} karakter.`;
+  }
+
   /* Validasi form (bahan bersifat opsional, jadi tidak masuk validasi) */
   const error = {
     nama: nama.trim() === "",
     daerah: daerah === "",
     kategori: kategori === "",
-    deskripsi: deskripsi.trim() === "",
+    deskripsi: pesanDeskripsi !== "",
     foto: foto === null || fotoError !== "",
     harga: pesanHarga !== "",
   };
   const formValid = !Object.values(error).some(Boolean);
+
+  /* Deskripsi dianggap salah kalau gagal validasi di browser ATAU ditolak server */
+  const deskripsiSalah = (sudahSubmit && error.deskripsi) || errorDeskripsiServer !== "";
+  const teksErrorDeskripsi = pesanDeskripsi || errorDeskripsiServer || "Mohon tuliskan deskripsi singkat kuliner.";
 
   /* Reset form */
   const resetForm = () => {
@@ -328,6 +348,7 @@ export default function TambahKulinerPage() {
     setDaerah("");
     setKategori("");
     setDeskripsi("");
+    setErrorDeskripsiServer("");
     setRasa([]);
     setHargaMin("");
     setHargaMax("");
@@ -405,12 +426,25 @@ export default function TambahKulinerPage() {
 
       if (!res.ok) {
         console.error("Gagal kirim kuliner:", hasil);
-        const detail = hasil.detail
-          ? Object.entries(hasil.detail)
-              .map(([field, pesan]) => `${field}: ${(pesan as string[]).join(", ")}`)
-              .join("\n")
-          : "";
-        alert(`${hasil.error || "Gagal mengirim rekomendasi."}${detail ? "\n" + detail : ""}`);
+
+        const detail = (hasil.detail ?? {}) as Record<string, string[] | string>;
+
+        /* Error deskripsi dari server -> tampilkan sebagai tulisan merah di bawah kolom */
+        const detailDeskripsi = detail.deskripsi;
+        if (detailDeskripsi) {
+          const teks = Array.isArray(detailDeskripsi) ? detailDeskripsi.join(", ") : String(detailDeskripsi);
+          setErrorDeskripsiServer(teks);
+        }
+
+        /* Error field lain (kalau ada) tetap ditampilkan lewat alert */
+        const sisaDetail = Object.entries(detail)
+          .filter(([field]) => field !== "deskripsi")
+          .map(([field, pesan]) => `${field}: ${Array.isArray(pesan) ? pesan.join(", ") : pesan}`)
+          .join("\n");
+
+        if (!detailDeskripsi || sisaDetail) {
+          alert(`${hasil.error || "Gagal mengirim rekomendasi."}${sisaDetail ? "\n" + sisaDetail : ""}`);
+        }
         return;
       }
 
@@ -422,7 +456,7 @@ export default function TambahKulinerPage() {
       setMengirim(false);
     }
   };
-    
+
   const tambahLagi = () => {
     setTampilModal(false);
     resetForm();
@@ -565,15 +599,22 @@ export default function TambahKulinerPage() {
                       Deskripsi Singkat <span className="text-danger">*</span>
                     </label>
                     <textarea
-                      className={`form-control ${sudahSubmit && error.deskripsi ? "is-invalid" : ""}`}
+                      className={`form-control ${deskripsiSalah ? "is-invalid" : ""}`}
                       id="deskripsi"
                       name="deskripsi"
                       rows={3}
                       placeholder="Ceritakan keunikan rasa, kebiasaan penyajian secara singkat..."
                       value={deskripsi}
-                      onChange={(e) => setDeskripsi(e.target.value)}
+                      onChange={(e) => {
+                        setDeskripsi(e.target.value);
+                        if (errorDeskripsiServer) setErrorDeskripsiServer("");
+                      }}
+                      aria-invalid={deskripsiSalah}
+                      aria-describedby="feedback-deskripsi"
                     ></textarea>
-                    <div className="invalid-feedback">Mohon tuliskan deskripsi singkat kuliner.</div>
+                    <div className="invalid-feedback" id="feedback-deskripsi">
+                      {teksErrorDeskripsi}
+                    </div>
                   </div>
 
                   {/* Bahan */}

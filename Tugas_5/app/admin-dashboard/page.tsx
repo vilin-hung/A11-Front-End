@@ -314,9 +314,10 @@ export default function AdminDashboard() {
   const [kulinerInfo, setKulinerInfo] = useState('');
   const [kulinerError, setKulinerError] = useState('');
 
-  /* notif pop up setelah kuliner berhasil ditambahkan */
-  const [popupTambahOpen, setPopupTambahOpen] = useState(false);
-  const [popupTambahNama, setPopupTambahNama] = useState('');
+  /* 
+    CATATAN: State popupTambahOpen dan popupTambahNama sudah DIHAPUS 
+    karena kita akan menggunakan notifikasi alert hijau (kulinerInfo).
+  */
 
   /* state pesan masuk */
   const [messages, setMessages] = useState<ContactMessage[]>([]);
@@ -423,29 +424,6 @@ export default function AdminDashboard() {
   const [heroSaving, setHeroSaving] = useState(false);
   const [heroError, setHeroError] = useState("");
   const [heroMessage, setHeroMessage] = useState("");
-
-  // Otomatis menghilangkan notifikasi setelah 5 detik
-  // useEffect(() => {
-  //   if (!messageError && !messageInfo) return;
-
-  //   const timer = setTimeout(() => {
-  //     setMessageError("");
-  //     setMessageInfo("");
-  //   }, 5000);
-
-  //   return () => clearTimeout(timer);
-  // }, [messageError, messageInfo]);
-
-  // useEffect(() => {
-  //   if (!faqError && !faqInfo) return;
-
-  //   const timer = setTimeout(() => {
-  //     setFaqError("");
-  //     setFaqInfo("");
-  //   }, 5000);
-
-  //   return () => clearTimeout(timer);
-  // }, [faqError, faqInfo]);
 
   useEffect(() => {
     if (!regionError && !regionMessage) return;
@@ -1240,8 +1218,12 @@ export default function AdminDashboard() {
       setTambahFoto('');
       if (inputFotoTambahRef.current) inputFotoTambahRef.current.value = '';
 
-      setPopupTambahNama(nama);
-      setPopupTambahOpen(true);
+      /* 
+        PERUBAHAN DI SINI: 
+        Gunakan setKulinerInfo untuk memunculkan alert hijau, 
+        bukan setPopupTambahOpen lagi.
+      */
+      setKulinerInfo(`Kuliner "${nama}" berhasil ditambahkan.`);
 
       await muatKuliner();
       await muatStatistik();
@@ -3726,40 +3708,10 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      {/* Pop up notif: kuliner berhasil ditambahkan */}
-      {popupTambahOpen && (
-        <div
-          className="modal fade show d-block"
-          tabIndex={-1}
-          role="dialog"
-          aria-modal="true"
-          style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
-        >
-          <div className="modal-dialog modal-dialog-centered modal-sm">
-            <div className="modal-content text-center">
-              <div className="modal-body py-4">
-                <i
-                  className="bx bx-check-circle text-success"
-                  style={{ fontSize: 64 }}
-                />
-                <h5 className="mt-2 mb-2">Kuliner berhasil ditambahkan</h5>
-                <p className="text-muted mb-0">
-                  &quot;{popupTambahNama}&quot; sudah tampil di daftar kuliner.
-                </p>
-              </div>
-              <div className="modal-footer justify-content-center border-0 pt-0">
-                <button
-                  type="button"
-                  className="btn btn-success px-4"
-                  onClick={() => setPopupTambahOpen(false)}
-                >
-                  OK
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* 
+        CATATAN: Blok modal pop up "popupTambahOpen" sudah DIHAPUS dari sini 
+        agar tidak muncul lagi dan beralih menggunakan alert hijau di atas.
+      */}
 
       {faqToDelete && (
         <div
