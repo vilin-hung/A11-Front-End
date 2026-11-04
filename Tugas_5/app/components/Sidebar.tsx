@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -142,6 +143,15 @@ export default function Sidebar() {
               <i className="bx bx-help-circle"></i>FAQ
             </Link>
           </li>
+
+          {/* Admin Dashboard hanya ditampilkan untuk pengguna dengan role ADMIN */}
+          {user?.role === "ADMIN" && (
+            <li className="nav-item">
+              <Link className="nav-link" href="/admin-dashboard">
+                <i className="bx bx-grid-alt"></i>Admin Dashboard
+              </Link>
+            </li>
+          )}
         </ul>
       </div>
     </div>
