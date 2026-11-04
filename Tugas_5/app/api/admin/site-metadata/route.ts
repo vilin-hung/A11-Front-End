@@ -16,7 +16,8 @@ const ALLOWED_KEYS = [
 
   "social_instagram",
   "social_tiktok",
-  "social_youtube"
+  "social_youtube",
+  "social_facebook"
 ] as const;
 
 async function isAdmin() {
@@ -43,6 +44,7 @@ export async function GET() {
     }
 
     const metadata = await prisma.siteMetadata.findMany({
+      where: { key: { in: [...ALLOWED_KEYS] } },
       orderBy: { key: "asc" },
     });
 
@@ -125,6 +127,7 @@ export async function PUT(request: Request) {
     );
 
     const updatedMetadata = await prisma.siteMetadata.findMany({
+      where: { key: { in: [...ALLOWED_KEYS] } },
       orderBy: { key: "asc" },
     });
 

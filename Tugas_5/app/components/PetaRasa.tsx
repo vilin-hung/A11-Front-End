@@ -174,7 +174,7 @@ export default function PetaRasa() {
               <Image
                 id="img-peta-jabar"
                 className="peta-image"
-                src="/images/homepage/peta-jabar.jpg"
+                src="/images/homepage/peta-jabar.png"
                 alt="Peta Jawa Barat"
                 width={1200}
                 height={900}
