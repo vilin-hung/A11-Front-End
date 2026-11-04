@@ -690,6 +690,11 @@ a:visited {
         display: none;
     }
 
+    /* Menyembunyikan foto profil header */
+    .header-profile-container .user-avatar {
+        display: none;
+    }
+
     .header-section-center {
         max-width: 450px;
     }

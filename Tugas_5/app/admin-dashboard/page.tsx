@@ -300,9 +300,10 @@ export default function AdminDashboard() {
   const [kulinerInfo, setKulinerInfo] = useState('');
   const [kulinerError, setKulinerError] = useState('');
 
-  /* notif pop up setelah kuliner berhasil ditambahkan */
-  const [popupTambahOpen, setPopupTambahOpen] = useState(false);
-  const [popupTambahNama, setPopupTambahNama] = useState('');
+  /* 
+    CATATAN: State popupTambahOpen dan popupTambahNama sudah DIHAPUS 
+    karena kita akan menggunakan notifikasi alert hijau (kulinerInfo).
+  */
 
   /* state pesan masuk */
   const [messages, setMessages] = useState<ContactMessage[]>([]);
@@ -1004,6 +1005,11 @@ export default function AdminDashboard() {
       setTambahFoto('');
       if (inputFotoTambahRef.current) inputFotoTambahRef.current.value = '';
 
+      /* 
+        PERUBAHAN DI SINI: 
+        Gunakan setKulinerInfo untuk memunculkan alert hijau, 
+        bukan setPopupTambahOpen lagi.
+      */
       setKulinerInfo(`Kuliner "${nama}" berhasil ditambahkan.`);
 
       await muatKuliner();
