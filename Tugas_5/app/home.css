@@ -280,10 +280,12 @@
 .kategori-grid > .kategori-card-wrapper:nth-child(1) .kategori-card:hover {
     border-color: var(--label-makanan);
 }
+
 .kategori-grid > .kategori-card-wrapper:nth-child(1) .kategori-icon {
     background-color: var(--label-makanan-soft);
     color: var(--label-makanan);
 }
+
 .kategori-grid > .kategori-card-wrapper:nth-child(1) .kategori-link {
     color: var(--label-makanan);
 }
@@ -292,10 +294,12 @@
 .kategori-grid > .kategori-card-wrapper:nth-child(2) .kategori-card:hover {
     border-color: var(--label-jajanan);
 }
+
 .kategori-grid > .kategori-card-wrapper:nth-child(2) .kategori-icon {
     background-color: var(--label-jajanan-soft);
     color: var(--label-jajanan);
 }
+
 .kategori-grid > .kategori-card-wrapper:nth-child(2) .kategori-link {
     color: var(--label-jajanan);
 }
@@ -304,10 +308,12 @@
 .kategori-grid > .kategori-card-wrapper:nth-child(3) .kategori-card:hover {
     border-color: var(--label-minuman);
 }
+
 .kategori-grid > .kategori-card-wrapper:nth-child(3) .kategori-icon {
     background-color: var(--label-minuman-soft);
     color: var(--label-minuman);
 }
+
 .kategori-grid > .kategori-card-wrapper:nth-child(3) .kategori-link {
     color: var(--label-minuman);
 }
@@ -316,10 +322,12 @@
 .kategori-grid > .kategori-card-wrapper:nth-child(4) .kategori-card:hover {
     border-color: var(--label-oleh);
 }
+
 .kategori-grid > .kategori-card-wrapper:nth-child(4) .kategori-icon {
     background-color: var(--label-oleh-soft);
     color: var(--label-oleh);
 }
+
 .kategori-grid > .kategori-card-wrapper:nth-child(4) .kategori-link {
     color: var(--label-oleh);
 }
@@ -402,7 +410,7 @@
 }
 
 .peta-viewport {
-    overflow:scroll;
+    overflow: scroll;
     width: 100%;
     height: clamp(280px, 48vw, 420px);
     position: relative;
@@ -469,11 +477,6 @@
     z-index: 1;
 }
 
-.peta-pin-item:hover,
-.peta-pin-item:focus-within {
-    z-index: 999;
-}
-
 /* .peta-pin-item:not(
     .pin-kota-bandung,
     .pin-kota-bogor,
@@ -520,18 +523,15 @@
     bottom: calc(100% + 12px);
     left: 50%;
     transform: translateX(-50%);
-
     width: 260px;
     max-width: min(280px, 75vw);
     white-space: normal;
-
     background: var(--warm-cream);
     color: var(--deep-green);
     border: 1px solid var(--deep-green-shadow);
     border-radius: 12px;
     box-shadow: 0 4px 12px var(--shadow-sm);
     overflow: hidden;
-
     font-size: 12px;
     line-height: 1.5;
     text-align: center;
@@ -802,6 +802,9 @@
     width: 48px;
     height: 48px;
     flex-shrink: 0;
+    border-radius: 50%;
+    object-fit: cover;
+    background-color: var(--bg-placeholder);
 }
 
 .user-info .user-name {
@@ -864,6 +867,246 @@
 
 .icon-edit {
     font-size: 18px;
+}
+
+/* =========================
+   FORM ULASAN
+   ========================= */
+
+/* Background modal ulasan */
+.modal-ulasan-overlay {
+    background-color: rgba(0, 0, 0, 0.55);
+    overflow-y: auto;
+}
+
+/* Tampilan modal */
+.modal-ulasan-content {
+    background-color: var(--warm-cream);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+}
+
+.modal-ulasan-header {
+    background-color: var(--deep-green);
+    color: var(--bg-white);
+    border-bottom: 1px solid var(--deep-green-shadow);
+    padding: 20px 24px;
+}
+
+.modal-ulasan-header .ulasan-title {
+    color: var(--bg-white);
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0;
+}
+
+.modal-ulasan-header .btn-close {
+    filter: brightness(0) invert(1);
+}
+
+.modal-ulasan-body {
+    padding: 24px;
+}
+
+.form-group-item {
+    margin-bottom: 20px;
+}
+
+.form-group-item:last-child {
+    margin-bottom: 0;
+}
+
+.form-label-custom {
+    display: block;
+    color: var(--deep-green);
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.form-input-custom {
+    display: block;
+    width: 100%;
+    padding: 12px 14px;
+    background-color: var(--bg-white);
+    color: var(--text-dark);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 14px;
+    line-height: 1.5;
+    transition: var(--transition);
+    box-sizing: border-box;
+}
+
+.form-input-custom:focus {
+    outline: none;
+    border-color: var(--deep-green);
+    box-shadow: 0 0 0 3px var(--deep-green-shadow);
+}
+
+.textarea-custom {
+    min-height: 110px;
+    resize: vertical;
+}
+
+.form-input-custom::placeholder {
+    color: var(--text-muted);
+    opacity: 0.8;
+}
+
+.modal-ulasan-footer {
+    padding: 16px 24px;
+    border-top: 1px solid var(--border-color);
+    background-color: var(--bg-white);
+    gap: 10px;
+}
+
+.btn-modal-cancel,
+.btn-modal-submit {
+    padding: 10px 22px;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn-modal-cancel {
+    background-color: var(--bg-white);
+    color: var(--deep-green);
+    border: 1px solid var(--deep-green);
+}
+
+.btn-modal-cancel:hover {
+    background-color: var(--warm-cream);
+    transform: translateY(-1px);
+}
+
+.btn-modal-submit {
+    background-color: var(--deep-green);
+    color: var(--bg-white);
+    border: 1px solid var(--deep-green);
+}
+
+.btn-modal-submit:disabled,
+.btn-modal-cancel:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Pilihan rating bintang */
+.ulasan-rating-input {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.btn-rating-star {
+    background: transparent;
+    border: none;
+    padding: 2px;
+    color: var(--text-muted);
+    font-size: 30px;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.btn-rating-star.active {
+    color: var(--warm-amber);
+}
+
+.btn-rating-star:hover {
+    color: var(--warm-amber);
+    transform: scale(1.15);
+}
+
+.btn-rating-star:focus-visible {
+    outline: 2px solid var(--warm-amber);
+    outline-offset: 3px;
+    border-radius: 4px;
+}
+
+/* Jumlah karakter ulasan */
+.ulasan-character-count {
+    display: block;
+    text-align: right;
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 6px;
+}
+
+/* Pesan error pada form ulasan */
+.ulasan-form-error {
+    color: #b42318;
+    font-size: 13px;
+    margin: 10px 0 0;
+}
+
+/* Tampilan ketika belum ada ulasan */
+.ulasan-empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: var(--bg-white);
+    font-size: 14px;
+    padding: 24px 16px;
+    margin: 0;
+}
+
+/* Tanggal ulasan */
+.ulasan-tanggal {
+    display: block;
+    margin-top: 14px;
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+/* =========================
+   POP-UP ULASAN BERHASIL
+   ========================= */
+
+.ulasan-success-icon {
+    text-align: center;
+    margin-bottom: 12px;
+}
+
+.ulasan-success-icon i {
+    font-size: 56px;
+    color: var(--deep-green);
+}
+
+.ulasan-success-message {
+    text-align: center;
+    color: var(--text-dark);
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 24px;
+}
+
+.ulasan-success-profile {
+    padding: 14px;
+    background-color: var(--bg-light);
+    border-radius: 12px;
+    margin-bottom: 16px;
+}
+
+.ulasan-success-comment {
+    padding: 14px;
+    background-color: var(--bg-light);
+    border-radius: 10px;
+    margin-top: 8px;
+}
+
+.ulasan-success-note {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 12px;
+    line-height: 1.6;
+    margin: 18px 0 0;
 }
 
 /* =========================
@@ -1290,5 +1533,40 @@
     .btn-tambah-link {
         padding: 12px 26px;
         font-size: 14px;
+    }
+
+    /* Responsive form ulasan */
+    .modal-ulasan-header {
+        padding: 16px 18px;
+    }
+
+    .modal-ulasan-body {
+        padding: 20px 18px;
+    }
+
+    .modal-ulasan-footer {
+        padding: 14px 18px;
+    }
+
+    .modal-ulasan-header .ulasan-title {
+        font-size: 16px;
+    }
+
+    .btn-modal-cancel,
+    .btn-modal-submit {
+        padding: 10px 18px;
+        font-size: 13px;
+    }
+
+    .ulasan-rating-input {
+        gap: 5px;
+    }
+
+    .btn-rating-star {
+        font-size: 27px;
+    }
+
+    .ulasan-success-icon i {
+        font-size: 48px;
     }
 }

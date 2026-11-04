@@ -6,6 +6,7 @@ import { seedRegions } from "./seeder/regions";
 import { seedMetadata } from "./seeder/metadata";
 import { seedKuliner } from "./seeder/kuliner";
 import { seedUsers } from "./seeder/users";
+import { seedReviews } from "./seeder/review";
 
 const adapter = new PrismaPg({
   connectionString: process.env.DATABASE_URL!,
@@ -15,6 +16,7 @@ const prisma = new PrismaClient({ adapter });
 
 async function main() {
   await seedUsers(prisma);
+  await seedReviews(prisma);
   await seedFaq(prisma);
   await seedRegions(prisma);
   await seedMetadata(prisma);

@@ -91,12 +91,13 @@ type KulinerDb = {
 
 type UlasanDb = {
   id: string;
-  namaUser: string;
   komentar: string;
   rating: number;
   status: string;
   createdAt: string;
-  kuliner: { nama: string };
+  user: {
+    nama: string;
+  } | null;
 };
 
 /* Menyamakan bentuk data database dengan bentuk yang dipakai
@@ -121,12 +122,11 @@ function keItemAdmin(item: KulinerDb): ItemAdmin {
 function keUlasan(item: UlasanDb): Ulasan {
   return {
     id: item.id,
-    namaUser: item.namaUser,
+    namaUser: item.user?.nama ?? "-",
     komentar: item.komentar,
     rating: item.rating,
     status: item.status as StatusUlasan,
     tanggal: item.createdAt.slice(0, 10),
-    kuliner: item.kuliner?.nama ?? '-',
   };
 }
 
@@ -299,6 +299,8 @@ export default function AdminDashboard() {
   const [kuliner, setKuliner] = useState<ItemAdmin[]>([]);
   const [ulasan, setUlasan] = useState<Ulasan[]>([]);
   const [users, setUsers] = useState<User[]>([]);
+  const [ulasanInfo, setUlasanInfo] = useState("");
+  const [ulasanError, setUlasanError] = useState("");
 
   /* state tambah kuliner oleh admin */
   const [tambahKulinerOpen, setTambahKulinerOpen] = useState(false);
@@ -498,6 +500,10 @@ export default function AdminDashboard() {
   // Notifikasi kuliner 
   useAutoDismiss(kulinerInfo, setKulinerInfo);
   useAutoDismiss(kulinerError, setKulinerError);
+
+  // Notifikasi ulasan
+  useAutoDismiss(ulasanInfo, setUlasanInfo);
+  useAutoDismiss(ulasanError, setUlasanError);
 
   /* Ambil angka ringkasan dari database. Dipisah dari effect awal
      supaya bisa dipanggil ulang setelah admin mengubah data. */
@@ -1258,28 +1264,82 @@ export default function AdminDashboard() {
     }
   };
 
+  // Status Ulasan
   const toggleUlasan = async (id: string) => {
     const item = ulasan.find((baris) => baris.id === id);
     if (!item) return;
 
     const status: StatusUlasan =
-      item.status === 'TAMPIL' ? 'SEMBUNYI' : 'TAMPIL';
+      item.status === "AKTIF" ? "NONAKTIF" : "AKTIF";
+
+    setUlasanInfo("");
+    setUlasanError("");
 
     try {
-      const response = await fetch('/api/admin/ulasan', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/admin/ulasan", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id, status }),
       });
 
-      if (!response.ok) return;
-    } catch (error) {
-      console.error('Gagal mengubah status ulasan:', error);
-      return;
-    }
+      const data = await response.json();
 
-    await muatUlasan();
-    await muatStatistik();
+      if (!response.ok) {
+        throw new Error(data.message || "Gagal mengubah status ulasan.");
+      }
+
+      setUlasanInfo(data.message || "Status ulasan berhasil diperbarui.");
+
+      await muatUlasan();
+      await muatStatistik();
+    } catch (error) {
+      setUlasanError(
+        error instanceof Error
+          ? error.message
+          : "Terjadi kesalahan saat mengubah status ulasan."
+      );
+    }
+  };
+
+  // Hapus Ulasan
+  const hapusUlasan = async (id: string) => {
+    const item = ulasan.find((baris) => baris.id === id);
+
+    if (!item) return;
+
+    const konfirmasi = window.confirm(
+      `Yakin ingin menghapus ulasan dari "${item.namaUser}"?`
+    );
+
+    if (!konfirmasi) return;
+
+    setUlasanInfo("");
+    setUlasanError("");
+
+    try {
+      const response = await fetch("/api/admin/ulasan", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Gagal menghapus ulasan.");
+      }
+
+      setUlasanInfo(data.message || "Ulasan berhasil dihapus.");
+
+      await muatUlasan();
+      await muatStatistik();
+    } catch (error) {
+      setUlasanError(
+        error instanceof Error
+          ? error.message
+          : "Terjadi kesalahan saat menghapus ulasan."
+      );
+    }
   };
 
   /* Logout */
@@ -2110,25 +2170,45 @@ export default function AdminDashboard() {
             {/* =========================
                 TAB KELOLA ULASAN
                 ========================= */}
-            {activeTab === 'ulasan' && (
+            {activeTab === "ulasan" && (
               <section id="tab-kelola-ulasan">
-                <h4>Ulasan Pengguna</h4>
+                <div className="mb-3">
+                  <h4>Ulasan Pengguna</h4>
+                  <p className="text-muted mb-0">
+                    Kelola ulasan yang diberikan pengguna terhadap website JelajahRasa.
+                  </p>
+                </div>
+
+                {ulasanError && (
+                  <div className="alert alert-danger">
+                    {ulasanError}
+                  </div>
+                )}
+
+                {ulasanInfo && (
+                  <div className="alert alert-success">
+                    {ulasanInfo}
+                  </div>
+                )}
+
                 <div className="box-tabel border rounded bg-white">
                   <div className="table-responsive">
                     <table className="table align-middle">
                       <thead className="table-light">
                         <tr>
-                          <th>Nama</th>
-                          <th>Ulasan</th>
+                          <th>Nama Pengguna</th>
+                          <th>Rating</th>
+                          <th>Komentar</th>
                           <th>Tanggal</th>
                           <th>Status</th>
                           <th className="text-center">Aksi</th>
                         </tr>
                       </thead>
+
                       <tbody id="tabel-daftar-ulasan">
                         {ulasanTerurut.length === 0 ? (
                           <BarisKosong
-                            kolom={5}
+                            kolom={6}
                             ikon="bx-chat"
                             pesan="Belum ada ulasan dari pengguna."
                           />
@@ -2137,7 +2217,8 @@ export default function AdminDashboard() {
                             <BarisUlasan
                               key={item.id}
                               item={item}
-                              onToggle={() => toggleUlasan(item.id)}
+                              onToggle={() => void toggleUlasan(item.id)}
+                              onHapus={() => void hapusUlasan(item.id)}
                             />
                           ))
                         )}

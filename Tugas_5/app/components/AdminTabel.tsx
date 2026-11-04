@@ -32,7 +32,6 @@ export type Ulasan = {
   rating: number;
   status: StatusUlasan;
   tanggal: string;
-  kuliner: string;
 };
 
 /* =========================
@@ -218,36 +217,60 @@ export function BarisKuliner({
 export function BarisUlasan({
   item,
   onToggle,
+  onHapus,
 }: {
   item: Ulasan;
   onToggle: () => void;
+  onHapus: () => void;
 }) {
   return (
     <tr>
+      {/* Nama Pengguna */}
       <td>{item.namaUser}</td>
-      <td>
-        {item.komentar}
-        <small className="d-block text-muted">
-          <i className="bx bx-restaurant me-1" />
-          {item.kuliner} &middot; {item.rating}/5
-        </small>
+
+      {/* Rating */}
+      <td className="text-nowrap">
+        {item.rating}/5
       </td>
-      <td>{item.tanggal}</td>
+
+      {/* Komentar */}
+      <td style={{ minWidth: 250, maxWidth: 450 }}>
+        <div style={{ whiteSpace: "pre-wrap" }}>
+          {item.komentar}
+        </div>
+      </td>
+
+      {/* Tanggal */}
+      <td className="text-nowrap">{item.tanggal}</td>
+
+      {/* Status */}
       <td>
         <BadgeStatus status={item.status} />
       </td>
-      <td className="text-center text-nowrap">
-        <button
-          type="button"
-          className={
-            item.status === 'TAMPIL'
-              ? 'btn btn-outline-secondary btn-sm'
-              : 'btn btn-success btn-sm'
-          }
-          onClick={onToggle}
-        >
-          {item.status === 'TAMPIL' ? 'Sembunyikan' : 'Tampilkan'}
-        </button>
+
+      {/* Aksi */}
+      <td className="text-center">
+        <div className="d-flex justify-content-center gap-2">
+          <button
+            type="button"
+            className={
+              item.status === "AKTIF"
+                ? "btn btn-secondary btn-sm"
+                : "btn btn-success btn-sm"
+            }
+            onClick={onToggle}
+          >
+            {item.status === "AKTIF" ? "Sembunyikan" : "Tampilkan"}
+          </button>
+
+          <button
+            type="button"
+            className="btn btn-outline-danger btn-sm"
+            onClick={onHapus}
+          >
+            Hapus
+          </button>
+        </div>
       </td>
     </tr>
   );

@@ -1,87 +1,241 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import type { FormEvent } from "react";
 import { useRouter } from "next/navigation";
 
-const ULASAN_KEY = "jelajahRasaUlasan";
-
 type Ulasan = {
-  id: number;
-  nama: string;
-  kota: string;
-  pesan: string;
-  status: "Tampil" | "Sembunyi";
-  tanggal: string;
+  id: string;
+  rating: number;
+  komentar: string;
+  status: string;
+  createdAt: string;
+  user: {
+    id: string;
+    nama: string;
+    kota: string | null;
+    avatar: string | null;
+  };
 };
+
+type Notifikasi = {
+  tipe: "sukses" | "error";
+  judul: string;
+  pesan: string;
+  redirect?: boolean;
+  tujuan?: string;
+};
+
+function formatTanggal(tanggal: string) {
+  return new Intl.DateTimeFormat("id-ID", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  }).format(new Date(tanggal));
+}
 
 export default function UlasanSection() {
   const [ulasan, setUlasan] = useState<Ulasan[]>([]);
   const [modalTerbuka, setModalTerbuka] = useState(false);
+  const [modalBerhasilTerbuka, setModalBerhasilTerbuka] = useState(false);
   const [pesan, setPesan] = useState("");
+  const [rating, setRating] = useState(0);
+  const [reviewBerhasil, setReviewBerhasil] = useState<Ulasan | null>(null);
+  const [pesanError, setPesanError] = useState("");
+  const [sedangMemuat, setSedangMemuat] = useState(true);
+  const [sedangMengirim, setSedangMengirim] = useState(false);
+  const [notifikasi, setNotifikasi] = useState<Notifikasi | null>(null);
+
   const router = useRouter();
 
-  const ulasanTampil = ulasan.filter(
-    (item) => item.status === "Tampil"
-  );
+  // Menampilkan modal notifikasi
+  function tampilkanNotifikasi(
+    tipe: "sukses" | "error",
+    judul: string,
+    pesan: string,
+    redirect = false,
+    tujuan = "/"
+  ) {
+    setNotifikasi({
+      tipe,
+      judul,
+      pesan,
+      redirect,
+      tujuan,
+    });
+  }
 
-  function bacaUlasan(): Ulasan[] {
-    try {
-      const data = JSON.parse(
-        localStorage.getItem(ULASAN_KEY) || "[]"
-      );
+  // Menutup modal notifikasi
+  function tutupNotifikasi() {
+    const perluRedirect = notifikasi?.redirect;
+    const tujuan = notifikasi?.tujuan ?? "/";
 
-      return Array.isArray(data) ? data : [];
-    } catch {
-      return [];
+    setNotifikasi(null);
+
+    if (perluRedirect) {
+      router.push(tujuan);
+      router.refresh();
     }
   }
 
-  function handleSubmit() {
+  // Mengambil enam ulasan terbaru yang berstatus aktif dari database
+  useEffect(() => {
+    async function bacaUlasan() {
+      try {
+        const response = await fetch("/api/reviews", {
+          cache: "no-store",
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.message || "Gagal mengambil ulasan.");
+        }
+
+        setUlasan(Array.isArray(data.reviews) ? data.reviews : []);
+      } catch (error) {
+        console.error("Gagal mengambil ulasan:", error);
+      } finally {
+        setSedangMemuat(false);
+      }
+    }
+
+    bacaUlasan();
+  }, []);
+
+  // Memeriksa session sebelum membuka form ulasan
+  async function handleBukaModal() {
+    try {
+      const response = await fetch("/api/auth/me", {
+        cache: "no-store",
+      });
+
+      const data = await response.json();
+
+      // Mengarahkan pengguna ke login jika belum memiliki session
+      if (response.status === 401 || !data.user) {
+        tampilkanNotifikasi(
+          "error",
+          "Login Diperlukan",
+          "Silakan login terlebih dahulu untuk menulis ulasan.",
+          true,
+          "/login"
+        );
+        return;
+      }
+
+      if (!response.ok) {
+        tampilkanNotifikasi(
+          "error",
+          "Gagal Memeriksa Sesi",
+          data.message || "Gagal memeriksa sesi pengguna."
+        );
+        return;
+      }
+
+      setPesanError("");
+      setModalTerbuka(true);
+    } catch (error) {
+      console.error("Gagal memeriksa session:", error);
+
+      tampilkanNotifikasi(
+        "error",
+        "Terjadi Kesalahan",
+        "Terjadi kesalahan saat memeriksa sesi pengguna. Silakan coba kembali."
+      );
+    }
+  }
+
+  // Mengirim ulasan ke database
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
     const review = pesan.trim();
 
-    if (!review) {
-      alert("Silakan isi ulasan terlebih dahulu.");
+    if (rating < 1 || rating > 5) {
+      setPesanError("Silakan pilih rating bintang terlebih dahulu.");
       return;
     }
 
-    let currentUser: { name: string; city: string } | null = null;
+    if (!review) {
+      setPesanError("Silakan isi ulasan terlebih dahulu.");
+      return;
+    }
+
+    if (review.length > 1000) {
+      setPesanError("Ulasan maksimal 1000 karakter.");
+      return;
+    }
 
     try {
-      currentUser = JSON.parse(
-        localStorage.getItem("jelajahRasaCurrentUser") || "null"
-      );
-    } catch {
-      currentUser = null;
-    }
+      setSedangMengirim(true);
+      setPesanError("");
 
-    if (!currentUser) {
-      alert("Silakan login terlebih dahulu untuk menulis ulasan.");
+      const response = await fetch("/api/reviews", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          rating,
+          komentar: review,
+        }),
+      });
+
+      const data = await response.json();
+
+      // Mengarahkan pengguna ke login jika session sudah tidak valid
+      if (response.status === 401) {
+        setModalTerbuka(false);
+
+        tampilkanNotifikasi(
+          "error",
+          "Sesi Login Berakhir",
+          "Sesi login kamu sudah berakhir. Silakan login kembali.",
+          true,
+          "/login"
+        );
+        return;
+      }
+
+      if (!response.ok) {
+        setPesanError(data.message || "Gagal mengirim ulasan.");
+        return;
+      }
+
+      // Menyimpan data ulasan untuk ditampilkan pada pop-up berhasil
+      setReviewBerhasil(data.review);
+
+      setPesan("");
+      setRating(0);
       setModalTerbuka(false);
-      router.push("/login");
-      return;
+      setModalBerhasilTerbuka(true);
+    } catch (error) {
+      console.error("Gagal mengirim ulasan:", error);
+
+      tampilkanNotifikasi(
+        "error",
+        "Gagal Mengirim Ulasan",
+        "Terjadi kesalahan saat mengirim ulasan. Silakan coba kembali."
+      );
+    } finally {
+      setSedangMengirim(false);
+    }
+  }
+
+  // Menampilkan ulasan baru setelah pop-up berhasil ditutup
+  function handleTutupBerhasil() {
+    if (reviewBerhasil) {
+      setUlasan((dataSebelumnya) => [
+        reviewBerhasil,
+        ...dataSebelumnya.filter(
+          (item) => item.id !== reviewBerhasil.id
+        ),
+      ]);
     }
 
-    const ulasanBaru: Ulasan = {
-      id: Date.now(),
-      nama: currentUser.name,
-      kota: currentUser.city,
-      pesan: review,
-      status: "Tampil",
-      tanggal: new Date().toISOString().slice(0, 10),
-    };
-
-    const dataTerbaru = [...ulasan, ulasanBaru];
-
-    localStorage.setItem(
-      ULASAN_KEY,
-      JSON.stringify(dataTerbaru)
-    );
-
-    setUlasan(dataTerbaru);
-    setPesan("");
-    setModalTerbuka(false);
-
-    alert("Ulasan berhasil dikirim!");
+    setReviewBerhasil(null);
+    setModalBerhasilTerbuka(false);
   }
 
   return (
@@ -98,144 +252,73 @@ export default function UlasanSection() {
         </div>
 
         <div className="testimoni-grid">
-          {/* Testimoni statis: Rina */}
-          <div id="testi-card-rina" className="testimoni-card-item">
-            <div className="testimoni-card">
-              <div className="user-profile">
-                <img
-                  id="img-user-rina"
-                  src="/images/homepage/default-avatar.png"
-                  alt="Rina S."
-                  className="user-avatar"
-                />
+          {/* Testimoni dinamis dari database */}
+          {sedangMemuat ? (
+            <p className="ulasan-empty-state">
+              Memuat ulasan...
+            </p>
+          ) : ulasan.length > 0 ? (
+            ulasan.map((item) => (
+              <div
+                className="testimoni-card-item ulasan-dinamis"
+                key={item.id}
+              >
+                <div className="testimoni-card">
+                  <div className="user-profile">
+                    <img
+                      src={
+                        item.user.avatar ||
+                        "/images/homepage/default-avatar.png"
+                      }
+                      alt={item.user.nama}
+                      className="user-avatar"
+                    />
 
-                <div className="user-info">
-                  <h6 id="name-rina" className="user-name">
-                    Rina S.
-                  </h6>
-                  <span className="user-origin">
-                    Wisatawan dari Jakarta
-                  </span>
-                </div>
-              </div>
+                    <div className="user-info">
+                      <h6 className="user-name">
+                        {item.user.nama}
+                      </h6>
 
-              <div className="star-rating" aria-label="5 dari 5 bintang">
-                {[1, 2, 3, 4, 5].map((bintang) => (
-                  <i className="bx bxs-star" key={bintang} />
-                ))}
-              </div>
-
-              <p className="user-review">
-                &quot;Sangat membantu pas mau road trip kuliner ke Garut
-                &amp; Tasikmalaya. Pilihan makanannya mantapp!&quot;
-              </p>
-            </div>
-          </div>
-
-          {/* Testimoni statis: Aris */}
-          <div id="testi-card-aris" className="testimoni-card-item">
-            <div className="testimoni-card">
-              <div className="user-profile">
-                <img
-                  id="img-user-aris"
-                  src="/images/homepage/default-avatar.png"
-                  alt="Aris Munandar"
-                  className="user-avatar"
-                />
-
-                <div className="user-info">
-                  <h6 id="name-aris" className="user-name">
-                    Aris Munandar
-                  </h6>
-                  <span className="user-origin">
-                    Food Blogger Bogor
-                  </span>
-                </div>
-              </div>
-
-              <div className="star-rating" aria-label="4,5 dari 5 bintang">
-                {[1, 2, 3, 4].map((bintang) => (
-                  <i className="bx bxs-star" key={bintang} />
-                ))}
-                <i className="bx bxs-star-half" />
-              </div>
-
-              <p className="user-review">
-                &quot;Tampilannya simpel dan langsung kelihatan makanan
-                khas tiap kabupaten. Sangat informatif!&quot;
-              </p>
-            </div>
-          </div>
-
-          {/* Testimoni statis: Dewi */}
-          <div id="testi-card-dewi" className="testimoni-card-item">
-            <div className="testimoni-card">
-              <div className="user-profile">
-                <img
-                  id="img-user-dewi"
-                  src="/images/homepage/default-avatar.png"
-                  alt="Dewi Lestari"
-                  className="user-avatar"
-                />
-
-                <div className="user-info">
-                  <h6 id="name-dewi" className="user-name">
-                    Dewi Lestari
-                  </h6>
-                  <span className="user-origin">
-                    Warga Bandung
-                  </span>
-                </div>
-              </div>
-
-              <div className="star-rating" aria-label="5 dari 5 bintang">
-                {[1, 2, 3, 4, 5].map((bintang) => (
-                  <i className="bx bxs-star" key={bintang} />
-                ))}
-              </div>
-
-              <p className="user-review">
-                &quot;Bisa nemu resep dan rekomendasi oleh-oleh khas
-                Sumedang &amp; Ciamis yang langka!&quot;
-              </p>
-            </div>
-          </div>
-
-          {/* Testimoni dinamis dari localStorage */}
-          {ulasanTampil.map((item) => (
-            <div
-              className="testimoni-card-item ulasan-dinamis"
-              key={item.id}
-            >
-              <div className="testimoni-card">
-                <div className="user-profile">
-                  <img
-                    src="/images/homepage/default-avatar.png"
-                    alt={item.nama}
-                    className="user-avatar"
-                  />
-
-                  <div className="user-info">
-                    <h6 className="user-name">{item.nama}</h6>
-                    <span className="user-origin">{item.kota}</span>
+                      <span className="user-origin">
+                        {item.user.kota || "Pengguna JelajahRasa"}
+                      </span>
+                    </div>
                   </div>
-                </div>
 
-                <div
-                  className="star-rating"
-                  aria-label="5 dari 5 bintang"
-                >
-                  {[1, 2, 3, 4, 5].map((bintang) => (
-                    <i className="bx bxs-star" key={bintang} />
-                  ))}
-                </div>
+                  <div
+                    className="star-rating"
+                    aria-label={`${item.rating} dari 5 bintang`}
+                  >
+                    {[1, 2, 3, 4, 5].map((bintang) => (
+                      <i
+                        className={`bx ${
+                          bintang <= item.rating
+                            ? "bxs-star"
+                            : "bx-star"
+                        }`}
+                        key={bintang}
+                        style={{
+                          opacity: bintang <= item.rating ? 1 : 0.3,
+                        }}
+                      />
+                    ))}
+                  </div>
 
-                <p className="user-review">
-                  &quot;{item.pesan}&quot;
-                </p>
+                  <p className="user-review">
+                    &quot;{item.komentar}&quot;
+                  </p>
+
+                  <span className="ulasan-tanggal">
+                    {formatTanggal(item.createdAt)}
+                  </span>
+                </div>
               </div>
-            </div>
-          ))}
+            ))
+          ) : (
+            <p className="ulasan-empty-state">
+              Belum ada ulasan. Jadilah yang pertama membagikan pengalamanmu!
+            </p>
+          )}
         </div>
 
         {/* Tombol membuka modal */}
@@ -244,20 +327,16 @@ export default function UlasanSection() {
             id="btn-write-review"
             className="btn-tulis-ulasan"
             type="button"
-            onClick={() => {
-              setUlasan(bacaUlasan());
-              setModalTerbuka(true);
-            }}
+            onClick={handleBukaModal}
           >
             <i className="bx bx-edit icon-edit" /> Tulis Ulasan Anda
           </button>
         </div>
 
         {/* Modal ulasan yang dikendalikan React */}
-
         {modalTerbuka && (
           <div
-            className="modal fade show d-block"
+            className="modal fade show d-block modal-ulasan-overlay"
             id="modalUlasan"
             tabIndex={-1}
             role="dialog"
@@ -274,7 +353,7 @@ export default function UlasanSection() {
                     id="title-modal-ulasan"
                     className="modal-title ulasan-title"
                   >
-                    Tulis Ulasan Kuliner
+                    Tulis Ulasan JelajahRasa
                   </h5>
 
                   <button
@@ -285,13 +364,44 @@ export default function UlasanSection() {
                   />
                 </div>
 
-                <form
-                  onSubmit={(event) => {
-                    event.preventDefault();
-                    handleSubmit();
-                  }}
-                >
+                <form onSubmit={handleSubmit}>
                   <div className="modal-body modal-ulasan-body">
+                    <div className="form-group-item">
+                      <label className="form-label-custom">
+                        Rating Anda
+                      </label>
+
+                      <div
+                        className="ulasan-rating-input"
+                        role="group"
+                        aria-label="Pilih rating bintang"
+                      >
+                        {[1, 2, 3, 4, 5].map((bintang) => (
+                          <button
+                            type="button"
+                            key={bintang}
+                            className={`btn-rating-star ${
+                              rating >= bintang ? "active" : ""
+                            }`}
+                            aria-label={`Berikan ${bintang} bintang`}
+                            aria-pressed={rating === bintang}
+                            onClick={() => {
+                              setRating(bintang);
+                              setPesanError("");
+                            }}
+                          >
+                            <i
+                              className={`bx ${
+                                rating >= bintang
+                                  ? "bxs-star"
+                                  : "bx-star"
+                              }`}
+                            />
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
                     <div className="form-group-item">
                       <label
                         htmlFor="input-pesan-ulasan"
@@ -304,12 +414,26 @@ export default function UlasanSection() {
                         id="input-pesan-ulasan"
                         className="form-input-custom textarea-custom"
                         rows={3}
-                        placeholder="Bagikan cerita pengalaman kulinermu..."
+                        maxLength={1000}
+                        placeholder="Bagikan pengalamanmu menggunakan website JelajahRasa..."
                         value={pesan}
-                        onChange={(event) => setPesan(event.target.value)}
+                        onChange={(event) => {
+                          setPesan(event.target.value);
+                          setPesanError("");
+                        }}
                         required
                       />
+
+                      <small className="ulasan-character-count">
+                        {pesan.length}/1000 karakter
+                      </small>
                     </div>
+
+                    {pesanError && (
+                      <p className="ulasan-form-error" role="alert">
+                        {pesanError}
+                      </p>
+                    )}
                   </div>
 
                   <div className="modal-footer modal-ulasan-footer">
@@ -317,9 +441,12 @@ export default function UlasanSection() {
                       id="btn-cancel-ulasan"
                       type="button"
                       className="btn-modal-cancel"
+                      disabled={sedangMengirim}
                       onClick={() => {
                         setModalTerbuka(false);
                         setPesan("");
+                        setRating(0);
+                        setPesanError("");
                       }}
                     >
                       Batal
@@ -329,8 +456,11 @@ export default function UlasanSection() {
                       id="btn-submit-ulasan"
                       type="submit"
                       className="btn-modal-submit"
+                      disabled={sedangMengirim}
                     >
-                      Kirim Ulasan
+                      {sedangMengirim
+                        ? "Mengirim..."
+                        : "Kirim Ulasan"}
                     </button>
                   </div>
                 </form>
@@ -339,6 +469,156 @@ export default function UlasanSection() {
           </div>
         )}
 
+        {/* Modal pemberitahuan ulasan berhasil dikirim */}
+        {modalBerhasilTerbuka && reviewBerhasil && (
+          <div
+            className="modal fade show d-block modal-ulasan-overlay"
+            id="modalUlasanBerhasil"
+            tabIndex={-1}
+            role="dialog"
+            aria-modal="true"
+            onClick={handleTutupBerhasil}
+          >
+            <div
+              className="modal-dialog modal-dialog-centered"
+              onClick={(event) => event.stopPropagation()}
+            >
+              <div className="modal-content modal-ulasan-content">
+                <div className="modal-header modal-ulasan-header">
+                  <h5 className="modal-title ulasan-title">
+                    Ulasan Berhasil Dikirim!
+                  </h5>
+
+                  <button
+                    type="button"
+                    className="btn-close"
+                    aria-label="Tutup"
+                    onClick={handleTutupBerhasil}
+                  />
+                </div>
+
+                <div className="modal-body modal-ulasan-body">
+                  <div className="ulasan-success-icon">
+                    <i className="bx bx-check-circle" />
+                  </div>
+
+                  <p className="ulasan-success-message">
+                    Terima kasih sudah membagikan pengalamanmu di JelajahRasa!
+                  </p>
+
+                  <div className="user-profile ulasan-success-profile">
+                    <img
+                      src={
+                        reviewBerhasil.user.avatar ||
+                        "/images/homepage/default-avatar.png"
+                      }
+                      alt={reviewBerhasil.user.nama}
+                      className="user-avatar"
+                    />
+
+                    <div className="user-info">
+                      <h6 className="user-name">
+                        {reviewBerhasil.user.nama}
+                      </h6>
+
+                      <span className="user-origin">
+                        {reviewBerhasil.user.kota ||
+                          "Pengguna JelajahRasa"}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div
+                    className="star-rating"
+                    aria-label={`${reviewBerhasil.rating} dari 5 bintang`}
+                  >
+                    {[1, 2, 3, 4, 5].map((bintang) => (
+                      <i
+                        className={`bx ${
+                          bintang <= reviewBerhasil.rating
+                            ? "bxs-star"
+                            : "bx-star"
+                        }`}
+                        key={bintang}
+                        style={{
+                          opacity:
+                            bintang <= reviewBerhasil.rating ? 1 : 0.3,
+                        }}
+                      />
+                    ))}
+                  </div>
+
+                  <p className="user-review ulasan-success-comment">
+                    &quot;{reviewBerhasil.komentar}&quot;
+                  </p>
+
+                  <p className="ulasan-success-note">
+                    Ulasan kamu berhasil disimpan dan akan ditampilkan
+                    di halaman JelajahRasa.
+                  </p>
+                </div>
+
+                <div className="modal-footer modal-ulasan-footer">
+                  <button
+                    type="button"
+                    className="btn-modal-submit"
+                    onClick={handleTutupBerhasil}
+                  >
+                    Selesai
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Modal notifikasi */}
+        {notifikasi && (
+          <div
+            id="modal-notifikasi-ulasan"
+            className="auth-notification-overlay"
+            role="presentation"
+          >
+            <div
+              className="auth-notification-card"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="ulasan-notification-title"
+            >
+              <div className="auth-notification-body">
+                {notifikasi.tipe === "sukses" ? (
+                  <div className="auth-notification-icon success">
+                    <i className="bx bx-check-circle" />
+                  </div>
+                ) : (
+                  <div className="auth-notification-icon error">
+                    <i className="bx bx-error-circle" />
+                  </div>
+                )}
+
+                <h4
+                  id="ulasan-notification-title"
+                  className="auth-notification-title"
+                >
+                  {notifikasi.judul}
+                </h4>
+
+                <p className="auth-notification-message">
+                  {notifikasi.pesan}
+                </p>
+
+                <button
+                  id="btn-close-ulasan-notification"
+                  type="button"
+                  className="auth-notification-button"
+                  onClick={tutupNotifikasi}
+                >
+                  {notifikasi.redirect ? "Lanjutkan" : "Mengerti"}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );
