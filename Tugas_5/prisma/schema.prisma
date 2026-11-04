@@ -41,7 +41,6 @@ model Kuliner {
   updatedAt    DateTime   @updatedAt
   favorites    Favorite[]
   user         User?      @relation("UserKuliner", fields: [submittedBy], references: [id])
-  reviews      Review[]
 
   @@index([status])
   @@index([kategori])
@@ -61,30 +60,27 @@ model Favorite {
 
 model Review {
   id        String   @id @default(uuid())
-  userId    String?
-  namaUser  String
-  kulinerId String
+  userId    String
   rating    Int
   komentar  String
-  status    String   @default("TAMPIL")
+  status    String   @default("AKTIF")
   createdAt DateTime @default(now())
-  kuliner   Kuliner  @relation(fields: [kulinerId], references: [id], onDelete: Cascade)
-  user      User?    @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
 
-  @@index([kulinerId])
   @@index([status])
+  @@index([createdAt])
 }
 
 model FAQ {
-  id         String   @id @default(uuid())
+  id         String           @id @default(uuid())
   pertanyaan String
   jawaban    String
-  urutan     Int      @default(0)
-  isActive   Boolean  @default(true)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  iconClass  String   @default("bx bx-info-circle")
-  slug       String   @unique
+  urutan     Int              @default(0)
+  isActive   Boolean          @default(true)
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+  iconClass  String           @default("bx bx-info-circle")
+  slug       String           @unique
   messages   ContactMessage[]
 }
 
@@ -106,15 +102,15 @@ model MapRegion {
 }
 
 model ContactMessage {
-  id        String   @id @default(uuid())
-  email     String
-  subjek    String
-  pesan     String
-  status    String   @default("BARU")
-  isFaqReference  Boolean  @default(false)
-  faqId     String?
-  faq       FAQ?     @relation(fields: [faqId], references: [id], onDelete: SetNull)
-  createdAt DateTime @default(now())
+  id             String   @id @default(uuid())
+  email          String
+  subjek         String
+  pesan          String
+  status         String   @default("BARU")
+  isFaqReference Boolean  @default(false)
+  faqId          String?
+  faq            FAQ?     @relation(fields: [faqId], references: [id], onDelete: SetNull)
+  createdAt      DateTime @default(now())
 
   @@index([status])
   @@index([createdAt])

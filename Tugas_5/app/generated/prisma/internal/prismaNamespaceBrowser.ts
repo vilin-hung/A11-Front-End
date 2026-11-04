@@ -126,8 +126,6 @@ export type FavoriteScalarFieldEnum = (typeof FavoriteScalarFieldEnum)[keyof typ
 export const ReviewScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
-  namaUser: 'namaUser',
-  kulinerId: 'kulinerId',
   rating: 'rating',
   komentar: 'komentar',
   status: 'status',
