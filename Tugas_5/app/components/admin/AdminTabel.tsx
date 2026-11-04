@@ -3,7 +3,7 @@ import {
   WARNA_STATUS,
   type StatusKuliner,
   type StatusUlasan,
-} from '../data/status';
+} from '../../data/status';
 
 /* =========================
    TIPE DATA
