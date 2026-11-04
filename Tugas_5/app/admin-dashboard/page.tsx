@@ -3284,10 +3284,9 @@ export default function AdminDashboard() {
                                 {item.messages?.length > 0 ? (
                                   <button
                                     type="button"
-                                    className="btn btn-sm btn-outline-primary"
+                                    className="btn btn-sm btn-outline-primary rounded-pill"
                                     onClick={() => setFaqReferenceOpen(item)}
                                   >
-                                    <i className="bx bx-book-content me-1" />
                                     Lihat ({item.messages.length})
                                   </button>
                                 ) : (
@@ -3312,7 +3311,6 @@ export default function AdminDashboard() {
                                     className="btn btn-sm btn-warning"
                                     onClick={() => bukaEditFaq(item)}
                                   >
-                                    <i className="bx bx-edit-alt me-1" />
                                     Edit
                                   </button>
                                   
@@ -3333,7 +3331,6 @@ export default function AdminDashboard() {
                                     onClick={() => setFaqToDelete(item)}
                                     disabled={faqLoading}
                                   >
-                                    <i className="bx bx-trash me-1" />
                                     Hapus
                                   </button>
                                 </div>
