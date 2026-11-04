@@ -6,6 +6,7 @@ import Script from 'next/script';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import './admin-dashboard.css';
+import AdminFilter from '../components/admin/AdminFilter';
 import {
   BarisKosong,
   BarisKuliner,
@@ -14,14 +15,14 @@ import {
   KATEGORI,
   type ItemAdmin,
   type Ulasan,
-} from '../components/AdminTabel';
+} from '../components/admin/AdminTabel';
 import type { StatusKuliner, StatusUlasan } from '../data/status';
 import {
   ModalEditKuliner,
   ModalGambar,
   ModalPeringkat,
   ModalTolakUsulan,
-} from '../components/AdminModal';
+} from '../components/admin/AdminModal';
 
 const CHART_URL =
   'https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js';
@@ -425,6 +426,13 @@ export default function AdminDashboard() {
   const [heroSaving, setHeroSaving] = useState(false);
   const [heroError, setHeroError] = useState("");
   const [heroMessage, setHeroMessage] = useState("");
+
+  const [kulinerCari, setKulinerCari] = useState("");
+  const [kulinerKategoriFilter, setKulinerKategoriFilter] = useState("");
+  const [kulinerStatusFilter, setKulinerStatusFilter] = useState("");
+
+  const [ulasanCari, setUlasanCari] = useState("");
+  const [ulasanStatusFilter, setUlasanStatusFilter] = useState("");
 
   // Otomatis menghilangkan notifikasi setelah 5 detik
   // useEffect(() => {
@@ -1373,7 +1381,60 @@ export default function AdminDashboard() {
     .slice(0, 5);
 
   /* API sudah mengurutkan ulasan dari yang paling baru */
-  const ulasanTerurut = ulasan;
+  // const ulasanTerurut = ulasan;
+
+  /* filtering */
+  const opsiKategoriKuliner = Array.from(
+    new Set(kuliner.map((item) => item.kategori).filter(Boolean))
+  )
+    .sort()
+    .map((value) => ({ value, label: value }));
+
+  const opsiStatusKuliner = Array.from(
+    new Set(kuliner.map((item) => item.status))
+  )
+    .sort()
+    .map((value) => ({ value, label: value }));
+
+  const opsiStatusUlasan = Array.from(
+    new Set(ulasan.map((item) => item.status))
+  )
+    .sort()
+    .map((value) => ({ value, label: value }));
+
+  const kataKuliner = kulinerCari.trim().toLowerCase();
+
+  const kulinerTersaring = kuliner.filter((item) => {
+    const cocokCari = [
+      item.nama,
+      item.kategori,
+      item.daerah,
+      item.pengirim,
+    ]
+      .join(" ")
+      .toLowerCase()
+      .includes(kataKuliner);
+
+    const cocokKategori =
+      !kulinerKategoriFilter || item.kategori === kulinerKategoriFilter;
+    const cocokStatus =
+      !kulinerStatusFilter || item.status === kulinerStatusFilter;
+
+    return cocokCari && cocokKategori && cocokStatus;
+  });
+
+  const kataUlasan = ulasanCari.trim().toLowerCase();
+
+  const ulasanTerurut = ulasan.filter((item) => {
+    const cocokCari = `${item.namaUser} ${item.komentar}`
+      .toLowerCase()
+      .includes(kataUlasan);
+
+    const cocokStatus =
+      !ulasanStatusFilter || item.status === ulasanStatusFilter;
+
+    return cocokCari && cocokStatus;
+  });
 
   /* Top 5 favorit sudah dihitung database */
   const peringkat = statistik?.topFavorit ?? [];
@@ -2130,6 +2191,34 @@ export default function AdminDashboard() {
                   <div className="alert alert-success">{kulinerInfo}</div>
                 )}
 
+                {/* filter kuliner */}
+                <AdminFilter
+                  searchValue={kulinerCari}
+                  searchPlaceholder="Cari nama, kategori, daerah, atau pengirim"
+                  onSearchChange={setKulinerCari}
+                  filters={[
+                    {
+                      key: "kategori-kuliner",
+                      label: "Kategori",
+                      value: kulinerKategoriFilter,
+                      options: opsiKategoriKuliner,
+                      onChange: setKulinerKategoriFilter,
+                    },
+                    {
+                      key: "status-kuliner",
+                      label: "Status",
+                      value: kulinerStatusFilter,
+                      options: opsiStatusKuliner,
+                      onChange: setKulinerStatusFilter,
+                    },
+                  ]}
+                  onReset={() => {
+                    setKulinerCari("");
+                    setKulinerKategoriFilter("");
+                    setKulinerStatusFilter("");
+                  }}
+                />
+
                 <div className="box-tabel border rounded bg-white">
                   <div className="table-responsive">
                     <table className="table align-middle">
@@ -2147,7 +2236,11 @@ export default function AdminDashboard() {
                           <BarisKosong
                             kolom={5}
                             ikon="bx-folder-open"
-                            pesan="Belum ada data kuliner."
+                            pesan={
+                              kuliner.length === 0
+                              ? "Belum ada data kuliner."
+                              : "Tidak ada kuliner yang cocok dengan filter"
+                            }
                           />
                         ) : (
                           kuliner.map((item) => (
@@ -2191,6 +2284,26 @@ export default function AdminDashboard() {
                   </div>
                 )}
 
+                {/* filter ulasan */}
+                <AdminFilter
+                  searchValue={ulasanCari}
+                  searchPlaceholder="Cari nama pengguna atau komentar"
+                  onSearchChange={setUlasanCari}
+                  filters={[
+                    {
+                      key: "status-ulasan",
+                      label: "Status",
+                      value: ulasanStatusFilter,
+                      options: opsiStatusUlasan,
+                      onChange: setUlasanStatusFilter,
+                    },
+                  ]}
+                  onReset={() => {
+                    setUlasanCari("");
+                    setUlasanStatusFilter("");
+                  }}
+                />
+                
                 <div className="box-tabel border rounded bg-white">
                   <div className="table-responsive">
                     <table className="table align-middle">
@@ -2531,7 +2644,7 @@ export default function AdminDashboard() {
                         };
 
                         return (
-                          <div className="mb-3" key={item.key}>
+                          <div className="col-12 col-md-6 mb-3" key={item.key}>
                             <label
                               htmlFor={`metadata-${item.key}`}
                               className="form-label fw-semibold"
@@ -2731,7 +2844,7 @@ export default function AdminDashboard() {
                       ) : (
                         <div className="row g-3">
                           {daftarKulinerHero.map((kuliner) => (
-                            <div className="col-md-6" key={kuliner.id}>
+                            <div className="col-12 col-md-6 col-xl-4" key={kuliner.id}>
                               <label
                                 className="border rounded p-3 d-flex align-items-center gap-3 h-100"
                                 style={{ cursor: "pointer" }}
@@ -2763,7 +2876,10 @@ export default function AdminDashboard() {
                                     {kuliner.nama}
                                   </div>
                                   <small className="text-muted">
-                                    {kuliner.kategori} — {kuliner.daerah}
+                                    {kuliner.kategori}
+                                  </small>
+                                  <small className="text-muted">
+                                    <br/>{kuliner.daerah}
                                   </small>
                                 </div>
                               </label>
