@@ -1,4 +1,3 @@
-
 "use client";
 
 import Image from "next/image";
@@ -35,7 +34,7 @@ export default function MapPositionPicker({
   }
 
   return (
-    <div className="map-position-picker">
+    <div className="map-position-picker-hint">
       <p className="text-muted small mb-2">
         Klik pada peta untuk menentukan posisi pin.
       </p>
@@ -54,7 +53,7 @@ export default function MapPositionPicker({
         }}
       >
         <Image
-          src="/images/homepage/peta-jabar.jpg"
+          src="/images/homepage/peta-jabar.png"
           alt="Peta Jawa Barat untuk menentukan posisi pin"
           fill
           sizes="(max-width: 768px) 100vw, 700px"
@@ -67,20 +66,20 @@ export default function MapPositionPicker({
             position: "absolute",
             left: `${posisiX}%`,
             top: `${posisiY}%`,
-            transform: "translate(-50%, -100%)",
+            transform: "translate(-50%, -50%)",
             pointerEvents: "none",
             zIndex: 2,
-            color: "#dc3545",
-            fontSize: "30px",
           }}
         >
-          <i className="bx bxs-map-pin" />
+          <span className="map-position-marker">
+            <i className="bx bx-map-pin" />
+          </span>
         </div>
       </div>
 
-      <small className="text-muted d-block mt-2">
+      {/* <small className="text-muted d-block mt-2">
         Posisi pin: {posisiX}% , {posisiY}%
-      </small>
+      </small> */}
     </div>
   );
 }
