@@ -17,6 +17,7 @@ type AdminFilterProps = {
   onSearchChange: (value: string) => void;
   filters: AdminFilterControl[];
   onReset: () => void;
+  resetClassName?: string;
 };
 
 export default function AdminFilter({
@@ -25,6 +26,7 @@ export default function AdminFilter({
   onSearchChange,
   filters,
   onReset,
+  resetClassName = "btn btn-outline-secondary w-100",
 }: AdminFilterProps) {
   return (
     <div className="admin-filter row g-3 align-items-end mb-3">
@@ -66,7 +68,7 @@ export default function AdminFilter({
       <div className="col-12 col-md-auto">
         <button
           type="button"
-          className="btn btn-outline-secondary w-100"
+          className={resetClassName}
           onClick={onReset}
         >
           Reset
