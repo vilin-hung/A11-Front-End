@@ -14,6 +14,7 @@ import PetaPage from "../components/admin/pages/PetaPage";
 import PesanPage from '../components/admin/pages/PesanPage';
 import PengaturanPage from '../components/admin/pages/PengaturanPage';
 import FAQPage from '../components/admin/pages/FAQPage';
+import PenggunaPage from '../components/admin/pages/PenggunaPage';
 
 import TambahKulinerModal, {
   type FormKulinerBaru,
@@ -300,11 +301,6 @@ export default function AdminDashboard() {
   const [kulinerInfo, setKulinerInfo] = useState('');
   const [kulinerError, setKulinerError] = useState('');
 
-  /* 
-    CATATAN: State popupTambahOpen dan popupTambahNama sudah DIHAPUS 
-    karena kita akan menggunakan notifikasi alert hijau (kulinerInfo).
-  */
-
   /* state pesan masuk */
   const [messages, setMessages] = useState<ContactMessage[]>([]);
   const [messageLoading, setMessageLoading] = useState(false);
@@ -342,6 +338,8 @@ export default function AdminDashboard() {
     role: string;
   } | null>(null);
   const [roleLoading, setRoleLoading] = useState(false);
+  const [penggunaInfo, setPenggunaInfo] = useState('');
+  const [penggunaError, setPenggunaError] = useState('');
 
   const [pendingDelete, setPendingDelete] = useState<PendingDelete | null>(null);
   const [roleError, setRoleError] = useState("");
@@ -545,6 +543,11 @@ export default function AdminDashboard() {
     if (!roleDialog) return;
 
     setRoleLoading(true);
+    setPenggunaInfo('');
+    setPenggunaError('');
+
+    const label = roleDialog.role === 'ADMIN' ? 'Admin' : 'User';
+    const nama = roleDialog.user.nama;
 
     try {
       const response = await fetch('/api/admin/users', {
@@ -561,17 +564,18 @@ export default function AdminDashboard() {
       };
 
       if (!response.ok) {
-        alert(data.message ?? 'Role pengguna belum berhasil diubah.');
+        setPenggunaError(data.message ?? 'Role pengguna belum berhasil diubah.');
         return;
       }
 
       setRoleDialog(null);
+      setPenggunaInfo(`Role "${nama}" berhasil diubah menjadi ${label}.`);
 
       await muatUsers();
       await muatStatistik();
     } catch (error) {
       console.error('Gagal mengubah role pengguna:', error);
-      alert('Tidak dapat menghubungi server. Silakan coba lagi.');
+      setPenggunaError('Tidak dapat menghubungi server. Silakan coba lagi.');
     } finally {
       setRoleLoading(false);
     }
@@ -1005,11 +1009,6 @@ export default function AdminDashboard() {
       setTambahFoto('');
       if (inputFotoTambahRef.current) inputFotoTambahRef.current.value = '';
 
-      /* 
-        PERUBAHAN DI SINI: 
-        Gunakan setKulinerInfo untuk memunculkan alert hijau, 
-        bukan setPopupTambahOpen lagi.
-      */
       setKulinerInfo(`Kuliner "${nama}" berhasil ditambahkan.`);
 
       await muatKuliner();
@@ -1819,84 +1818,13 @@ export default function AdminDashboard() {
                 TAB KELOLA PENGGUNA
                 ========================= */}
             {activeTab === 'pengguna' && (
-              <section id="tab-kelola-pengguna">
-                <h4>Kelola Pengguna</h4>
-
-                <div className="box-tabel border rounded bg-white">
-                  <div className="table-responsive">
-                    <table className="table align-middle">
-                      <thead className="table-light">
-                        <tr>
-                          <th>Nama</th>
-                          <th>Email</th>
-                          <th>Kota</th>
-                          <th>Role</th>
-                          <th className="text-center">Aksi</th>
-                        </tr>
-                      </thead>
-
-                      <tbody>
-                        {users.length === 0 ? (
-                          <BarisKosong
-                            kolom={5}
-                            ikon="bx-user"
-                            pesan="Belum ada data pengguna."
-                          />
-                        ) : (
-                          users.map((user) => (
-                            <tr key={user.id}>
-                              <td>{user.nama}</td>
-                              <td>{user.email}</td>
-                              <td>{user.kota || '-'}</td>
-                              <td>
-                                <span
-                                  className={`badge ${
-                                    user.role === 'ADMIN'
-                                      ? 'bg-success'
-                                      : 'bg-secondary'
-                                  }`}
-                                >
-                                  {user.role}
-                                </span>
-                              </td>
-                              <td className="text-center text-nowrap">
-                                {user.id === admin?.id ? (
-                                  <span className="text-muted small">
-                                    Akun Anda
-                                  </span>
-                                ) : (
-                                  <button
-                                    type="button"
-                                    className={
-                                      user.role === 'ADMIN'
-                                        ? 'btn btn-outline-danger btn-sm'
-                                        : 'btn btn-success btn-sm'
-                                    }
-                                    onClick={() =>
-                                      mintaUbahRole(
-                                        user,
-                                        user.role === 'ADMIN' ? 'USER' : 'ADMIN'
-                                      )
-                                    }
-                                  >
-                                    {user.role === 'ADMIN'
-                                      ? 'Jadikan User'
-                                      : 'Jadikan Admin'}
-                                  </button>
-                                )}
-                              </td>
-                            </tr>
-                          ))
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-
-                <small className="text-muted d-block mt-3">
-                  Hanya admin yang dapat mengubah role pengguna dari dashboard.
-                </small>
-              </section>
+              <PenggunaPage
+                users={users}
+                adminId={admin?.id ?? null}
+                info={penggunaInfo}
+                error={penggunaError}
+                onUbahRole={mintaUbahRole}
+              />
             )}
 
             {/* =========================
@@ -1987,41 +1915,6 @@ export default function AdminDashboard() {
           </main>
         </div>
       </div>
-      
-      {/* Pop up notif: kuliner berhasil ditambahkan */}
-      {popupTambahOpen && (
-        <div
-          className="modal fade show d-block"
-          tabIndex={-1}
-          role="dialog"
-          aria-modal="true"
-          style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
-        >
-          <div className="modal-dialog modal-dialog-centered modal-sm">
-            <div className="modal-content text-center">
-              <div className="modal-body py-4">
-                <i
-                  className="bx bx-check-circle text-success"
-                  style={{ fontSize: 64 }}
-                />
-                <h5 className="mt-2 mb-2">Kuliner berhasil ditambahkan</h5>
-                <p className="text-muted mb-0">
-                  &quot;{popupTambahNama}&quot; sudah tampil di daftar kuliner.
-                </p>
-              </div>
-              <div className="modal-footer justify-content-center border-0 pt-0">
-                <button
-                  type="button"
-                  className="btn btn-success px-4"
-                  onClick={() => setPopupTambahOpen(false)}
-                >
-                  OK
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
       {editForm && (
         <ModalEditKuliner
