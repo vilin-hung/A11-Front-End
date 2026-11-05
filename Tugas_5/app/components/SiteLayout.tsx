@@ -27,7 +27,13 @@ export default function SiteLayout({
   }
   
   return (
-    <>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        minHeight: "100vh",
+      }}
+    >
       {/* Header dan sidebar hanya ditampilkan pada halaman biasa */}
       {!isAuthPage && (
         <>
@@ -37,10 +43,18 @@ export default function SiteLayout({
       )}
 
       {/* Konten halaman tetap ditampilkan seperti biasa */}
-      {children}
+      <div
+        style={{
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        {children}
+      </div>
 
       {/* Login menggunakan copyright kecil, halaman lain menggunakan footer lengkap */}
       <Footer variant={isAuthPage ? "compact" : "full"} />
-    </>
+    </div>
   );
 }

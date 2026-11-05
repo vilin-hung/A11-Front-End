@@ -3,6 +3,7 @@
    ========================= */
 .profile-page {
     background-color: var(--deep-green-shadow);
+    flex: 1;
     padding-top: 32px;
     padding-bottom: 64px;
 }
@@ -306,6 +307,30 @@
     display: flex;
     flex-direction: column;
     gap: 16px;
+
+    /* Membatasi tinggi container */
+    max-height: 620px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    margin: -6px -6px -6px 0;
+    padding: 6px;
+}
+
+.history-list-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.history-list-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.history-list-container::-webkit-scrollbar-thumb {
+    background-color: var(--border-color);
+    border-radius: 8px;
+}
+
+.history-list-container::-webkit-scrollbar-thumb:hover {
+    background-color: var(--sage-green);
 }
 
 /* Card histori (dipanggil JS) */
@@ -313,10 +338,10 @@
     background-color: var(--warm-cream);
     border: 1px solid var(--border-color);
     border-radius: 12px;
-    padding: 20px;
+    padding: 16px;
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 16px;
     transition: var(--transition);
 }
 
@@ -326,9 +351,9 @@
 }
 
 .history-item-img {
-    width: 400px;
-    height: 400px;
-    border-radius: 16px;
+    width: 96px;
+    height: 96px;
+    border-radius: 12px;
     object-fit: cover;
     flex-shrink: 0;
     background-color: var(--bg-placeholder);
@@ -340,16 +365,16 @@
 }
 
 .history-item-title {
-    font-size: 22px;
+    font-size: 18px;
     font-weight: 700;
     color: var(--deep-green);
     margin-top: 0;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
     line-height: 1.3;
 }
 
 .history-item-meta {
-    font-size: 15px;
+    font-size: 14px;
     color: var(--text-muted);
     margin-bottom: 4px;
     display: flex;
@@ -359,7 +384,7 @@
 
 .history-item-meta i {
     color: var(--warm-amber);
-    font-size: 18px;
+    font-size: 16px;
 }
 
 .history-item-actions {
@@ -628,12 +653,16 @@
     }
 
     .history-item-img {
-        width: 280px;
-        height: 280px;
+        width: 80px;
+        height: 80px;
+    }
+
+    .history-list-container {
+        max-height: 520px;
     }
 
     .history-item-title {
-        font-size: 19px;
+        font-size: 17px;
     }
 
     .history-item-meta {
@@ -675,12 +704,16 @@
     }
 
     .history-item-img {
-        width: 180px;
-        height: 180px;
+        width: 64px;
+        height: 64px;
+    }
+
+    .history-list-container {
+        max-height: 380px;
     }
 
     .history-item-title {
-        font-size: 17px;
+        font-size: 16px;
     }
 
     .history-btn {
@@ -767,8 +800,12 @@
     }
 
     .history-item-img {
-        width: 120px;
-        height: 120px;
+        width: 56px;
+        height: 56px;
+    }
+
+    .history-list-container {
+        max-height: 320px;
     }
 
     .history-item-title {
