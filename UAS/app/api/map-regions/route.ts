@@ -83,7 +83,14 @@ export async function POST(request: Request) {
     }
 
     const region = await prisma.mapRegion.create({
-      data: { nama, daerah, deskripsi, posisiX, posisiY },
+      data: { 
+        id: crypto.randomUUID(),
+        nama,
+        daerah,
+        deskripsi,
+        posisiX,
+        posisiY
+      },
     });
 
     return NextResponse.json({ region }, { status: 201 });
