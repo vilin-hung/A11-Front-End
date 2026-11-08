@@ -1,8 +1,10 @@
-import { NextResponse } from "next/server";
+import { connection, NextResponse } from "next/server";
 import { prisma } from "../../../../lib/prisma";
 import { verifySession } from "../../../../lib/auth";
 
 export async function GET() {
+    await connection();
+    
     try {
         // Memeriksa session pengguna yang sedang login
         const session = await verifySession();

@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { connection, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { verifySession } from "@/lib/auth";
 
@@ -13,6 +13,8 @@ const DAFTAR_KATEGORI = [
 /* GET: ringkasan angka untuk dashboard admin. Semua dihitung dari
    database, bukan dari penyimpanan browser. */
 export async function GET() {
+  await connection();
+  
   try {
     const session = await verifySession();
 

@@ -32,7 +32,6 @@ Diberikan pada: Teori Pertemuan 3 - Senin, 7 September 2026
 
 Sebuah website Kopi Nusantara dengan penerapan **responsivitas UI** yang menyesuaikan tampilan dan tata letak berdasarkan ukuran layar. Terdapat beberapa bagian pada website, yakni navigasi, halaman utama, informasi tentang Kopi Nusantara, menu kopi beserta rekomendasi, dan kontak. Responsive layout diterapkan menggunakan **CSS Grid, Flexbox, dan media query** agar website dapat digunakan pada perangkan mobile, tablet (kecil dan besar), dan dekstop.
 
-- **[Download ZIP](./A11_T2_Responsive_UI.zip)**
 - **[Lihat Laporan](./Tugas_2/A11_T2_Laporan_Responsive_UI.pdf)**
 - **[Lihat Kode](./Tugas_2/)**
 
@@ -45,7 +44,6 @@ Diberikan pada: Teori Pertemuan 4 - Senin, 14 September 2026
 
 Sebuah website Kopi Nusantara dengan penerapan **jQuery** untuk **menambahkan interaksi pada halaman**. Website memiliki fitur **FAQ Accordion**, fitur interaktif **Menu Search Filter**, dan **Back-To-Top Button**.
 
-- **[Download ZIP](./A11_T3_jQuery.zip)**
 - **[Lihat Laporan](./Tugas_3/A11_T3_Laporan_jQuery.pdf)**
 - **[Lihat Kode](./Tugas_3/)**
 
@@ -58,7 +56,6 @@ Diberikan pada: Teori Pertemuan 5 - Senin, 14 September 2026
 
 Sebuah website Kopi Nusantara dengan penerapan **Bootstrap** untuk **membangun layout responsif dan komponen interaktif pada halaman**. Website menggunakan **Bootstrap Grid** untuk mengatur layout menu pada berbagai ukuran layar, serta menerapkan komponen **Reponsive Navbar**, **Card**, dan **Accordion**.
 
-- **[Download ZIP](./A11_T4_Bootstrap.zip)**
 - **[Lihat Laporan](./Tugas_4/A11_T4_Laporan_Bootstrap.pdf)**
 - **[Lihat Kode](./Tugas_4/)**
 
@@ -88,9 +85,38 @@ Sebuah website informasi dan eksplorasi kuliner khas Jawa Barat. Pengguna dapat 
 4. Pengajuan kuliner dari pengguna akan masuk ke halaman Admin untuk disetujui atau ditolak
 5. Admin juga dapat mengelola data kuliner dan menampilkan/menyembunyikan ulasan
 
-- **[Download ZIP](./A11_UTS_JelajahRasa.zip)**
 - **[Lihat Laporan](./UTS/A11_UTS_JelajahRasa.pdf)**
 - **[Lihat Kode](./UTS/)**
 
 **Teknologi:** HTML, CSS, JavaScript, Boostrap<br>
 
+---
+
+### 📂 UAS: JelajahRasa - Website Kuliner Jawa Barat
+
+Pengembangan website informasi dan eksplorasi kuliner khas Jawa Barat. Website ini memungkinkan pengguna menjelajahi berbagai kuliner berdasarkan daerah, kategori, rentang harga, dan karakter rasa. Pada versi ini, aplikasi dikembangkan menggunakan Next.js dan TypeScript serta terintegrasi dengan database PostgreSQL.
+
+**Fitur yang diimplementasikan: ✨**
+- Login dan Register Pengguna
+- Search dan Filter Kuliner berdasarkan Kota/Daerah, Kategori, Harga, dan Rasa
+- Daftar dan Detail Kuliner
+- Favorit Kuliner
+- Pengajuan Kuliner Baru bagi Pengguna yang sudah Login
+- Penambahan Ulasan Kuliner maupun Website bagi Pengguna yang sudah Login
+- Peta dan Informasi Kuliner Jawa Barat
+- Admin Dashboard untuk Mengelola Kuliner, Ulasan, Pengguna, Pesan, FAQ, dan Pengaturan Website
+- Statistik Admin berdasarkan data dari database
+- Pengelolaan Rekomendasi Kuliner paada Halaman Berand
+
+**Cara Kerja Aplikasi: 🔎**
+1. Pengguna dapat menjelajahi kuliner melalui halaman Beranda atau Daftar Kuliner
+2. Kuliner dapat dicari dan difilter berdasarkan daerah, kategori, harga, dan karakter rasa
+3. Pengguna dapat login untuk mengakses fitur Favorit, Tambah Kuliner, dan Ulasan
+4. Pengajuan kuliner baru dari pengguna akan masuk ke Admin Dashboard untuk ditinjau dan diproses
+5. Admin dapat mengelola data kuliner, ulasan, pengguna, FAQ, pesan, dan pengaturan website
+6. Data aplikasi disimpan dan dikelola menggunakan database PostgreSQL
+
+- **[Lihat Laporan](./UAS/A11_UAS_JelajahRasa.pdf)**
+- **[Lihat Kode](./UAS/)**
+
+**Teknologi:** Next.js, React, TypeScript, CSS, Prisma ORM, PostgreSQL<br>
