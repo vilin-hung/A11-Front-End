@@ -25,6 +25,7 @@ export default function UlasanPage({
 }: Props) {
   const [cari, setCari] = useState("");
   const [status, setStatus] = useState("");
+  const [rating, setRating] = useState("");
   const [ulasanToDelete, setUlasanToDelete] = useState<Ulasan | null>(null);
   
 
@@ -36,6 +37,14 @@ export default function UlasanPage({
     [ulasan]
   );
 
+  const opsiRating = useMemo(
+    () =>
+      [...new Set(ulasan.map((item) => String(item.rating)))]
+        .sort((a, b) => Number(a) - Number(b))
+        .map((value) => ({ value, label: `${value} bintang` })),
+    [ulasan]
+  );
+
   const ulasanTersaring = useMemo(() => {
     const query = cari.trim().toLowerCase();
 
@@ -44,9 +53,11 @@ export default function UlasanPage({
         .toLowerCase()
         .includes(query);
 
-      return cocokCari && (!status || item.status === status);
+      return cocokCari && 
+      (!status || item.status === status) &&
+      (!rating || String(item.rating) === rating);
     });
-  }, [ulasan, cari, status]);
+  }, [ulasan, cari, status, rating]);
 
   return (
     <section id="tab-kelola-ulasan">
@@ -72,10 +83,18 @@ export default function UlasanPage({
             options: opsiStatus,
             onChange: setStatus,
           },
+          {
+            key: "rating-ulasan",
+            label: "Rating",
+            value: rating,
+            options: opsiRating,
+            onChange: setRating,
+          },
         ]}
         onReset={() => {
           setCari("");
           setStatus("");
+          setRating("");
         }}
       />
 

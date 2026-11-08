@@ -8,6 +8,8 @@ import "./daftar-kuliner.css";
 import FavoriteButton from "../components/FavoriteButton";
 import { type Kuliner } from "../data/kuliner";
 import { bacaUsulanAktif } from "../data/usulan";
+import { regions } from "../data/regions";
+import { useRouter } from "next/navigation";
 
 type FilterState = {
   kota: string[];
@@ -33,6 +35,14 @@ type KulinerDb = {
   sejarah: string | null;
   hargaMin: number;
   hargaMax: number;
+};
+
+type Notifikasi = {
+  tipe: "sukses" | "error";
+  judul: string;
+  pesan: string;
+  redirect?: boolean;
+  tujuan?: string;
 };
 
 const kapital = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
@@ -72,19 +82,11 @@ function petakanKuliner(raw: Record<string, unknown>): Kuliner {
    FILTER KOTA & KABUPATEN
    ========================= */
 
-const OPSI_KOTA = [
-  { key: "kota-bandung", label: "Kota Bandung", kota: "bandung" },
-  { key: "kota-cirebon", label: "Kota Cirebon", kota: "cirebon" },
-  { key: "kab-cirebon", label: "Kab. Cirebon", kota: "cirebon" },
-  { key: "kota-tasikmalaya", label: "Kota Tasikmalaya", kota: "tasikmalaya" },
-  { key: "kota-bogor", label: "Kota Bogor", kota: "bogor" },
-  { key: "kota-garut", label: "Kota Garut", kota: "garut" },
-  { key: "kab-garut", label: "Kab. Garut", kota: "garut" },
-  { key: "kab-karawang", label: "Kab. Karawang", kota: "karawang" },
-  { key: "kab-subang", label: "Kab. Subang", kota: "subang" },
-  { key: "kota-sumedang", label: "Kota Sumedang", kota: "sumedang" },
-  { key: "kab-sumedang", label: "Kab. Sumedang", kota: "sumedang" },
-];
+const OPSI_KOTA = regions.map((region) => ({
+  key: region.id,
+  label: region.daerah,
+  daerah: region.daerah,
+}));
 
 const OPSI_KATEGORI = [
   { value: "makanan", label: "Makanan" },
@@ -224,6 +226,8 @@ function DaftarKulinerContent() {
   const [filter, setFilter] = useState<FilterState>(FILTER_KOSONG);
   const [favorit, setFavorit] = useState<string[]>([]);
   const [userId, setUserId] = useState<string | null>(null);
+  const [notifikasi, setNotifikasi] = useState<Notifikasi | null>(null);
+  const router = useRouter();
 
   // Data kuliner diambil dari database
   const [semuaKuliner, setSemuaKuliner] = useState<Kuliner[]>([]);
@@ -234,6 +238,34 @@ function DaftarKulinerContent() {
   const refKategori = useRef<HTMLSelectElement>(null);
   const refHarga = useRef<HTMLSelectElement>(null);
   const refRasa = useRef<HTMLSelectElement>(null);
+
+  function tampilkanNotifikasi(
+    tipe: "sukses" | "error",
+    judul: string,
+    pesan: string,
+    redirect = false,
+    tujuan = "/"
+  ) {
+    setNotifikasi({
+      tipe,
+      judul,
+      pesan,
+      redirect,
+      tujuan,
+    });
+  }
+
+  function tutupNotifikasi() {
+    const perluRedirect = notifikasi?.redirect;
+    const tujuan = notifikasi?.tujuan ?? "/";
+
+    setNotifikasi(null);
+
+    if (perluRedirect) {
+      router.push(tujuan);
+      router.refresh();
+    }
+  }
 
   if (kataKunciUrl !== kataKunciUrlSebelumnya) {
     setKataKunciUrlSebelumnya(kataKunciUrl);
@@ -311,57 +343,88 @@ function DaftarKulinerContent() {
 
   const toggleLike = async (kulinerId: string) => {
     if (!userId) {
-      alert("Silakan masuk (login) terlebih dahulu untuk menyimpan kuliner favorit!");
+      tampilkanNotifikasi(
+        "error",
+        "Login Diperlukan",
+        "Silakan login terlebih dahulu untuk menyimpan kuliner favorit.",
+        true,
+        "/login"
+      );
       return;
     }
 
     const sudahDisukai = favorit.includes(kulinerId);
 
     try {
-      if (sudahDisukai) {
-        const res = await fetch("/api/favorite", {
-          method: "DELETE",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ userId, kulinerId }),
-        });
+      const res = await fetch("/api/favorite", {
+        method: sudahDisukai ? "DELETE" : "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, kulinerId }),
+      });
 
-        if (res.ok) {
-          setFavorit((lama) => lama.filter((id) => id !== kulinerId));
-        }
-      } else {
-        const res = await fetch("/api/favorite", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ userId, kulinerId }),
-        });
-
-        if (res.ok) {
-          setFavorit((lama) => [...lama, kulinerId]);
-        }
+      if (!res.ok) {
+        tampilkanNotifikasi(
+          "error",
+          "Gagal Memperbarui Favorit",
+          "Terjadi kesalahan saat memperbarui daftar favorit. Silakan coba lagi."
+        );
+        return;
       }
+
+      if (sudahDisukai) {
+        setFavorit((lama) => lama.filter((id) => id !== kulinerId));
+      } else {
+        setFavorit((lama) => [...lama, kulinerId]);
+      }
+      
     } catch (err) {
       console.error("Gagal mengubah status favorit:", err);
-      alert("Terjadi kesalahan saat memperbarui favorit.");
+      tampilkanNotifikasi(
+        "error",
+        "Terjadi Kesalahan",
+        "Koneksi bermasalah. Silakan coba lagi."
+      );
     }
   };
 
-  const bagikan = async (item: Kuliner) => {
-    const url = `${window.location.origin}/daftar-kuliner#item-${item.id}`;
-    try {
-      if (navigator.share) {
-        await navigator.share({ title: item.nama, text: item.deskripsi, url });
-      } else {
-        await navigator.clipboard.writeText(url);
-        alert("Tautan kuliner berhasil disalin!");
-      }
-    } catch {
-      /* pengguna membatalkan share */
+const bagikan = async (item: Kuliner) => {
+  const url = `${window.location.origin}/daftar-kuliner#item-${item.id}`;
+
+  try {
+    if (navigator.share) {
+      await navigator.share({
+        title: item.nama,
+        text: item.deskripsi,
+        url,
+        });
+    } else {
+      await navigator.clipboard.writeText(url);
+
+      tampilkanNotifikasi(
+        "sukses",
+        "Tautan Berhasil Disalin!",
+        `Tautan ${item.nama} berhasil disalin. Silakan bagikan kepada temanmu!`
+      );
     }
-  };
+  } catch (error) {
+    // Pembatalan share oleh pengguna bukan sebuah kesalahan.
+    if (error instanceof Error && error.name === "AbortError") {
+      return;
+    }
+
+    console.error("Gagal membagikan kuliner:", error);
+
+    tampilkanNotifikasi(
+      "error",
+      "Gagal Membagikan Kuliner",
+      "Tautan tidak dapat dibagikan atau disalin. Silakan coba lagi."
+    );
+  }
+};
 
   const kataKunciKecil = kataKunci.trim().toLowerCase();
   const hasil = semuaKuliner.filter((item) => {
-    const cocokKota = filter.kota.length === 0 || filter.kota.includes(item.kota);
+    const cocokKota = filter.kota.length === 0 || filter.kota.includes(item.asal);
     const cocokKategori = filter.kategori.length === 0 || filter.kategori.includes(item.kategori);
     const cocokHarga = filter.harga.length === 0 || filter.harga.includes(item.harga);
     const cocokRasa =
@@ -412,7 +475,7 @@ function DaftarKulinerContent() {
                   size={4}
                 >
                   {OPSI_KOTA.map((o) => (
-                    <option key={o.key} value={o.key} data-value={o.kota}>
+                    <option key={o.key} value={o.key} data-value={o.daerah}>
                       {o.label}
                     </option>
                   ))}
@@ -548,6 +611,54 @@ function DaftarKulinerContent() {
           )}
         </div>
       </div>
+
+      {/* Modal notifikasi */}
+      {notifikasi && (
+        <div
+          id="modal-notifikasi-favorit"
+          className="auth-notification-overlay"
+          role="presentation"
+        >
+          <div
+            className="auth-notification-card"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="favorit-notification-title"
+          >
+            <div className="auth-notification-body">
+              {notifikasi.tipe === "sukses" ? (
+                <div className="auth-notification-icon success">
+                  <i className="bx bx-check-circle" />
+                </div>
+              ) : (
+                <div className="auth-notification-icon error">
+                  <i className="bx bx-error-circle" />
+                </div>
+              )}
+
+              <h4
+                id="favorit-notification-title"
+                className="auth-notification-title"
+              >
+                {notifikasi.judul}
+              </h4>
+
+              <p className="auth-notification-message">
+                {notifikasi.pesan}
+              </p>
+
+              <button
+                id="btn-close-favorit-notification"
+                type="button"
+                className="auth-notification-button"
+                onClick={tutupNotifikasi}
+              >
+                {notifikasi.redirect ? "Lanjutkan" : "Mengerti"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }

@@ -209,10 +209,25 @@ const METADATA_AWAL: SiteMetadata[] = [
     key: "site_description",
     value: "Jelajahi kuliner khas Jawa Barat",
   },
+
+
+  // Hero Homepage
+  {
+    key: "hero_tagline",
+    value: "Satu Tampah Rasa, Sejuta Cerita Parahyangan",
+  },
+  {
+    key: "hero_description",
+    value:
+      "Temukan cita rasa otentik yang tersebar dari pusat kota hingga sudut Pasundan.",
+  },
+
   { key: "site_email", value: "halo@jelajahrasajabar.id" },
   { key: "site_phone", value: "" },
   { key: "site_address", value: "Jawa Barat, Indonesia" },
   { key: "footer_text", value: "© 2026 JelajahRasa" },
+
+  // Media Sosial
   { key: "social_instagram", value: "" },
   { key: "social_tiktok", value: "" },
   { key: "social_youtube", value: "" },
@@ -278,6 +293,7 @@ export default function AdminDashboard() {
   const router = useRouter();
 
   const [activeTab, setActiveTab] = useState<TabType>('ringkasan');
+  const [menuOpen, setMenuOpen] = useState(false);
   const [siap, setSiap] = useState(false);
   const [admin, setAdmin] = useState<User | null>(null);
 
@@ -1661,14 +1677,26 @@ export default function AdminDashboard() {
 
       {/* Navbar Admin */}
       <header className="header-admin border-bottom py-2 px-4 d-flex justify-content-between align-items-center">
-        <Link
-          className="logo-brand text-decoration-none"
-          href="/admin-dashboard"
-        >
-          <i className="bx bx-map-pin" />
-          JelajahRasa
-          <span className="badge bg-primary">Admin Dashboard</span>
-        </Link>
+        <div className="d-flex align-items-center gap-3">
+          <button
+            type="button"
+            className="btn-toggle-menu"
+            onClick={() => setMenuOpen((prev) => !prev)}
+            aria-label={menuOpen ? "Tutup navigasi" : "Buka navigasi"}
+            aria-expanded={menuOpen}
+          >
+            <i className={`bx ${menuOpen ? "bx-x" : "bx-menu"}`} />
+          </button>
+
+          <Link
+            className="logo-brand text-decoration-none"
+            href="/admin-dashboard"
+          >
+            <i className="bx bx-map-pin" />
+            JelajahRasa
+            <span className="badge bg-primary">Admin Dashboard</span>
+          </Link>
+        </div>
 
         <div className="profil-admin d-flex align-items-center">
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -1693,62 +1721,82 @@ export default function AdminDashboard() {
       <div className="container-fluid my-4">
         <div className="row">
           {/* Sidebar */}
-          <nav className="col-md-3 col-lg-2 mb-4">
-            <div className="list-group nav-menu" role="tablist">
-              {menu.map((item) => (
-                <button
-                  key={item.id}
-                  type="button"
-                  className={`list-group-item list-group-item-action ${
-                    activeTab === item.id ? 'active' : ''
-                  }`}
-                  onClick={() => {
-                    /* notif kuliner dibersihkan setiap pindah menu */
-                    setKulinerInfo('');
-                    setKulinerError('');
+          <nav
+            className={`sidebar-admin col-12 col-lg-3 col-xl-2 ${
+              menuOpen ? "sidebar-admin-open" : "sidebar-admin-closed"
+            }`}
+          >
+            <div className="sidebar-admin-inner">
+              <div className="sidebar-admin-heading">
+                <span>NAVIGASI UTAMA</span>
+              </div>
 
-                    if (item.id === "peta") {
-                      setRegionLoading(true);
-                      setRegionError("");
-                      setRegionMessage("");
-                    }
+              <div className="nav-menu" role="tablist" aria-label="Menu Admin">
+                {menu.map((item) => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    className={`nav-menu-item ${
+                      activeTab === item.id ? "active" : ""
+                    }`}
+                    onClick={() => {
+                      setKulinerInfo("");
+                      setKulinerError("");
 
-                    if (item.id === "metadata") {
-                      setMetadataLoading(true);
-                      setMetadataError("");
-                      setMetadataMessage("");
-                    }
-                    
-                    if (item.id === "pesan") {
-                      setMessageLoading(true);
-                      setMessageError("");
-                      setMessageInfo("");
-                    }
-                    
-                    if (item.id === "faq") {
-                      void muatPesan();
-                    }
+                      if (item.id === "peta") {
+                        setRegionLoading(true);
+                        setRegionError("");
+                        setRegionMessage("");
+                      }
 
-                    setActiveTab(item.id);
-                    if (item.id === "pesan") {
-                      void muatPesan();
-                    }
-                  }}
-                  role="tab"
-                  aria-selected={activeTab === item.id}
-                >
-                  <i className={`bx ${item.icon} me-2`} />
-                  {item.label}
-                </button>
-              ))}
+                      if (item.id === "metadata") {
+                        setMetadataLoading(true);
+                        setMetadataError("");
+                        setMetadataMessage("");
+                      }
+
+                      if (item.id === "pesan") {
+                        setMessageLoading(true);
+                        setMessageError("");
+                        setMessageInfo("");
+                        void muatPesan();
+                      }
+
+                      if (item.id === "faq") {
+                        void muatPesan();
+                      }
+
+                      setActiveTab(item.id);
+                      setMenuOpen(false);
+                    }}
+                    role="tab"
+                    aria-selected={activeTab === item.id}
+                  >
+                    <span className="nav-menu-icon">
+                      <i className={`bx ${item.icon}`} />
+                    </span>
+
+                    <span className="nav-menu-label">{item.label}</span>
+
+                    {activeTab === item.id && (
+                      <span className="nav-menu-indicator" />
+                    )}
+                  </button>
+                ))}
+              </div>
+
+              <div className="sidebar-admin-footer">
+                <i className="bx bx-shield-quarter" />
+                <span>Panel Administrator</span>
+              </div>
             </div>
           </nav>
 
           {/* Konten Utama */}
-          <main className="col-md-9 col-lg-10 tab-content">
+          <main className="col-12 col-lg-9 col-xl-10">
             {/* =========================
-                TAB RINGKASAN
-                ========================= */}
+              TAB RINGKASAN
+              ========================= */}
             {activeTab === "ringkasan" && (
               <RingkasanPage
                 statistik={statistik}

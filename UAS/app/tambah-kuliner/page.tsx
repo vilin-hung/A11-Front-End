@@ -3,27 +3,25 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { regions } from "../data/regions";
 import "./tambah-kuliner.css";
 
 /* =========================
    DATA OPSI
    ========================= */
-const OPSI_KOTA = [
-  { value: "kota-bandung", label: "Kota Bandung" },
-  { value: "kota-cirebon", label: "Kota Cirebon" },
-  { value: "kota-tasikmalaya", label: "Kota Tasikmalaya" },
-  { value: "kota-bogor", label: "Kota Bogor" },
-  { value: "kota-garut", label: "Kota Garut" },
-  { value: "kota-sumedang", label: "Kota Sumedang" },
-];
+const OPSI_KOTA = regions
+  .filter((region) => region.id.startsWith("region-kota-"))
+  .map((region) => ({
+    value: region.id.replace("region-", ""),
+    label: region.daerah,
+  }));
 
-const OPSI_KABUPATEN = [
-  { value: "kab-cirebon", label: "Kab. Cirebon" },
-  { value: "kab-garut", label: "Kab. Garut" },
-  { value: "kab-karawang", label: "Kab. Karawang" },
-  { value: "kab-subang", label: "Kab. Subang" },
-  { value: "kab-sumedang", label: "Kab. Sumedang" },
-];
+const OPSI_KABUPATEN = regions
+  .filter((region) => region.id.startsWith("region-kab-"))
+  .map((region) => ({
+    value: region.id.replace("region-", ""),
+    label: region.daerah,
+  }));
 
 const OPSI_KATEGORI = [
   { id: "kat-makanan-utama", value: "Makanan", label: "Makanan", icon: "bx-bowl-rice", warna: "text-success" },
@@ -61,6 +59,14 @@ const USULAN_KEY = "jelajahRasaUsulan";
    (hanya satu definisi, di luar komponen)
    ========================= */
 type UserAktif = { nama: string };
+
+type Notifikasi = {
+  tipe: "sukses" | "error";
+  judul: string;
+  pesan: string;
+  redirect?: boolean;
+  tujuan?: string;
+};
 
 /* Baca user yang sedang login dari session server (cookie),
    sama seperti yang dipakai halaman login. */
@@ -116,6 +122,16 @@ function kompresFoto(file: File, maxSisi = 1000, kualitas = 0.8): Promise<string
 function labelDaerah(value: string) {
   const semua = [...OPSI_KOTA, ...OPSI_KABUPATEN];
   return semua.find((o) => o.value === value)?.label ?? value;
+}
+
+function formatTitleCase(value: string) {
+  return value
+    .replace(/[0-9]/g, "")
+    .replace(/\s{2,}/g, " ")
+    .toLocaleLowerCase("id-ID")
+    .replace(/(^|[\s-])(\p{L})/gu, (_, pemisah, huruf) => {
+      return pemisah + huruf.toLocaleUpperCase("id-ID");
+    });
 }
 
 /* =========================
@@ -224,7 +240,7 @@ function KelompokBahan({
         placeholder={placeholderLain}
         aria-label={`${judul} lainnya (opsional)`}
         value={lain}
-        onChange={(e) => onLainChange(e.target.value)}
+        onChange={(e) => onLainChange(e.target.value.replace(/[0-9]/g, ""))}
       />
       <div className="form-text small">Lainnya (opsional). Pisahkan dengan koma jika lebih dari satu.</div>
     </div>
@@ -237,6 +253,9 @@ function KelompokBahan({
 export default function TambahKulinerPage() {
   const router = useRouter();
 
+  const [statusLogin, setStatusLogin] = useState<
+    "memeriksa" | "belum-login" | "login"
+  >("memeriksa");
   const [nama, setNama] = useState("");
   const [daerah, setDaerah] = useState("");
   const [kategori, setKategori] = useState("");
@@ -262,7 +281,29 @@ export default function TambahKulinerPage() {
 
   const [sudahSubmit, setSudahSubmit] = useState(false);
   const [tampilModal, setTampilModal] = useState(false);
+  const [notifikasi, setNotifikasi] = useState<Notifikasi | null>(null);
 
+  const tampilkanNotifikasi = (
+    tipe: "sukses" | "error",
+    judul: string,
+    pesan: string,
+    redirect = false,
+    tujuan = "/"
+  ) => {
+    setNotifikasi({ tipe, judul, pesan, redirect, tujuan });
+  };
+
+  const tutupNotifikasi = () => {
+    const perluRedirect = notifikasi?.redirect;
+    const tujuan = notifikasi?.tujuan ?? "/";
+
+    setNotifikasi(null);
+
+    if (perluRedirect) {
+      router.push(tujuan);
+      router.refresh();
+    }
+  };
   /* Pesan error deskripsi yang datang dari server (cadangan kalau validasi
      di server menolak, supaya tetap tampil sebagai tulisan merah, bukan alert) */
   const [errorDeskripsiServer, setErrorDeskripsiServer] = useState("");
@@ -273,6 +314,15 @@ export default function TambahKulinerPage() {
     };
   }, [previewUrl]);
 
+  useEffect(() => {
+    const cekLogin = async () => {
+      const user = await ambilUserAktif();
+      setStatusLogin(user ? "login" : "belum-login");
+    };
+
+    cekLogin();
+  }, []);
+  
   /* Handler foto */
   const prosesFile = (file?: File) => {
     if (!file) return;
@@ -311,9 +361,17 @@ export default function TambahKulinerPage() {
     hargaMax.trim() !== "" &&
     hargaKeAngka(hargaMin) > hargaKeAngka(hargaMax);
 
+  const hargaMinKurang =
+    hargaMin.trim() !== "" &&
+    !minFormatSalah &&
+    hargaKeAngka(hargaMin) < 1000;
+
   let pesanHarga = "";
+
   if (minFormatSalah || maxFormatSalah) {
     pesanHarga = "Tolong masukkan harga dalam bentuk angka saja (contoh: 15000 atau 15.000).";
+  } else if (hargaMinKurang) {
+    pesanHarga = "Harga minimal harus Rp1.000.";
   } else if (rentangSalah) {
     pesanHarga = "Harga minimal tidak boleh lebih besar dari harga maksimal.";
   }
@@ -329,17 +387,20 @@ export default function TambahKulinerPage() {
 
   /* Validasi form (bahan bersifat opsional, jadi tidak masuk validasi) */
   const error = {
-    nama: nama.trim() === "",
+    nama: nama.trim() === "" || !/\p{L}/u.test(nama),
     daerah: daerah === "",
     kategori: kategori === "",
     deskripsi: pesanDeskripsi !== "",
+    rasa: rasa.length === 0,
     foto: foto === null || fotoError !== "",
     harga: pesanHarga !== "",
   };
   const formValid = !Object.values(error).some(Boolean);
 
   /* Deskripsi dianggap salah kalau gagal validasi di browser ATAU ditolak server */
-  const deskripsiSalah = (sudahSubmit && error.deskripsi) || errorDeskripsiServer !== "";
+  const deskripsiSalah =
+    ((sudahSubmit || deskripsi.length > 0) && error.deskripsi) ||
+    errorDeskripsiServer !== "";
   const teksErrorDeskripsi = pesanDeskripsi || errorDeskripsiServer || "Mohon tuliskan deskripsi singkat kuliner.";
 
   /* Reset form */
@@ -384,8 +445,13 @@ export default function TambahKulinerPage() {
     /* Cek login lewat session server (cookie) */
     const user = await ambilUserAktif();
     if (!user) {
-      alert("Kamu harus login dulu sebelum mengirim rekomendasi kuliner.");
-      router.push("/login");
+      tampilkanNotifikasi(
+        "error",
+        "Login Diperlukan",
+        "Kamu harus login terlebih dahulu sebelum mengirim rekomendasi kuliner.",
+        true,
+        "/login"
+      );
       return;
     }
 
@@ -419,8 +485,13 @@ export default function TambahKulinerPage() {
       const hasil = await res.json().catch(() => ({}));
 
       if (res.status === 401) {
-        alert("Sesi login habis. Silakan login lagi.");
-        router.push("/login");
+        tampilkanNotifikasi(
+          "error",
+          "Sesi Login Berakhir",
+          "Sesi login kamu telah berakhir. Silakan masuk kembali.",
+          true,
+          "/login"
+        );
         return;
       }
 
@@ -443,7 +514,11 @@ export default function TambahKulinerPage() {
           .join("\n");
 
         if (!detailDeskripsi || sisaDetail) {
-          alert(`${hasil.error || "Gagal mengirim rekomendasi."}${sisaDetail ? "\n" + sisaDetail : ""}`);
+          tampilkanNotifikasi(
+            "error",
+            "Validasi Gagal",
+            `${hasil.error || "Gagal mengirim rekomendasi."}${sisaDetail ? "\n" + sisaDetail : ""}`
+          );
         }
         return;
       }
@@ -451,7 +526,11 @@ export default function TambahKulinerPage() {
       setTampilModal(true); // hanya muncul jika API benar-benar sukses
     } catch (err) {
       console.error(err);
-      alert("Terjadi kesalahan jaringan. Coba lagi.");
+      tampilkanNotifikasi(
+        "error",
+        "Terjadi Kesalahan",
+        "Koneksi bermasalah. Silakan periksa jaringan internet dan coba lagi."
+      );
     } finally {
       setMengirim(false);
     }
@@ -485,8 +564,25 @@ export default function TambahKulinerPage() {
           </p>
         </div>
 
-        {/* Form utama */}
-        <form id="form-tambah-kuliner" onSubmit={handleSubmit} noValidate>
+        {/* Form utama & status login */}
+        {statusLogin === "memeriksa" ? (
+          <div className="text-center py-5">
+            <div className="spinner-border text-success" role="status">
+              <span className="visually-hidden">Memeriksa login...</span>
+            </div>
+          </div>
+        ) : statusLogin === "belum-login" ? (
+          <div className="alert alert-warning border rounded-4 p-4" role="alert">
+            <p className="mb-3">
+              <i className="bx bx-info-circle me-2"></i>
+              Silakan masuk terlebih dahulu untuk menambahkan rekomendasi kuliner.
+            </p>
+            <Link href="/login" className="btn btn-success rounded-pill">
+              Masuk Sekarang
+            </Link>
+          </div>
+        ) : (
+          <form id="form-tambah-kuliner" onSubmit={handleSubmit} noValidate>
           <div className="row g-4">
             <div className="col-lg-7">
               {/* Card 1: Informasi Utama */}
@@ -509,9 +605,13 @@ export default function TambahKulinerPage() {
                       name="nama-kuliner"
                       placeholder="Contoh: Nasi Tutug Oncom, Es Goyobod"
                       value={nama}
-                      onChange={(e) => setNama(e.target.value)}
+                      onChange={(e) => setNama(formatTitleCase(e.target.value))}
                     />
-                    <div className="invalid-feedback">Mohon masukkan nama kuliner.</div>
+                    <div className="invalid-feedback">
+                      {nama.trim() === ""
+                        ? "Mohon masukkan nama kuliner."
+                        : "Nama kuliner tidak boleh hanya terdiri dari angka."}
+                    </div>
                   </div>
 
                   {/* Asal daerah */}
@@ -527,17 +627,15 @@ export default function TambahKulinerPage() {
                       onChange={(e) => setDaerah(e.target.value)}
                     >
                       <option value="" disabled>
-                        -- Pilih 1 dari 11 Daerah --
+                        -- Pilih 1 dari {OPSI_KOTA.length + OPSI_KABUPATEN.length} Daerah --
                       </option>
-                      <optgroup label="Kota (6)">
-                        {OPSI_KOTA.map((o) => (
+                      <optgroup label={`Kota (${OPSI_KOTA.length})`}>                        {OPSI_KOTA.map((o) => (
                           <option key={o.value} value={o.value}>
                             {o.label}
                           </option>
                         ))}
                       </optgroup>
-                      <optgroup label="Kabupaten (5)">
-                        {OPSI_KABUPATEN.map((o) => (
+                      <optgroup label={`Kabupaten (${OPSI_KABUPATEN.length})`}>                        {OPSI_KABUPATEN.map((o) => (
                           <option key={o.value} value={o.value}>
                             {o.label}
                           </option>
@@ -675,8 +773,7 @@ export default function TambahKulinerPage() {
                         name="pelengkap"
                         placeholder="Misal: Bumbu kacang, Sambal, Kerupuk"
                         value={pelengkap}
-                        onChange={(e) => setPelengkap(e.target.value)}
-                      />
+                        onChange={(e) => setPelengkap(e.target.value.replace(/[0-9]/g, ""))}                      />
                       <div className="form-text small">
                         Menu pendamping atau bumbu yang menyertai hidangan (opsional). Pisahkan dengan koma.
                       </div>
@@ -708,6 +805,14 @@ export default function TambahKulinerPage() {
                     </div>
                   </div>
 
+                  <div
+                    className={`invalid-feedback d-block ${
+                      sudahSubmit && error.rasa ? "" : "d-none"
+                    }`}
+                  >
+                    Mohon pilih minimal 1 karakter rasa.
+                  </div>
+
                   {/* Estimasi harga (min - max) */}
                   <div className="mb-0">
                     <label htmlFor="harga-min" className="form-label small fw-semibold text-dark">
@@ -722,7 +827,7 @@ export default function TambahKulinerPage() {
                           type="text"
                           inputMode="numeric"
                           className={`form-control border-start-0 ${
-                            minFormatSalah || rentangSalah ? "is-invalid" : ""
+                            minFormatSalah || rentangSalah || hargaMinKurang ? "is-invalid" : ""
                           }`}
                           id="harga-min"
                           name="harga-min"
@@ -872,7 +977,53 @@ export default function TambahKulinerPage() {
             </div>
           </div>
         </form>
+        )}
 
+        {/* Modal notifikasi */}
+        {notifikasi && (
+          <>
+            <div className="auth-notification-overlay">
+              <div
+                className="auth-notification-card"
+                role="alertdialog"
+                aria-modal="true"
+                aria-labelledby="notification-title"
+              >
+                <div className="auth-notification-body">
+                  <div className={`auth-notification-icon ${notifikasi.tipe}`}>
+                    <i
+                      className={`bx ${
+                        notifikasi.tipe === "sukses"
+                          ? "bx-check-circle"
+                          : "bx-error-circle"
+                      }`}
+                    ></i>
+                  </div>
+
+                  <h5
+                    className="auth-notification-title"
+                    id="notification-title"
+                  >
+                    {notifikasi.judul}
+                  </h5>
+
+                  <p className="auth-notification-message">
+                    {notifikasi.pesan}
+                  </p>
+
+                  <button
+                    type="button"
+                    className="auth-notification-button"
+                    onClick={tutupNotifikasi}
+                  >
+                    {notifikasi.redirect ? "Masuk Sekarang" : "Mengerti"}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+        
         {/* Modal sukses (dikontrol state, tanpa Bootstrap JS) */}
         {tampilModal && (
           <>

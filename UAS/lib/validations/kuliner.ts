@@ -21,7 +21,12 @@ const harga = z.coerce
 
 export const kulinerSchema = z
   .object({
-    nama: z.string().trim().min(3, "Nama minimal 3 karakter").max(100),
+    nama: z
+    .string()
+    .trim()
+    .min(3, "Nama minimal 3 karakter")
+    .max(100)
+    .refine((value) => /\p{L}/u.test(value), "Nama kuliner harus berupa huruf"),
     deskripsi: z.string().trim().min(10, "Deskripsi minimal 10 karakter").max(1000),
     kategori: z.string().trim().min(1, "Kategori wajib diisi"),
     daerah: z.string().trim().min(1, "Daerah wajib diisi"),

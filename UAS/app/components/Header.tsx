@@ -21,6 +21,7 @@ type SiteMetadata = {
 export default function Header() {
   const pathname = usePathname();
   const [user, setUser] = useState<User | null>(null);
+  const [sudahCekUser, setSudahCekUser] = useState(false);
   const [siteName, setSiteName] = useState("JelajahRasa");
 
   /* Header dipasang di layout, jadi tidak ikut dipasang ulang tiap pindah
@@ -38,6 +39,7 @@ export default function Header() {
         if (!response.ok) {
           if (masihAktif) {
             setUser(null);
+            setSudahCekUser(true);
           }
           return;
         }
@@ -48,6 +50,7 @@ export default function Header() {
 
         if (masihAktif) {
           setUser(data.user ?? null);
+          setSudahCekUser(true);
         }
       } catch (error) {
         // Mengosongkan data pengguna jika sesi gagal diperiksa
@@ -55,6 +58,7 @@ export default function Header() {
 
         if (masihAktif) {
           setUser(null);
+          setSudahCekUser(true);
         }
       }
     };
@@ -193,7 +197,13 @@ export default function Header() {
         </ul>
 
         {/* Profil */}
-        <div id="header-right" className="header-profile-container">
+        <div
+          id="header-right"
+          className="header-profile-container"
+          style={{
+              visibility: sudahCekUser ? "visible" : "hidden",
+          }}
+        >
           <Image
             id="user-avatar-desktop"
             className="user-avatar"

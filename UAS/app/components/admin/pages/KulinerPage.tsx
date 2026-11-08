@@ -5,6 +5,7 @@ import AdminFilter from "../AdminFilter";
 import {
   BarisKosong,
   BarisKuliner,
+  KATEGORI,
   type ItemAdmin,
 } from "../AdminTabel";
 
@@ -33,11 +34,17 @@ export default function KulinerPage({
 
   const opsiKategori = useMemo(
     () =>
-      [...new Set(items.map((item) => item.kategori).filter(Boolean))]
-        .sort()
-        .map((value) => ({ value, label: value })),
-    [items]
-  );
+      KATEGORI.map((item) => ({
+        value: item.nama, 
+        label: item.nama,
+      })),
+      []
+    );
+  //     [...new Set(items.map((item) => item.kategori).filter(Boolean))]
+  //       .sort()
+  //       .map((value) => ({ value, label: value })),
+  //   [items]
+  // );
 
   const opsiStatus = useMemo(
     () =>
@@ -63,7 +70,7 @@ export default function KulinerPage({
 
       return (
         cocokCari &&
-        (!kategori || item.kategori === kategori) &&
+        (!kategori || item.kategori.trim().toLocaleLowerCase("id-ID") === kategori.toLocaleLowerCase("id-ID")) &&
         (!status || item.status === status)
       );
     });
