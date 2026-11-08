@@ -8,19 +8,28 @@ import { prisma } from "../lib/prisma";
 export const instant = false;
 
 export default async function HomePage() {
-  const [jumlahKuliner, heroMetadata] = await Promise.all([
+  const [
+    jumlahKuliner,
+    heroMetadata,
+    taglineMetadata,
+    descriptionMetadata,
+  ] = await Promise.all([
     prisma.kuliner.count({
       where: {
         status: "APPROVED",
       },
     }),
     prisma.siteMetadata.findUnique({
-      where: {
-        key: "hero_kuliner_ids",
-      },
-      select: {
-        value: true,
-      },
+      where: { key: "hero_kuliner_ids" },
+      select: { value: true },
+    }),
+    prisma.siteMetadata.findUnique({
+      where: { key: "hero_tagline" },
+      select: { value: true },
+    }),
+    prisma.siteMetadata.findUnique({
+      where: { key: "hero_description" },
+      select: { value: true },
     }),
   ]);
 
@@ -122,12 +131,13 @@ export default async function HomePage() {
           <div className="hero-wrapper">
             <div className="hero-text-content">
               <span className="hero-quote">
-                &quot;Satu Tampah Rasa, Sejuta Cerita Parahyangan&quot;
+                &quot;{taglineMetadata?.value ||
+                  "Satu Tampah Rasa, Sejuta Cerita Parahyangan"}&quot;
               </span>
               <h1 className="hero-title">Jelajah Rasa Jawa Barat</h1>
               <p className="hero-description">
-                Temukan {jumlahKuliner.toLocaleString("id-ID")} cita rasa otentik yang tersebar dari pusat kota
-                hingga sudut Pasundan.
+                {descriptionMetadata?.value ||
+                  `Temukan ${jumlahKuliner.toLocaleString("id-ID")} cita rasa otentik yang tersebar dari pusat kota hingga sudut Pasundan.`}
               </p>
               <div className="hero-action-buttons">
                 <a

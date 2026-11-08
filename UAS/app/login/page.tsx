@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { regions } from "../data/regions";
 import "./login.css";
 
 type Notifikasi = {
@@ -25,6 +26,7 @@ export default function LoginPage() {
     const [registerName, setRegisterName] = useState("");
     const [registerEmail, setRegisterEmail] = useState("");
     const [registerCity, setRegisterCity] = useState("");
+    const [registerCityOther, setRegisterCityOther] = useState("");
     const [registerPassword, setRegisterPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
 
@@ -80,7 +82,10 @@ export default function LoginPage() {
 
         const email = registerEmail.trim().toLowerCase();
         const name = registerName.trim();
-        const city = registerCity.trim();
+        const city =
+            registerCity === "Lainnya"
+                ? registerCityOther.trim()
+                : registerCity;
 
         // Reset pesan validasi sebelumnya
         setRegisterNameError("");
@@ -94,6 +99,9 @@ export default function LoginPage() {
         // Validasi nama
         if (!name) {
             setRegisterNameError("Nama lengkap wajib diisi.");
+            adaError = true;
+        } else if (/\d/.test(name)) {
+            setRegisterNameError("Nama lengkap harus berupa huruf.");
             adaError = true;
         } else if (name.length < 4) {
             setRegisterNameError("Nama lengkap minimal 4 karakter.");
@@ -111,9 +119,14 @@ export default function LoginPage() {
             adaError = true;
         }
 
-        // Validasi kota atau kabupaten
+        // Validasi domisili
         if (!city) {
-            setRegisterCityError("Kota atau kabupaten wajib diisi.");
+            setRegisterCityError("Domisili wajib diisi.");
+            adaError = true;
+        } else if (!/^[\p{L}\s.'-]+$/u.test(city)) {
+            setRegisterCityError(
+                "Domisili hanya boleh mengandung huruf."
+            );
             adaError = true;
         }
 
@@ -502,13 +515,11 @@ export default function LoginPage() {
                                                 setRegisterName(value);
 
                                                 if (!nama) {
-                                                    setRegisterNameError(
-                                                        "Nama lengkap wajib diisi."
-                                                    );
+                                                    setRegisterNameError("Nama lengkap wajib diisi.");
+                                                } else if (/\d/.test(nama)) {
+                                                    setRegisterNameError("Nama lengkap tidak boleh mengandung angka.");
                                                 } else if (nama.length < 4) {
-                                                    setRegisterNameError(
-                                                        "Nama lengkap minimal 4 karakter."
-                                                    );
+                                                    setRegisterNameError("Nama lengkap minimal 4 karakter.");
                                                 } else {
                                                     setRegisterNameError("");
                                                 }
@@ -561,27 +572,55 @@ export default function LoginPage() {
 
                                     <div className="login-form-group">
                                         <label htmlFor="register-city" className="login-label">Kota / Kabupaten Domisili</label>
-                                        <input
-                                            type="text"
+                                        <select
                                             className={`login-input ${registerCityError ? "is-invalid" : ""}`}
                                             id="register-city"
-                                            placeholder="Contoh: Kota Bandung / Kab. Bandung"
                                             value={registerCity}
                                             onChange={(e) => {
-                                                const value = e.target.value;
-
-                                                setRegisterCity(value);
-
-                                                if (!value.trim()) {
-                                                    setRegisterCityError(
-                                                        "Kota atau kabupaten wajib diisi."
-                                                    );
-                                                } else {
-                                                    setRegisterCityError("");
-                                                }
+                                                setRegisterCity(e.target.value);
+                                                setRegisterCityError("");
+                                                setRegisterCityOther("");
                                             }}
                                             required
-                                        />
+                                        >
+                                            <option value="" disabled>
+                                                -- Pilih Domisili --
+                                            </option>
+
+                                            <optgroup label="Kota/Kabupaten Jawa Barat">
+                                                {regions.map((region) => (
+                                                    <option key={region.id} value={region.daerah}>
+                                                        {region.daerah}
+                                                    </option>
+                                                ))}
+                                            </optgroup>
+
+                                            <option value="Jabodetabek">Jabodetabek</option>
+                                            <option value="Lainnya">Lainnya</option>
+                                        </select>
+
+                                        {registerCity === "Lainnya" && (
+                                            <input
+                                                className={`login-input ${registerCityError ? "is-invalid" : ""}`}
+                                                type="text"
+                                                placeholder="Masukkan kota/kabupaten domisili"
+                                                value={registerCityOther}
+                                                onChange={(e) => {
+                                                    const value = e.target.value;
+                                                    setRegisterCityOther(value);
+
+                                                    if (!value.trim()) {
+                                                        setRegisterCityError("Domisili wajib diisi.");
+                                                    } else if (!/^[\p{L}\s.'-]+$/u.test(value.trim())) {
+                                                        setRegisterCityError(
+                                                            "Domisili hanya boleh mengandung huruf."
+                                                        );
+                                                    } else {
+                                                        setRegisterCityError("");
+                                                    }
+                                                }}
+                                            />
+                                        )}
 
                                         {registerCityError && (
                                             <small className="login-field-error">

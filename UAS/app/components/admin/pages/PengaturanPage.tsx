@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 type SiteMetadata = { key: string; value: string };
 type KategoriRekomendasi = "makanan" | "jajanan" | "minuman" | "oleh_oleh";
 type KulinerPilihan = {
@@ -56,8 +58,17 @@ type Props = {
 };
 
 export default function PengaturanPage(props: Props) {
+  const [socialVisible, setSocialVisible] = useState<Record<string, boolean>>({
+    social_instagram: true,
+    social_tiktok: true,
+    social_youtube: true,
+    social_facebook: true,
+  });
+  
   const labels: Record<string, string> = {
     site_name: "Nama Website",
+    hero_tagline: "Tagline Hero Homepage",
+    hero_description: "Deskripsi Hero Homepage",
     site_description: "Deskripsi Website",
     site_email: "Email Kontak",
     site_phone: "Nomor Telepon",
@@ -69,6 +80,60 @@ export default function PengaturanPage(props: Props) {
     social_facebook: "URL Facebook",
   };
 
+  const domainMediaSosial: Record<string, string[]> = {
+    social_instagram: ["instagram.com"],
+    social_tiktok: ["tiktok.com"],
+    social_youtube: ["youtube.com", "youtu.be"],
+    social_facebook: ["facebook.com", "fb.com"],
+  };
+
+  const validasiURL = (key: string, value: string): string => {
+    const urlValue = value.trim();
+
+    // URL media sosial boleh dikosongkan.
+    if (!urlValue) return "";
+
+    if (!/^https?:\/\//i.test(urlValue)) {
+      return "URL harus diawali http:// atau https://.";
+    }
+
+    try {
+      const url = new URL(urlValue);
+      const domainDiizinkan = domainMediaSosial[key];
+
+      const domainValid = domainDiizinkan.some(
+        (domain) =>
+          url.hostname === domain ||
+          url.hostname.endsWith(`.${domain}`)
+      );
+
+      if (!domainValid || !url.hostname.includes(".")) {
+        return "Gunakan URL dari platform media sosial yang sesuai.";
+      }
+
+      return "";
+    } catch {
+      return "Format URL tidak valid.";
+    }
+  };
+
+  const socialErrors: Record<string, string> = {};
+
+  props.metadata.forEach((item) => {
+    if (domainMediaSosial[item.key]) {
+      socialErrors[item.key] = validasiURL(item.key, item.value);
+    }
+  });
+
+  const handleSaveMetadata = () => {
+    const adaError = Object.values(socialErrors).some(
+      (error) => error !== ""
+    );
+
+    if (adaError) return;
+
+    props.onSaveMetadata();
+  };
   return (
     <section id="tab-metadata">
       <h4>Pengaturan Website</h4>
@@ -100,7 +165,12 @@ export default function PengaturanPage(props: Props) {
                     {labels[item.key] ?? item.key}
                   </label>
 
-                  {["site_description", "site_address", "footer_text"].includes(
+                  {[
+                    "site_description",
+                    "site_address",
+                    "footer_text",
+                    "hero_description"
+                  ].includes(
                     item.key
                   ) ? (
                     <textarea
@@ -113,15 +183,51 @@ export default function PengaturanPage(props: Props) {
                       }
                     />
                   ) : (
-                    <input
-                      id={`metadata-${item.key}`}
-                      type={item.key === "site_email" ? "email" : "text"}
-                      className="form-control"
-                      value={item.value}
-                      onChange={(event) =>
-                        props.onMetadataChange(item.key, event.target.value)
-                      }
-                    />
+                    <>
+                      <input
+                        id={`metadata-${item.key}`}
+                        type={item.key === "site_email" ? "email" : "text"}
+                        className={`form-control ${
+                          socialErrors[item.key] ? "is-invalid" : ""
+                        }`}
+                        value={item.value}
+                        onChange={(event) =>
+                          props.onMetadataChange(item.key, event.target.value)
+                        }
+                      />
+
+                      {socialErrors[item.key] && (
+                        <div className="invalid-feedback">
+                          {socialErrors[item.key]}
+                        </div>
+                      )}
+
+                      {domainMediaSosial[item.key] && (
+                        <div className="form-check form-switch mt-2">
+                          <input
+                            className="form-check-input"
+                            type="checkbox"
+                            role="switch"
+                            id={`visible-${item.key}`}
+                            checked={socialVisible[item.key] ?? true}
+                            onChange={(event) =>
+                              setSocialVisible((prev) => ({
+                                ...prev,
+                                [item.key]: event.target.checked,
+                              }))
+                            }
+                          />
+                          <label
+                            className="form-check-label"
+                            htmlFor={`visible-${item.key}`}
+                          >
+                            {socialVisible[item.key]
+                              ? "Tampilkan di website"
+                              : "Sembunyikan dari website"}
+                          </label>
+                        </div>
+                      )}
+                    </>
                   )}
                 </div>
               ))}
@@ -131,7 +237,7 @@ export default function PengaturanPage(props: Props) {
               <button
                 type="button"
                 className="btn btn-success"
-                onClick={props.onSaveMetadata}
+                onClick={handleSaveMetadata}
                 disabled={props.metadataSaving}
               >
                 {props.metadataSaving ? "Menyimpan..." : "Simpan Metadata"}
