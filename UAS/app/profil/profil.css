@@ -943,3 +943,44 @@
         padding: 9px 16px;
     }
 }
+
+/* Foto kuliner pada modal edit */
+.edit-foto-zone {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px;
+  border: 2px dashed #c5d3c8;
+  border-radius: 16px;
+  background: #fafcfa;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.edit-foto-zone.dragover {
+  border-color: #1f5e2e;
+  background: #eef5ef;
+}
+
+.edit-foto-preview {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 14px;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+.edit-foto-info {
+  flex: 1;
+  min-width: 0;
+}
+
+@media (max-width: 575.98px) {
+  .edit-foto-zone {
+    flex-direction: column;
+    text-align: center;
+  }
+  .edit-foto-zone .d-flex {
+    justify-content: center;
+  }
+}

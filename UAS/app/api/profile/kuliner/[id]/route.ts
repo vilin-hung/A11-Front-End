@@ -2,6 +2,10 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { verifySession } from "@/lib/auth";
 
+/* Batas foto (dataURL hasil kompresi dari browser) */
+const POLA_GAMBAR = /^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/;
+const MAKS_PANJANG_GAMBAR = 3_000_000;
+
 function ambilAngka(teks: string) {
   const cocok = String(teks || "").match(/[0-9][0-9.]*/g);
 
@@ -26,7 +30,8 @@ async function ambilMilikSendiri(id: string, userId: string) {
   return kuliner;
 }
 
-/* mengubah kuliner milik sendiri, status dikembalikan ke PENDING supaya perubahannya ditinjau ulang oleh admin. */
+/* mengubah kuliner milik sendiri, status dikembalikan ke PENDING supaya
+   perubahannya (termasuk foto baru) ditinjau ulang oleh admin. */
 export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -58,6 +63,7 @@ export async function PATCH(
       harga?: string;
       bahan?: string;
       deskripsi?: string;
+      gambar?: string;
     };
 
     const nama = String(body.nama || "").trim();
@@ -67,6 +73,23 @@ export async function PATCH(
         { message: "Nama kuliner wajib diisi." },
         { status: 400 }
       );
+    }
+
+    /* Validasi foto baru (opsional). Kalau tidak dikirim, foto lama dipertahankan. */
+    let gambarBaru: string | undefined;
+
+    if (typeof body.gambar === "string" && body.gambar !== "") {
+      if (
+        body.gambar.length > MAKS_PANJANG_GAMBAR ||
+        !POLA_GAMBAR.test(body.gambar)
+      ) {
+        return NextResponse.json(
+          { message: "Format atau ukuran foto tidak valid." },
+          { status: 400 }
+        );
+      }
+
+      gambarBaru = body.gambar;
     }
 
     const angkaHarga = ambilAngka(String(body.harga || ""));
@@ -88,6 +111,8 @@ export async function PATCH(
         deskripsi: String(body.deskripsi ?? milikSendiri.deskripsi),
         hargaMin,
         hargaMax,
+        /* spread kondisional: field gambar hanya ikut diupdate jika ada foto baru */
+        ...(gambarBaru ? { gambar: gambarBaru } : {}),
         status: "PENDING",
         catatanAdmin: null,
       },

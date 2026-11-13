@@ -9,6 +9,7 @@ import {
   WARNA_STATUS,
   type StatusKuliner,
 } from "../data/status";
+import { FORMAT_FOTO, MAKS_UKURAN_FOTO, kompresFoto, validasiFoto } from "../utils/foto";
 
 /* =========================
    TIPE DATA
@@ -90,9 +91,6 @@ const DAFTAR_KATEGORI = [
   "Oleh-Oleh Khas",
 ];
 
-const FORMAT_FOTO = ["image/jpeg", "image/png", "image/webp"];
-const MAKS_UKURAN_FOTO = 5 * 1024 * 1024;
-
 /* =========================
    BANTUAN TAMPILAN
    ========================= */
@@ -105,14 +103,29 @@ function formatTanggal(tanggal?: string) {
   return `${Number(bagian[2])} ${NAMA_BULAN[Number(bagian[1]) - 1]} ${bagian[0]}`;
 }
 
-function formatHarga(min: number, max: number) {
-  if (!min && !max) return "";
+/* =========================
+   HELPER HARGA
+   (sama seperti di halaman Tambah Kuliner)
+   ========================= */
+/* Hanya angka, boleh titik sebagai pemisah ribuan (mis. 13.000) */
+const POLA_HARGA = /^\d+(\.\d{3})*$/;
 
-  const angka = (nilai: number) => nilai.toLocaleString("id-ID");
+function hargaValid(value: string) {
+  const v = value.trim();
+  return v === "" || POLA_HARGA.test(v);
+}
 
-  if (!max || min === max) return angka(min);
+function hargaKeAngka(value: string) {
+  return Number(value.trim().replace(/\./g, ""));
+}
 
-  return `${angka(min)} - ${angka(max)}`;
+function formatRupiah(angka: number) {
+  return angka.toLocaleString("id-ID");
+}
+
+/* Angka dari database -> teks untuk kolom input ("" jika kosong/0) */
+function hargaKeInput(angka: number) {
+  return angka ? formatRupiah(angka) : "";
 }
 
 /* =========================
@@ -153,9 +166,41 @@ export default function ProfilPage() {
   const [editNama, setEditNama] = useState("");
   const [editKategori, setEditKategori] = useState("");
   const [editDaerah, setEditDaerah] = useState("");
-  const [editHarga, setEditHarga] = useState("");
+  const [editHargaMin, setEditHargaMin] = useState("");
+  const [editHargaMax, setEditHargaMax] = useState("");
   const [editBahan, setEditBahan] = useState("");
   const [editDeskripsi, setEditDeskripsi] = useState("");
+
+  /* Foto kuliner pada modal edit.
+     editFotoBaru berisi dataURL foto pengganti; kosong = foto lama tidak diubah. */
+  const [editFotoBaru, setEditFotoBaru] = useState("");
+  const [editFotoError, setEditFotoError] = useState("");
+  const [editDragOver, setEditDragOver] = useState(false);
+  const [memprosesFoto, setMemprosesFoto] = useState(false);
+  const inputEditFotoRef = useRef<HTMLInputElement>(null);
+
+  /* Validasi harga pada modal edit */
+  const minFormatSalah = !hargaValid(editHargaMin);
+  const maxFormatSalah = !hargaValid(editHargaMax);
+  const rentangSalah =
+    !minFormatSalah &&
+    !maxFormatSalah &&
+    editHargaMin.trim() !== "" &&
+    editHargaMax.trim() !== "" &&
+    hargaKeAngka(editHargaMin) > hargaKeAngka(editHargaMax);
+  const hargaMinKurang =
+    editHargaMin.trim() !== "" &&
+    !minFormatSalah &&
+    hargaKeAngka(editHargaMin) < 1000;
+
+  let pesanHarga = "";
+  if (minFormatSalah || maxFormatSalah) {
+    pesanHarga = "Tolong masukkan harga dalam bentuk angka saja (contoh: 15000 atau 15.000).";
+  } else if (hargaMinKurang) {
+    pesanHarga = "Harga minimal harus Rp1.000.";
+  } else if (rentangSalah) {
+    pesanHarga = "Harga minimal tidak boleh lebih besar dari harga maksimal.";
+  }
 
   /* Tampilkan notifikasi dalam card */
   const tampilkanNotifikasi = (
@@ -418,12 +463,68 @@ export default function ProfilPage() {
     setEditNama(item.nama);
     setEditKategori(item.kategori);
     setEditDaerah(item.daerah);
-    setEditHarga(formatHarga(item.hargaMin, item.hargaMax));
+    setEditHargaMin(hargaKeInput(item.hargaMin));
+    setEditHargaMax(hargaKeInput(item.hargaMax));
     setEditBahan(item.bahan.join(", "));
     setEditDeskripsi(item.deskripsi);
+
+    /* Reset state foto setiap kali modal dibuka */
+    setEditFotoBaru("");
+    setEditFotoError("");
+    setEditDragOver(false);
   };
 
-  const tutupEdit = () => setDiedit(null);
+  const tutupEdit = () => {
+    setDiedit(null);
+    setEditHargaMin("");
+    setEditHargaMax("");
+    setEditFotoBaru("");
+    setEditFotoError("");
+    setEditDragOver(false);
+    if (inputEditFotoRef.current) inputEditFotoRef.current.value = "";
+  };
+
+  /* Proses foto pengganti pada modal edit */
+  const prosesFotoEdit = async (file?: File) => {
+    if (!file) return;
+
+    const pesanError = validasiFoto(file);
+    if (pesanError) {
+      setEditFotoError(pesanError);
+      if (inputEditFotoRef.current) inputEditFotoRef.current.value = "";
+      return;
+    }
+
+    setMemprosesFoto(true);
+    const hasil = await kompresFoto(file);
+    setMemprosesFoto(false);
+
+    if (!hasil) {
+      setEditFotoError("Foto tidak dapat dibaca. Silakan coba pilih foto lain.");
+      return;
+    }
+
+    setEditFotoError("");
+    setEditFotoBaru(hasil);
+  };
+
+  /* Batalkan foto pengganti -> kembali ke foto lama */
+  const batalkanFotoBaru = () => {
+    setEditFotoBaru("");
+    setEditFotoError("");
+    if (inputEditFotoRef.current) inputEditFotoRef.current.value = "";
+  };
+
+  /* Gabungkan harga min & max jadi 1 teks, mis. "15.000 - 25.000".
+     Format ini yang dibaca oleh API lewat ambilAngka(). */
+  const susunHargaEdit = () => {
+    const min = editHargaMin.trim();
+    const max = editHargaMax.trim();
+    if (min && max) return `${formatRupiah(hargaKeAngka(min))} - ${formatRupiah(hargaKeAngka(max))}`;
+    if (min) return formatRupiah(hargaKeAngka(min));
+    if (max) return formatRupiah(hargaKeAngka(max));
+    return "";
+  };
 
   /* Simpan hasil edit */
   const simpanEdit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -439,6 +540,10 @@ export default function ProfilPage() {
       return;
     }
 
+    if (pesanHarga) return; /* pesan error merah sudah tampil di bawah kolom harga */
+
+    if (memprosesFoto) return;
+
     setSedangSimpan(true);
 
     try {
@@ -449,9 +554,11 @@ export default function ProfilPage() {
           nama: editNama.trim(),
           kategori: editKategori,
           daerah: editDaerah,
-          harga: editHarga.trim(),
+          harga: susunHargaEdit(),
           bahan: editBahan.trim(),
           deskripsi: editDeskripsi.trim(),
+          /* Kirim gambar hanya kalau user memilih foto baru */
+          ...(editFotoBaru ? { gambar: editFotoBaru } : {}),
         }),
       });
 
@@ -863,7 +970,7 @@ export default function ProfilPage() {
           onClick={tutupEdit}
         >
           <div
-            className="modal-dialog modal-lg modal-dialog-centered"
+            className="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable"
             onClick={(event) => event.stopPropagation()}
           >
             <div className="modal-content">
@@ -880,8 +987,88 @@ export default function ProfilPage() {
               </div>
 
               <div className="modal-body">
-                <form id="form-edit-kuliner" onSubmit={simpanEdit}>
+                <form id="form-edit-kuliner" onSubmit={simpanEdit} noValidate>
                   <div className="row g-3">
+                    {/* Foto kuliner */}
+                    <div className="col-12">
+                      <label className="form-label d-block">Foto Kuliner</label>
+
+                      <div
+                        className={`edit-foto-zone ${editDragOver ? "dragover" : ""}`}
+                        onDragOver={(e) => {
+                          e.preventDefault();
+                          setEditDragOver(true);
+                        }}
+                        onDragLeave={() => setEditDragOver(false)}
+                        onDrop={(e) => {
+                          e.preventDefault();
+                          setEditDragOver(false);
+                          void prosesFotoEdit(e.dataTransfer.files?.[0]);
+                        }}
+                      >
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={
+                            editFotoBaru ||
+                            diedit.gambar ||
+                            "/images/homepage/default-avatar.png"
+                          }
+                          alt="Foto kuliner"
+                          className="edit-foto-preview"
+                        />
+
+                        <div className="edit-foto-info">
+                          <p className="small mb-2 text-muted">
+                            {memprosesFoto
+                              ? "Memproses foto..."
+                              : editFotoBaru
+                                ? "Foto baru dipilih. Klik Simpan Perubahan untuk menerapkan."
+                                : "Foto saat ini. Seret foto baru ke sini atau klik tombol di bawah."}
+                          </p>
+
+                          <div className="d-flex flex-wrap gap-2">
+                            <button
+                              type="button"
+                              className="btn btn-sm btn-outline-success"
+                              onClick={() => inputEditFotoRef.current?.click()}
+                              disabled={memprosesFoto}
+                            >
+                              <i className="bx bx-image-add me-1"></i>
+                              {editFotoBaru ? "Pilih Foto Lain" : "Ganti Foto"}
+                            </button>
+
+                            {editFotoBaru && (
+                              <button
+                                type="button"
+                                className="btn btn-sm btn-outline-secondary"
+                                onClick={batalkanFotoBaru}
+                              >
+                                <i className="bx bx-undo me-1"></i>
+                                Batalkan Perubahan Foto
+                              </button>
+                            )}
+                          </div>
+
+                          <div className="form-text small mt-2">
+                            Format: JPG, PNG, atau WEBP (Maks. 5MB).
+                          </div>
+                        </div>
+
+                        <input
+                          type="file"
+                          id="input-edit-foto"
+                          className="d-none"
+                          accept="image/jpeg,image/png,image/webp"
+                          ref={inputEditFotoRef}
+                          onChange={(e) => void prosesFotoEdit(e.target.files?.[0])}
+                        />
+                      </div>
+
+                      {editFotoError && (
+                        <div className="text-danger small mt-2">{editFotoError}</div>
+                      )}
+                    </div>
+
                     <div className="col-md-6">
                       <label htmlFor="input-edit-nama" className="form-label">
                         Nama Kuliner *
@@ -915,7 +1102,7 @@ export default function ProfilPage() {
                       </select>
                     </div>
 
-                    <div className="col-md-6">
+                    <div className="col-12">
                       <label htmlFor="input-edit-daerah" className="form-label">
                         Asal Daerah *
                       </label>
@@ -937,18 +1124,67 @@ export default function ProfilPage() {
                       </select>
                     </div>
 
-                    <div className="col-md-6">
-                      <label htmlFor="input-edit-harga" className="form-label">
-                        Estimasi Harga
+                    {/* Estimasi harga (min - max) */}
+                    <div className="col-12">
+                      <label htmlFor="input-edit-harga-min" className="form-label">
+                        Estimasi Harga Per Porsi / Kemasan
                       </label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        id="input-edit-harga"
-                        placeholder="Misal: 15.000 - 25.000"
-                        value={editHarga}
-                        onChange={(e) => setEditHarga(e.target.value)}
-                      />
+
+                      <div className="d-flex align-items-center gap-2">
+                        {/* Harga minimal */}
+                        <div className="input-group flex-grow-1">
+                          <span className="input-group-text bg-light text-muted border-end-0">
+                            Rp
+                          </span>
+                          <input
+                            type="text"
+                            inputMode="numeric"
+                            className={`form-control border-start-0 ${
+                              minFormatSalah || rentangSalah || hargaMinKurang
+                                ? "is-invalid"
+                                : ""
+                            }`}
+                            id="input-edit-harga-min"
+                            placeholder="Harga minimal"
+                            aria-label="Harga minimal"
+                            value={editHargaMin}
+                            onChange={(e) => setEditHargaMin(e.target.value)}
+                          />
+                        </div>
+
+                        {/* Strip pemisah */}
+                        <span className="fw-bold text-muted fs-5">&ndash;</span>
+
+                        {/* Harga maksimal */}
+                        <div className="input-group flex-grow-1">
+                          <span className="input-group-text bg-light text-muted border-end-0">
+                            Rp
+                          </span>
+                          <input
+                            type="text"
+                            inputMode="numeric"
+                            className={`form-control border-start-0 ${
+                              maxFormatSalah || rentangSalah ? "is-invalid" : ""
+                            }`}
+                            id="input-edit-harga-max"
+                            placeholder="Harga maksimal"
+                            aria-label="Harga maksimal"
+                            value={editHargaMax}
+                            onChange={(e) => setEditHargaMax(e.target.value)}
+                          />
+                        </div>
+                      </div>
+
+                      {/* Pesan error merah */}
+                      {pesanHarga && (
+                        <div className="invalid-feedback d-block" id="feedback-edit-harga">
+                          {pesanHarga}
+                        </div>
+                      )}
+
+                      <div className="form-text small">
+                        Tulis perkiraan kisaran harga pasaran lokal (angka saja, contoh: 15000 atau 15.000).
+                      </div>
                     </div>
 
                     <div className="col-12">
@@ -995,7 +1231,7 @@ export default function ProfilPage() {
                   type="submit"
                   form="form-edit-kuliner"
                   className="btn btn-success"
-                  disabled={sedangSimpan}
+                  disabled={sedangSimpan || memprosesFoto}
                 >
                   {sedangSimpan ? "Menyimpan..." : "Simpan Perubahan"}
                 </button>
