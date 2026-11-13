@@ -10,6 +10,11 @@ const metadataData = [
   { key: "site_phone", value: "081211223344" },
   { key: "site_address", value: "Jawa Barat, Indonesia" },
   { key: "footer_text", value: "© 2026 JelajahRasa" },
+
+  { key: "home_icon_makanan", value: "bx bx-bowl-rice" },
+  { key: "home_icon_jajanan", value: "bx bx-cookie" },
+  { key: "home_icon_minuman", value: "bx bx-drink" },
+  { key: "home_icon_oleh_oleh", value: "bx bx-gift" },
 ];
 
 export async function seedMetadata(prisma: PrismaClient) {

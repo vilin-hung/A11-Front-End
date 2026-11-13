@@ -17,7 +17,12 @@ const ALLOWED_KEYS = [
   "social_instagram",
   "social_tiktok",
   "social_youtube",
-  "social_facebook"
+  "social_facebook",
+
+  "home_icon_makanan",
+  "home_icon_jajanan",
+  "home_icon_minuman",
+  "home_icon_oleh_oleh",
 ] as const;
 
 async function isAdmin() {

@@ -28,6 +28,23 @@ const PILIHAN_REKOMENDASI: {
   { key: "oleh_oleh", label: "Oleh-oleh", kategori: "Oleh-oleh Khas" },
 ];
 
+const PILIHAN_ICON = [
+  { label: "Mangkuk nasi", value: "bx bx-bowl-rice" },
+  { label: "Sup", value: "bx bx-bowl-hot" },
+  { label: "Sushi", value: "bx bx-sushi" },
+  { label: "Kue", value: "bx bx-cake" },
+  { label: "Cookies", value: "bx bx-cookie" },
+  { label: "Keju", value: "bx bx-cheese" },
+  { label: "Roti", value: "bx bx-baguette" },
+  { label: "Garpu", value: "bx bx-fork" },
+  { label: "Menu kuliner", value: "bx bx-food-menu" },
+  { label: "Kopi", value: "bx bx-coffee" },
+  { label: "Minuman", value: "bx bx-drink" },
+  { label: "Lemon", value: "bx bx-lemon" },
+  { label: "Es loli", value: "bx bx-popsicle" },
+  { label: "Oleh-oleh", value: "bx bx-gift" },
+];
+
 type Props = {
   metadata: SiteMetadata[];
   metadataLoading: boolean;
@@ -78,6 +95,10 @@ export default function PengaturanPage(props: Props) {
     social_tiktok: "URL TikTok",
     social_youtube: "URL YouTube",
     social_facebook: "URL Facebook",
+    home_icon_makanan: "Ikon Kategori Makanan",
+    home_icon_minuman: "Ikon Kategori Minuman",
+    home_icon_jajanan: "Ikon Kategori Jajanan",
+    home_icon_oleh_oleh: "Ikon Kategori Oleh-oleh",
   };
 
   const domainMediaSosial: Record<string, string[]> = {
@@ -184,17 +205,46 @@ export default function PengaturanPage(props: Props) {
                     />
                   ) : (
                     <>
-                      <input
-                        id={`metadata-${item.key}`}
-                        type={item.key === "site_email" ? "email" : "text"}
-                        className={`form-control ${
-                          socialErrors[item.key] ? "is-invalid" : ""
-                        }`}
-                        value={item.value}
-                        onChange={(event) =>
-                          props.onMetadataChange(item.key, event.target.value)
-                        }
-                      />
+                      {/* icons */}
+                      {item.key.startsWith("home_icon_") ? (
+                        <div className="input-group">
+                          <span className="input-group-text">
+                            <i className={`${item.value || "bx bx-question-mark"} fs-4`} />
+                          </span>
+
+                          <select
+                            id={`metadata-${item.key}`}
+                            className="form-select"
+                            value={item.value}
+                            onChange={(event) =>
+                              props.onMetadataChange(item.key, event.target.value)
+                            }
+                          >
+                            {PILIHAN_ICON.map((icon) => (
+                              <option key={icon.value} value={icon.value}>
+                                {icon.label}
+                              </option>
+                            ))}
+
+                            {item.value &&
+                              !PILIHAN_ICON.some((icon) => icon.value === item.value) && (
+                                <option value={item.value}>Ikon tersimpan</option>
+                              )}
+                          </select>
+                        </div>
+                      ) : (
+                        <input
+                          id={`metadata-${item.key}`}
+                          type={item.key === "site_email" ? "email" : "text"}
+                          className={`form-control ${
+                            socialErrors[item.key] ? "is-invalid" : ""
+                          }`}
+                          value={item.value}
+                          onChange={(event) =>
+                            props.onMetadataChange(item.key, event.target.value)
+                          }
+                        />
+                      )}
 
                       {socialErrors[item.key] && (
                         <div className="invalid-feedback">
