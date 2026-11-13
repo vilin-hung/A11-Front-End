@@ -232,6 +232,12 @@ const METADATA_AWAL: SiteMetadata[] = [
   { key: "social_tiktok", value: "" },
   { key: "social_youtube", value: "" },
   { key: "social_facebook", value: "" },
+
+  // icons
+  { key: "home_icon_makanan", value: "bx bx-bowl-rice" },
+  { key: "home_icon_jajanan", value: "bx bx-cookie" },
+  { key: "home_icon_minuman", value: "bx bx-drink" },
+  { key: "home_icon_oleh_oleh", value: "bx bx-gift" },
 ];
 
 type KategoriRekomendasi =
@@ -1672,7 +1678,14 @@ export default function AdminDashboard() {
     return (
       <div className="body-admin">
         <div className="container my-5">
-          <p className="text-center text-muted py-5">Memuat dashboard...</p>
+          <div className="d-flex flex-column align-items-center justify-content-center py-5">
+            <div
+              className="spinner-border text-primary"
+              role="status"
+              aria-label="Memuat dashboard"
+            />
+            <p className="text-muted mt-3 mb-0">Menyiapkan dashboard admin...</p>
+          </div>
         </div>
       </div>
     );
@@ -1710,6 +1723,12 @@ export default function AdminDashboard() {
         </div>
 
         <div className="profil-admin d-flex align-items-center">
+          <Link
+            href="/"
+            className="header-nav-link"
+          >
+            User Dashboard
+          </Link>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={admin.avatar || '/images/homepage/default-avatar.png'}

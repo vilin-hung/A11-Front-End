@@ -79,17 +79,32 @@ export default async function HomePage() {
           .filter((item) => item !== undefined)
       : dataHero;
 
-    const FEATURED_KEYS = [
+  const FEATURED_KEYS = [
     "featured_makanan",
     "featured_jajanan",
     "featured_minuman",
     "featured_oleh_oleh",
   ];
 
+  const HOMEPAGE_ICON_KEYS = [
+  "home_icon_makanan",
+  "home_icon_jajanan",
+  "home_icon_minuman",
+  "home_icon_oleh_oleh",
+];
+
   const featuredMetadata = await prisma.siteMetadata.findMany({
-    where: { key: { in: FEATURED_KEYS } },
+    where: { 
+      key: { 
+        in: [...FEATURED_KEYS, ...HOMEPAGE_ICON_KEYS], 
+      }
+    },
     select: { key: true, value: true },
   });
+
+  const metadataByKey = new Map(
+    featuredMetadata.map((item) => [item.key, item.value])
+  );
 
   const featuredIdByKey = new Map(
     featuredMetadata.map((item) => [item.key, item.value])
@@ -227,7 +242,11 @@ export default async function HomePage() {
           <div className="kategori-grid">
             <div className="kategori-card-wrapper">
               <div className="kategori-card">
-                <i className="kategori-icon bx bx-bowl-rice"></i>
+                <i
+                  className={`kategori-icon ${
+                    metadataByKey.get("home_icon_makanan") || "bx bx-bowl-rice"
+                  }`}
+                />
                 <h6 className="kategori-title">Makanan</h6>
                 <Link
                   className="kategori-link"
@@ -240,7 +259,11 @@ export default async function HomePage() {
 
             <div className="kategori-card-wrapper">
               <div className="kategori-card">
-                <i className="kategori-icon bx bx-cookie"></i>
+                <i
+                  className={`kategori-icon ${
+                    metadataByKey.get("home_icon_jajanan") || "bx bx-cookie"
+                  }`}
+                />
                 <h6 className="kategori-title">Jajanan</h6>
                 <Link
                   className="kategori-link"
@@ -253,7 +276,11 @@ export default async function HomePage() {
 
             <div className="kategori-card-wrapper">
               <div className="kategori-card">
-                <i className="kategori-icon bx bx-drink"></i>
+                <i
+                  className={`kategori-icon ${
+                    metadataByKey.get("home_icon_minuman") || "bx bx-drink"
+                  }`}
+                />
                 <h6 className="kategori-title">Minuman</h6>
                 <Link
                   className="kategori-link"
@@ -266,7 +293,11 @@ export default async function HomePage() {
 
             <div className="kategori-card-wrapper">
               <div className="kategori-card">
-                <i className="kategori-icon bx bx-gift"></i>
+                <i
+                  className={`kategori-icon ${
+                    metadataByKey.get("home_icon_oleh_oleh") || "bx bx-gift"
+                  }`}
+                />
                 <h6 className="kategori-title">Oleh-Oleh Khas</h6>
                 <Link
                   className="kategori-link"
