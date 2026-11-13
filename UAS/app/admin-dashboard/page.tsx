@@ -838,27 +838,38 @@ export default function AdminDashboard() {
   };
 
   const hapusItem = async (item: ItemAdmin) => {
-    if (!confirm(`Hapus "${item.nama}" dari daftar kuliner?`)) return;
+  setKulinerInfo('');
+  setKulinerError('');
 
-    setKulinerInfo('');
-    setKulinerError('');
+  try {
+    const response = await fetch('/api/admin/kuliner', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: item.id }),
+    });
 
-    try {
-      const response = await fetch('/api/admin/kuliner', {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: item.id }),
-      });
+    const data = (await response.json().catch(() => ({}))) as {
+      message?: string;
+    };
 
-      if (!response.ok) return;
-    } catch (error) {
-      console.error('Gagal menghapus kuliner:', error);
-      return;
+    if (!response.ok) {
+      throw new Error(data.message || 'Gagal menghapus kuliner.');
     }
+
+    setKulinerInfo(`Kuliner "${item.nama}" berhasil dihapus.`);
 
     await muatKuliner();
     await muatStatistik();
-  };
+  } catch (error) {
+    console.error('Gagal menghapus kuliner:', error);
+
+    setKulinerError(
+      error instanceof Error
+        ? error.message
+        : 'Terjadi kesalahan saat menghapus kuliner.'
+    );
+  }
+};
 
   /* Simpan hasil edit kuliner. Hasilnya ditampilkan sebagai notif
      di atas tabel (model sama seperti notif di Kelola Peta). */
