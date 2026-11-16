@@ -1,0 +1,121 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id           String     @id @default(uuid())
+  nama         String
+  email        String     @unique
+  passwordHash String
+  role         String     @default("USER")
+  kota         String?
+  avatar       String?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  favorites    Favorite[]
+  kuliner      Kuliner[]  @relation("UserKuliner")
+  reviews      Review[]
+}
+
+model Kuliner {
+  id           String     @id @default(uuid())
+  nama         String
+  deskripsi    String
+  sejarah      String     @default("")
+  kategori     String
+  daerah       String
+  /* SQLite tidak mendukung String[], jadi disimpan sebagai teks JSON.
+     Gunakan serializeListData / parseListData di lib/kulinerJson.ts. */
+  bahan        String     @default("[]")
+  rasa         String     @default("[]")
+  gambar       String?
+  hargaMin     Int
+  hargaMax     Int
+  status       String     @default("PENDING")
+  catatanAdmin String?
+  submittedBy  String?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  favorites    Favorite[]
+  user         User?      @relation("UserKuliner", fields: [submittedBy], references: [id])
+
+  @@index([status])
+  @@index([kategori])
+  @@index([daerah])
+}
+
+model Favorite {
+  userId    String
+  kulinerId String
+  createdAt DateTime @default(now())
+  kuliner   Kuliner  @relation(fields: [kulinerId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, kulinerId])
+  @@index([kulinerId])
+}
+
+model Review {
+  id        String   @id @default(uuid())
+  userId    String
+  rating    Int
+  komentar  String
+  status    String   @default("AKTIF")
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@index([status])
+  @@index([createdAt])
+}
+
+model FAQ {
+  id         String           @id @default(uuid())
+  pertanyaan String
+  jawaban    String
+  urutan     Int              @default(0)
+  isActive   Boolean          @default(true)
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+  iconClass  String           @default("bx bx-info-circle")
+  slug       String           @unique
+  messages   ContactMessage[]
+}
+
+model SiteMetadata {
+  id        String   @id @default(uuid())
+  key       String   @unique
+  value     String
+  updatedAt DateTime @updatedAt
+}
+
+model MapRegion {
+  id        String  @id
+  nama      String
+  daerah    String  @unique
+  deskripsi String
+  posisiX   Float   @default(50)
+  posisiY   Float   @default(50)
+  isActive  Boolean @default(true)
+}
+
+model ContactMessage {
+  id             String   @id @default(uuid())
+  email          String
+  subjek         String
+  pesan          String
+  status         String   @default("BARU")
+  isFaqReference Boolean  @default(false)
+  faqId          String?
+  faq            FAQ?     @relation(fields: [faqId], references: [id], onDelete: SetNull)
+  createdAt      DateTime @default(now())
+
+  @@index([status])
+  @@index([createdAt])
+  @@index([faqId])
+  @@index([isFaqReference])
+}

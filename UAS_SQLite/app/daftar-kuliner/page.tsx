@@ -1,0 +1,672 @@
+"use client";
+
+import { Suspense, useEffect, useRef, useState } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { useSearchParams } from "next/navigation";
+import "./daftar-kuliner.css";
+import FavoriteButton from "../components/FavoriteButton";
+import { type Kuliner } from "../data/kuliner";
+import { bacaUsulanAktif } from "../data/usulan";
+import { regions } from "../data/regions";
+import { useRouter } from "next/navigation";
+
+type FilterState = {
+  kota: string[];
+  kategori: string[];
+  harga: string[];
+  rasa: string[];
+};
+
+const FILTER_KOSONG: FilterState = { kota: [], kategori: [], harga: [], rasa: [] };
+
+/* =========================
+   PEMETAAN DATA DATABASE
+   ========================= */
+type KulinerDb = {
+  id: string;
+  nama: string;
+  deskripsi: string;
+  kategori: string;
+  daerah: string;
+  bahan: string[];
+  rasa: string[];
+  gambar: string | null;
+  sejarah: string | null;
+  hargaMin: number;
+  hargaMax: number;
+};
+
+type Notifikasi = {
+  tipe: "sukses" | "error";
+  judul: string;
+  pesan: string;
+  redirect?: boolean;
+  tujuan?: string;
+};
+
+const kapital = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+const rupiah = (n: number) => `Rp ${n.toLocaleString("id-ID")}`;
+
+function petakanKuliner(raw: Record<string, unknown>): Kuliner {
+  if (typeof raw.kota === "string" && typeof raw.asal === "string") {
+    return { ...(raw as unknown as Kuliner), gambar: (raw.gambar as string | null) ?? "" };
+  }
+
+  const d = raw as unknown as KulinerDb;
+  const daerah = d.daerah ?? "";
+  const kategoriKecil = (d.kategori ?? "").toLowerCase();
+  const rasaList = Array.isArray(d.rasa) ? d.rasa : [];
+  const hargaMin = Number(d.hargaMin) || 0;
+  const hargaMax = Number(d.hargaMax) || hargaMin;
+
+  return {
+    id: d.id,
+    nama: d.nama,
+    kota: daerah.toLowerCase().replace(/^(kota|kab\.?)\s+/, "").trim(),
+    kategori: (kategoriKecil.includes("oleh") ? "oleh-oleh" : kategoriKecil) as Kuliner["kategori"],
+    kategoriLabel: d.kategori,
+    harga: hargaMin < 15000 ? "murah" : hargaMin <= 30000 ? "sedang" : "tinggi",
+    rasa: rasaList.map((r) => (r.toLowerCase() === "asam" ? "segar" : r.toLowerCase())).join(" "),
+    asal: daerah,
+    gambar: d.gambar ?? "",
+    sejarah: d.sejarah ?? undefined, 
+    deskripsi: d.deskripsi,
+    bahan: (d.bahan ?? []).join(", "),
+    karakterRasa: rasaList.map(kapital).join(", "),
+    estimasiHarga: `${rupiah(hargaMin)} - ${rupiah(hargaMax)}`,
+  };
+}
+
+/* =========================
+   FILTER KOTA & KABUPATEN
+   ========================= */
+
+const OPSI_KOTA = regions.map((region) => ({
+  key: region.id,
+  label: region.daerah,
+  daerah: region.daerah,
+}));
+
+const OPSI_KATEGORI = [
+  { value: "makanan", label: "Makanan" },
+  { value: "jajanan", label: "Jajanan" },
+  { value: "minuman", label: "Minuman" },
+  { value: "oleh-oleh", label: "Oleh-oleh Khas" },
+];
+
+const OPSI_HARGA = [
+  { value: "murah", label: "< Rp 15.000" },
+  { value: "sedang", label: "Rp 15.000 - 30.000" },
+  { value: "tinggi", label: "> Rp 30.000" },
+];
+
+const OPSI_RASA = [
+  { value: "gurih", label: "Gurih / Asin" },
+  { value: "pedas", label: "Pedas" },
+  { value: "manis", label: "Manis" },
+  { value: "segar", label: "Segar / Asam" },
+];
+
+/* =========================
+   CARD KULINER
+   ========================= */
+type KartuProps = {
+  item: Kuliner;
+  disukai: boolean;
+  onLike: (id: string) => void;
+  onShare: (item: Kuliner) => void;
+};
+
+function KartuKuliner({ item, disukai, onLike, onShare }: KartuProps) {
+  const [terbuka, setTerbuka] = useState(false);
+
+  return (
+    <div className="col-12 col-md-6 col-lg-4 catalog-col">
+      <div
+        id={`item-${item.id}`}
+        className="card h-100 border-0 shadow-sm rounded-4 overflow-hidden catalog-card"
+        data-city={item.kota}
+        data-category={item.kategori}
+        data-price={item.harga}
+        data-taste={item.rasa}
+      >
+        {/* Gambar & tombol aksi */}
+        <div className="position-relative card-media-wrapper">
+          {item.gambar ? (
+            <Image
+              src={item.gambar}
+              alt={item.nama}
+              width={400}
+              height={300}
+              className="card-img-top item-img"
+            />
+          ) : (
+            <div className="card-img-top item-img d-flex align-items-center justify-content-center bg-light text-muted small">
+              Belum ada gambar
+            </div>
+          )}
+          <div className="item-actions position-absolute top-0 end-0 p-2 d-flex gap-2">
+            <FavoriteButton
+              isFavorite={disukai}
+              onToggle={() => onLike(item.id)}
+            />
+            <button
+              type="button"
+              className="btn btn-light btn-sm rounded-circle shadow-sm btn-icon btn-share"
+              title="Bagikan Kuliner"
+              onClick={() => onShare(item)}
+            >
+              <i className="bx bx-share-alt fs-6"></i>
+            </button>
+          </div>
+        </div>
+
+        {/* Isi card */}
+        <div className="card-body d-flex flex-column item-content">
+          <div className="mb-2 tag-wrapper">
+            <span className="badge rounded-pill item-badge">
+              {item.kategoriLabel} • {item.asal.replace(/^(Kota|Kab\.)\s/, "")}
+            </span>
+          </div>
+          <h5 className="card-title fw-bold text-dark mb-1 item-title">{item.nama}</h5>
+          <p className="card-text text-muted small mb-2 item-origin">
+            <i className="bx bx-map-pin me-1"></i>Asal: {item.asal}
+          </p>
+          <p className="card-text text-secondary small mb-3 item-description">{item.deskripsi}</p>
+
+          {/* Detail (collapse dikontrol React state, tanpa Bootstrap JS) */}
+          <div className="mt-auto detail-toggle-wrapper">
+            <button
+              className="btn btn-outline-success btn-sm w-100 rounded-pill btn-toggle-detail d-flex align-items-center justify-content-center gap-1"
+              type="button"
+              aria-expanded={terbuka}
+              aria-controls={`detail-${item.id}`}
+              onClick={() => setTerbuka((v) => !v)}
+            >
+              <span>{terbuka ? "Tutup Detail" : "Lihat Detail"}</span>{" "}
+              <i className="bx bx-chevron-down"></i>
+            </button>
+
+            <div
+              id={`detail-${item.id}`}
+              className={`collapse mt-3 detail-info-box bg-light p-3 rounded-3 border ${terbuka ? "show" : ""}`}
+            >
+              {item.sejarah && (
+                <p className="small mb-1">
+                  <strong>Sejarah:</strong> {item.sejarah}
+                </p>
+              )}
+              <p className="small mb-1">
+                <strong>Bahan utama:</strong> {item.bahan}
+              </p>
+              <p className="small mb-1">
+                <strong>Karakter Rasa:</strong> {item.karakterRasa}
+              </p>
+              <p className="small mb-0 text-success fw-bold price-range">
+                <strong>Estimasi Harga:</strong> {item.estimasiHarga}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* =========================
+   KONTEN HALAMAN
+   ========================= */
+function DaftarKulinerContent() {
+  const searchParams = useSearchParams();
+  const kataKunciUrl = searchParams.get("search") ?? "";
+
+  const [kataKunci, setKataKunci] = useState(kataKunciUrl);
+  const [kataKunciUrlSebelumnya, setKataKunciUrlSebelumnya] = useState(kataKunciUrl);
+  const [filter, setFilter] = useState<FilterState>(FILTER_KOSONG);
+  const [favorit, setFavorit] = useState<string[]>([]);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [notifikasi, setNotifikasi] = useState<Notifikasi | null>(null);
+  const router = useRouter();
+
+  // Data kuliner diambil dari database
+  const [semuaKuliner, setSemuaKuliner] = useState<Kuliner[]>([]);
+  const [memuat, setMemuat] = useState(true);
+  const [galat, setGalat] = useState<string | null>(null);
+
+  const refKota = useRef<HTMLSelectElement>(null);
+  const refKategori = useRef<HTMLSelectElement>(null);
+  const refHarga = useRef<HTMLSelectElement>(null);
+  const refRasa = useRef<HTMLSelectElement>(null);
+
+  function tampilkanNotifikasi(
+    tipe: "sukses" | "error",
+    judul: string,
+    pesan: string,
+    redirect = false,
+    tujuan = "/"
+  ) {
+    setNotifikasi({
+      tipe,
+      judul,
+      pesan,
+      redirect,
+      tujuan,
+    });
+  }
+
+  function tutupNotifikasi() {
+    const perluRedirect = notifikasi?.redirect;
+    const tujuan = notifikasi?.tujuan ?? "/";
+
+    setNotifikasi(null);
+
+    if (perluRedirect) {
+      router.push(tujuan);
+      router.refresh();
+    }
+  }
+
+  if (kataKunciUrl !== kataKunciUrlSebelumnya) {
+    setKataKunciUrlSebelumnya(kataKunciUrl);
+    setKataKunci(kataKunciUrl);
+  }
+
+  // Ambil data kuliner dari database (/api/kuliner)
+  useEffect(() => {
+    async function muatKuliner() {
+      try {
+        const res = await fetch("/api/kuliner", { cache: "no-store" });
+        if (!res.ok) throw new Error("Respons server tidak OK");
+        const json = await res.json();
+
+        const daftar: Record<string, unknown>[] = Array.isArray(json) ? json : (json.data ?? []);
+
+        setSemuaKuliner([...daftar.map(petakanKuliner), ...bacaUsulanAktif()]);
+        setGalat(null);
+      } catch (err) {
+        console.error("Gagal memuat data kuliner:", err);
+        setGalat("Gagal memuat data kuliner dari server.");
+      } finally {
+        setMemuat(false);
+      }
+    }
+
+    void muatKuliner();
+  }, []);
+
+  useEffect(() => {
+    async function cekSesiDanFavorit() {
+      try {
+        const resMe = await fetch("/api/auth/me", { cache: "no-store" });
+        const dataMe = await resMe.json();
+
+        if (resMe.ok && dataMe.user && dataMe.user.id) {
+          const currentUserId = dataMe.user.id;
+          setUserId(currentUserId);
+
+          const resFav = await fetch(`/api/favorite?userId=${encodeURIComponent(currentUserId)}`);
+          if (resFav.ok) {
+            const dataFav = await resFav.json();
+            const listIdFav = dataFav.map((item: { kulinerId: string }) => item.kulinerId);
+            setFavorit(listIdFav);
+          }
+        }
+      } catch (err) {
+        console.error("Gagal memuat status favorit:", err);
+      }
+    }
+
+    void cekSesiDanFavorit();
+  }, []);
+
+  const ambilNilai = (el: HTMLSelectElement | null) =>
+    el ? Array.from(el.selectedOptions).map((o) => o.dataset.value ?? o.value) : [];
+
+  const terapkanFilter = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setFilter({
+      kota: ambilNilai(refKota.current),
+      kategori: ambilNilai(refKategori.current),
+      harga: ambilNilai(refHarga.current),
+      rasa: ambilNilai(refRasa.current),
+    });
+  };
+
+  const bersihkanFilter = () => {
+    [refKota, refKategori, refHarga, refRasa].forEach((r) => {
+      if (r.current) Array.from(r.current.options).forEach((o) => (o.selected = false));
+    });
+    setFilter(FILTER_KOSONG);
+    setKataKunci("");
+  };
+
+  const toggleLike = async (kulinerId: string) => {
+    if (!userId) {
+      tampilkanNotifikasi(
+        "error",
+        "Login Diperlukan",
+        "Silakan login terlebih dahulu untuk menyimpan kuliner favorit.",
+        true,
+        "/login"
+      );
+      return;
+    }
+
+    const sudahDisukai = favorit.includes(kulinerId);
+
+    try {
+      const res = await fetch("/api/favorite", {
+        method: sudahDisukai ? "DELETE" : "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, kulinerId }),
+      });
+
+      if (!res.ok) {
+        tampilkanNotifikasi(
+          "error",
+          "Gagal Memperbarui Favorit",
+          "Terjadi kesalahan saat memperbarui daftar favorit. Silakan coba lagi."
+        );
+        return;
+      }
+
+      if (sudahDisukai) {
+        setFavorit((lama) => lama.filter((id) => id !== kulinerId));
+      } else {
+        setFavorit((lama) => [...lama, kulinerId]);
+      }
+      
+    } catch (err) {
+      console.error("Gagal mengubah status favorit:", err);
+      tampilkanNotifikasi(
+        "error",
+        "Terjadi Kesalahan",
+        "Koneksi bermasalah. Silakan coba lagi."
+      );
+    }
+  };
+
+const bagikan = async (item: Kuliner) => {
+  const url = `${window.location.origin}/daftar-kuliner#item-${item.id}`;
+
+  try {
+    if (navigator.share) {
+      await navigator.share({
+        title: item.nama,
+        text: item.deskripsi,
+        url,
+        });
+    } else {
+      await navigator.clipboard.writeText(url);
+
+      tampilkanNotifikasi(
+        "sukses",
+        "Tautan Berhasil Disalin!",
+        `Tautan ${item.nama} berhasil disalin. Silakan bagikan kepada temanmu!`
+      );
+    }
+  } catch (error) {
+    // Pembatalan share oleh pengguna bukan sebuah kesalahan.
+    if (error instanceof Error && error.name === "AbortError") {
+      return;
+    }
+
+    console.error("Gagal membagikan kuliner:", error);
+
+    tampilkanNotifikasi(
+      "error",
+      "Gagal Membagikan Kuliner",
+      "Tautan tidak dapat dibagikan atau disalin. Silakan coba lagi."
+    );
+  }
+};
+
+  const kataKunciKecil = kataKunci.trim().toLowerCase();
+  const hasil = semuaKuliner.filter((item) => {
+    const cocokKota = filter.kota.length === 0 || filter.kota.includes(item.asal);
+    const cocokKategori = filter.kategori.length === 0 || filter.kategori.includes(item.kategori);
+    const cocokHarga = filter.harga.length === 0 || filter.harga.includes(item.harga);
+    const cocokRasa =
+      filter.rasa.length === 0 || item.rasa.split(" ").some((r) => filter.rasa.includes(r));
+    const cocokCari =
+      kataKunciKecil === "" ||
+      `${item.nama} ${item.asal} ${item.kategoriLabel} ${item.kota}`.toLowerCase().includes(kataKunciKecil);
+    return cocokKota && cocokKategori && cocokHarga && cocokRasa && cocokCari;
+  });
+
+  return (
+    <main id="main-content" className="daftar-kuliner-page">
+      <div className="container catalog-container">
+        {/* Breadcrumb */}
+        <nav id="breadcrumb-nav" className="mb-3">
+          <ol className="breadcrumb breadcrumb-list">
+            <li className="breadcrumb-item">
+              <Link href="/" className="nav-home-link">
+                <i className="bx bx-home-alt me-1"></i>Beranda
+              </Link>
+            </li>
+            <li className="breadcrumb-item active">Daftar Kuliner</li>
+          </ol>
+        </nav>
+
+        {/* Header halaman */}
+        <div id="catalog-header" className="mb-4 page-header-wrapper">
+          <h4 className="mb-1 page-title">Eksplorasi Kuliner Jawa Barat</h4>
+          <p className="page-subtitle">
+            Temukan berbagai makanan, jajanan, minuman, dan oleh-oleh khas Jawa Barat bebas sesuai selera Anda.
+          </p>
+        </div>
+
+        {/* Panel filter */}
+        <div id="filter-card" className="card border-0 shadow-sm rounded-4 p-3 mb-4 filter-panel">
+          <form id="culinary-search-form" onSubmit={terapkanFilter} className="filter-form">
+            <p className="filter-hint text-muted small mb-2">*Tahan tombol Ctrl untuk memilih lebih dari satu.</p>
+            <div className="row g-3 align-items-start filter-row">
+              <div className="col-12 col-sm-6 col-md-3 filter-group region-filter-group">
+                <label htmlFor="select-city" className="form-label small text-muted mb-1 fw-semibold filter-label">
+                  <i className="bx bx-map me-1 text-success"></i>Kota / Daerah
+                </label>
+                <select
+                  id="select-city"
+                  ref={refKota}
+                  className="form-select form-select-sm rounded-3 multi-select-box"
+                  multiple
+                  size={4}
+                >
+                  {OPSI_KOTA.map((o) => (
+                    <option key={o.key} value={o.key} data-value={o.daerah}>
+                      {o.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="col-12 col-sm-6 col-md-3 filter-group category-filter-group">
+                <label htmlFor="select-category" className="form-label small text-muted mb-1 fw-semibold filter-label">
+                  <i className="bx bx-category me-1 text-success"></i>Kategori
+                </label>
+                <select
+                  id="select-category"
+                  ref={refKategori}
+                  className="form-select form-select-sm rounded-3 multi-select-box"
+                  multiple
+                  size={4}
+                >
+                  {OPSI_KATEGORI.map((o) => (
+                    <option key={o.value} value={o.value}>
+                      {o.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="col-12 col-sm-6 col-md-3 filter-group price-filter-group">
+                <label htmlFor="select-price" className="form-label small text-muted mb-1 fw-semibold filter-label">
+                  <i className="bx bx-money me-1 text-success"></i>Rentang Harga
+                </label>
+                <select
+                  id="select-price"
+                  ref={refHarga}
+                  className="form-select form-select-sm rounded-3 multi-select-box"
+                  multiple
+                  size={4}
+                >
+                  {OPSI_HARGA.map((o) => (
+                    <option key={o.value} value={o.value}>
+                      {o.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="col-12 col-sm-6 col-md-3 filter-group taste-filter-group">
+                <label htmlFor="select-taste" className="form-label small text-muted mb-1 fw-semibold filter-label">
+                  <i className="bx bx-cookie me-1 text-success"></i>Karakter Rasa
+                </label>
+                <select
+                  id="select-taste"
+                  ref={refRasa}
+                  className="form-select form-select-sm rounded-3 multi-select-box"
+                  multiple
+                  size={4}
+                >
+                  {OPSI_RASA.map((o) => (
+                    <option key={o.value} value={o.value}>
+                      {o.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div className="filter-submit-wrapper d-flex gap-2">
+              <button
+                id="btn-apply-filter"
+                type="submit"
+                className="btn btn-success btn-sm rounded-pill fw-semibold filter-submit-btn py-2"
+              >
+                <i className="bx bx-filter-alt me-1"></i> Terapkan Filter
+              </button>
+              <button
+                id="btn-clear-filter"
+                type="button"
+                onClick={bersihkanFilter}
+                className="btn btn-outline-success btn-sm rounded-pill fw-semibold filter-submit-btn py-2"
+              >
+                Clear Filter
+              </button>
+            </div>
+          </form>
+        </div>
+
+        {/* Info hasil */}
+        {!memuat && !galat && (
+          <p className="result-info">
+            Menampilkan <strong>{hasil.length}</strong> dari {semuaKuliner.length} kuliner
+            {kataKunci && (
+              <>
+                {" "}
+                untuk pencarian &quot;<strong>{kataKunci}</strong>&quot;
+              </>
+            )}
+          </p>
+        )}
+
+        {/* Katalog */}
+        <div id="culinary-catalog-grid" className="row g-4 catalog-grid">
+          {memuat ? (
+            <div className="col-12">
+              <div className="empty-state">
+                <i className="bx bx-loader-alt bx-spin"></i>
+                <h6>Memuat data kuliner...</h6>
+              </div>
+            </div>
+          ) : galat ? (
+            <div className="col-12">
+              <div className="empty-state">
+                <i className="bx bx-error-circle"></i>
+                <h6>{galat}</h6>
+                <p>Coba muat ulang halaman.</p>
+              </div>
+            </div>
+          ) : hasil.length > 0 ? (
+            hasil.map((item) => (
+              <KartuKuliner
+                key={item.id}
+                item={item}
+                disukai={favorit.includes(item.id)}
+                onLike={toggleLike}
+                onShare={bagikan}
+              />
+            ))
+          ) : (
+            <div className="col-12">
+              <div className="empty-state">
+                <i className="bx bx-search-alt"></i>
+                <h6>Kuliner tidak ditemukan</h6>
+                <p>Coba ubah filter atau kata kunci pencarianmu.</p>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Modal notifikasi */}
+      {notifikasi && (
+        <div
+          id="modal-notifikasi-favorit"
+          className="auth-notification-overlay"
+          role="presentation"
+        >
+          <div
+            className="auth-notification-card"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="favorit-notification-title"
+          >
+            <div className="auth-notification-body">
+              {notifikasi.tipe === "sukses" ? (
+                <div className="auth-notification-icon success">
+                  <i className="bx bx-check-circle" />
+                </div>
+              ) : (
+                <div className="auth-notification-icon error">
+                  <i className="bx bx-error-circle" />
+                </div>
+              )}
+
+              <h4
+                id="favorit-notification-title"
+                className="auth-notification-title"
+              >
+                {notifikasi.judul}
+              </h4>
+
+              <p className="auth-notification-message">
+                {notifikasi.pesan}
+              </p>
+
+              <button
+                id="btn-close-favorit-notification"
+                type="button"
+                className="auth-notification-button"
+                onClick={tutupNotifikasi}
+              >
+                {notifikasi.redirect ? "Lanjutkan" : "Mengerti"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </main>
+  );
+}
+
+export default function DaftarKulinerPage() {
+  return (
+    <Suspense fallback={null}>
+      <DaftarKulinerContent />
+    </Suspense>
+  );
+}
