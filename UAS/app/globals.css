@@ -384,8 +384,8 @@ a:visited {
 }
 
 .modal-ulasan-header {
-    background-color: var(--deep-green);
-    color: var(--bg-white);
+    background-color: var(--deep-green) !important;
+    color: var(--bg-white) !important;
     padding: 20px 24px;
     border-bottom: none;
 }
