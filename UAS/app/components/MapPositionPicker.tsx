@@ -76,10 +76,6 @@ export default function MapPositionPicker({
           </span>
         </div>
       </div>
-
-      {/* <small className="text-muted d-block mt-2">
-        Posisi pin: {posisiX}% , {posisiY}%
-      </small> */}
     </div>
   );
 }

@@ -8,6 +8,7 @@ import MapPositionPicker from "../../MapPositionPicker";
 type MapRegion = {
   id: string;
   nama: string;
+  daerah: string;
   deskripsi: string;
   posisiX: number;
   posisiY: number;
@@ -16,6 +17,7 @@ type MapRegion = {
 
 type RegionForm = {
   nama: string;
+  daerah: string;
   deskripsi: string;
   posisiX: number;
   posisiY: number;
@@ -224,11 +226,11 @@ export default function PetaPage({
                     <input
                       type="text"
                       className="form-control"
-                      value={regionForm.nama}
+                      value={regionForm.daerah}
                       onChange={(event) =>
                         setRegionForm({
                           ...regionForm,
-                          nama: event.target.value,
+                          daerah: event.target.value,
                         })
                       }
                       placeholder="Contoh: Kabupaten Bandung"

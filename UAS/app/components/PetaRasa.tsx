@@ -41,63 +41,6 @@ export default function PetaRasa() {
 
   const [skalaPeta, setSkalaPeta] = useState(1);
   const [lokasiAktif, setLokasiAktif] = useState<string | null>(null);
-  // const lokasiKuliner = [
-  //   {
-  //     nama: "Kota Bandung",
-  //     className: "pin-kota-bandung",
-  //     deskripsi: "Dominan Gurih, Olahan Tapioka, Herbal & Dingin Segar.",
-  //   },
-  //   {
-  //     nama: "Kota Bogor",
-  //     className: "pin-kota-bogor",
-  //     deskripsi: "Segar Asam-Manis, Olahan Fermentasi (Asinan/Toge Goreng)",
-  //   },
-  //   {
-  //     nama: "Kota Cirebon",
-  //     className: "pin-kota-cirebon",
-  //     deskripsi: "Gurih Asin, Kuah Rempah Daging, & Olahan Hasil Laut",
-  //   },
-  //   {
-  //     nama: "Kota Tasikmalaya",
-  //     className: "pin-kota-tasikmalaya",
-  //     deskripsi: "Gurih Pedas, Oncom Fermentasi, & Olahan Bakso.",
-  //   },
-  //   {
-  //     nama: "Kab. Sumedang",
-  //     className: "pin-kab-sumedang",
-  //     deskripsi: "Gurih Renyah (Tahu) & Manis Alami (Ubi Cilembu).",
-  //   },
-  //   {
-  //     nama: "Kab. Garut",
-  //     className: "pin-kab-garut",
-  //     deskripsi: "Manis Legit (Dodol), Gurih Pedas, & Es Goyobod.",
-  //   },
-  //   {
-  //     nama: "Kab. Subang",
-  //     className: "pin-kab-subang",
-  //     deskripsi: "Manis Asam Segar (Nanas Madu Subang)",
-  //   },
-  //   {
-  //     nama: "Kab. Karawang",
-  //     className: "pin-kab-karawang",
-  //     deskripsi: "Manis Pandan (Sorabi Hijau) & Opak Ketan.",
-  //   },
-  //   {
-  //     nama: "Kab. Pangandaran",
-  //     className: "pin-kab-pangandaran",
-  //     deskripsi: "Asam Gurih Pindang Gunung & Seafood Segar.",
-  //   },
-  //   {
-  //     nama: "Kab. Bekasi",
-  //     className: "pin-kab-bekasi",
-  //     deskripsi: "Gurih Gabus Pucung & Sayur Asem Khas.",
-  //   },
-  //   {
-  //     nama: "Kab. Cirebon",
-  //     className: "pin-kab-cirebon",
-  //     deskripsi: "Asam Manis Gurih (Tahu Gejrot) & Es Doger.",
-  //   },
-  // ]
 
   function zoomIn() {
     setSkalaPeta((skala) => Math.min(skala + 0.1, 2));
@@ -190,9 +133,10 @@ export default function PetaRasa() {
                 return (
                   <div
                     key={region.id}
-                    className={`peta-pin-item ${jenisWilayah}`}                  style={{
-                    left: `${region.posisiX}%`,
-                    top: `${region.posisiY}%`,
+                    className={`peta-pin-item ${jenisWilayah}`}
+                    style={{
+                      left: `${region.posisiX}%`,
+                      top: `${region.posisiY}%`,
                     }}
                     onMouseEnter={() => setLokasiAktif(region.nama)}
                     onMouseLeave={() => setLokasiAktif(null)}
