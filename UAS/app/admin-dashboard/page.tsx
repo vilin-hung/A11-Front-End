@@ -66,6 +66,7 @@ type User = {
 type MapRegion = {
   id: string;
   nama: string;
+  daerah: string;
   deskripsi: string;
   posisiX: number;
   posisiY: number;
@@ -344,6 +345,7 @@ export default function AdminDashboard() {
   const [regionFormOpen, setRegionFormOpen] = useState(false);
   const [regionForm, setRegionForm] = useState({
     nama: "",
+    daerah: "",
     deskripsi: "",
     posisiX: 50,
     posisiY: 50,
@@ -1020,8 +1022,8 @@ export default function AdminDashboard() {
           bahan: tambahForm.bahan.trim(),
           rasa: tambahForm.rasa.trim(),
           gambar: tambahFoto,
-          hargaMin, // <--- Kirim ke API
-          hargaMax, // <--- Kirim ke API
+          hargaMin, 
+          hargaMax, 
           status: 'APPROVED',
         }),
       });
@@ -1250,6 +1252,7 @@ export default function AdminDashboard() {
 
     setRegionForm({
       nama: region?.nama ?? "",
+      daerah: region?.daerah ?? "",
       deskripsi: region?.deskripsi ?? "",
       posisiX: region?.posisiX ?? 50,
       posisiY: region?.posisiY ?? 50,
@@ -1274,6 +1277,11 @@ export default function AdminDashboard() {
         body: JSON.stringify({
           ...(editingRegion ? { id: editingRegion.id } : {}),
           ...regionForm,
+          nama: regionForm.daerah.trim(),
+          daerah: regionForm.daerah.trim(),
+          deskripsi: regionForm.deskripsi.trim(),
+          posisiX: Number(regionForm.posisiX),
+          posisiY: Number(regionForm.posisiY),
         }),
       });
 

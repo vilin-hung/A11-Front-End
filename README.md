@@ -13,8 +13,22 @@ Repositori ini berisi kumpulan tugas yang dikerjakan untuk mata kuliah Pemrogram
 
 ---
 
+## Daftar Project
 
-## Daftar Tugas
+| Project | Deskripsi | Kode |
+|---|---|---|
+| Tugas 1 – Hukum Ohm | Aplikasi perhitungan Hukum Ohm | [Lihat Kode](./Tugas_1/) |
+| Tugas 2 – Responsive UI | Website Kopi Nusantara dengan tampilan responsif | [Lihat Kode](./Tugas_2/) |
+| Tugas 3 – jQuery | Website interaktif menggunakan jQuery | [Lihat Kode](./Tugas_3/) |
+| Tugas 4 – Bootstrap | Website dengan layout responsif dan komponen Bootstrap | [Lihat Kode](./Tugas_4/) |
+| UTS – JelajahRasa | Website informasi dan eksplorasi kuliner Jawa Barat | [Lihat Kode](./UTS/) |
+| UAS - Next.js | Implementasi Next.js tanpa integrasi database | [Lihat Kode](./UAS_Next/) |
+| UAS - SQLite | Implementasi SQLite yang dijalankan secara lokal (localhost) | [Lihat Kode](./UAS_SQLite/) |
+| UAS - PostgreSQL | Implementasi PostgreSQL dengan Prisma ORM dan deployment Vercel | [Lihat Kode](./UAS/) |
+
+---
+
+## Detail Tugas
 
 ### 📂 Tugas 1: Hukum Ohm
 
@@ -117,6 +131,8 @@ Pengembangan website informasi dan eksplorasi kuliner khas Jawa Barat. Website i
 6. Data aplikasi disimpan dan dikelola menggunakan database PostgreSQL
 
 - **[Lihat Laporan](./UAS/A11_UAS_JelajahRasa.pdf)**
-- **[Lihat Kode](./UAS/)**
+- **[Lihat Kode - Vercel](./UAS/)**
+- **[Lihat Kode - SQLite](./UAS_SQLite/)**
+- **[Lihat Kode - Next](./UAS_Next/)**
 
-**Teknologi:** Next.js, React, TypeScript, CSS, Prisma ORM, PostgreSQL<br>
+**Teknologi:** Next.js, React, TypeScript, CSS, Prisma ORM, SQLite, PostgreSQL<br>
