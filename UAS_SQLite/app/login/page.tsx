@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { regions } from "../data/regions";
 import "./login.css";
 
 type Notifikasi = {
@@ -15,28 +14,14 @@ type Notifikasi = {
 };
 
 export default function LoginPage() {
-    const [activeTab, setActiveTab] = useState<"login" | "register">("login");
-
     // state dan router
     const router = useRouter();
 
     const [loginEmail, setLoginEmail] = useState("");
     const [loginPassword, setLoginPassword] = useState("");
 
-    const [registerName, setRegisterName] = useState("");
-    const [registerEmail, setRegisterEmail] = useState("");
-    const [registerCity, setRegisterCity] = useState("");
-    const [registerCityOther, setRegisterCityOther] = useState("");
-    const [registerPassword, setRegisterPassword] = useState("");
-    const [confirmPassword, setConfirmPassword] = useState("");
-
     const [loginEmailError, setLoginEmailError] = useState("");
     const [loginPasswordError, setLoginPasswordError] = useState("");
-    const [registerNameError, setRegisterNameError] = useState("");
-    const [registerEmailError, setRegisterEmailError] = useState("");
-    const [registerCityError, setRegisterCityError] = useState("");
-    const [passwordError, setPasswordError] = useState("");
-    const [confirmPasswordError, setConfirmPasswordError] = useState("");
 
     const [notifikasi, setNotifikasi] = useState<Notifikasi | null>(null);
 
@@ -73,164 +58,6 @@ export default function LoginPage() {
         if (perluRedirect) {
             router.push(tujuan);
             router.refresh();
-        }
-    }
-
-    // handle register
-    async function handleRegister(e: React.FormEvent<HTMLFormElement>) {
-        e.preventDefault();
-
-        const email = registerEmail.trim().toLowerCase();
-        const name = registerName.trim();
-        const city =
-            registerCity === "Lainnya"
-                ? registerCityOther.trim()
-                : registerCity;
-
-        // Reset pesan validasi sebelumnya
-        setRegisterNameError("");
-        setRegisterEmailError("");
-        setRegisterCityError("");
-        setPasswordError("");
-        setConfirmPasswordError("");
-
-        let adaError = false;
-
-        // Validasi nama
-        if (!name) {
-            setRegisterNameError("Nama lengkap wajib diisi.");
-            adaError = true;
-        } else if (/\d/.test(name)) {
-            setRegisterNameError("Nama lengkap harus berupa huruf.");
-            adaError = true;
-        } else if (name.length < 4) {
-            setRegisterNameError("Nama lengkap minimal 4 karakter.");
-            adaError = true;
-        }
-
-        // Validasi email
-        if (!email) {
-            setRegisterEmailError("Email wajib diisi.");
-            adaError = true;
-        } else if (!validasiEmail(email)) {
-            setRegisterEmailError(
-                "Masukkan alamat email dengan format yang benar."
-            );
-            adaError = true;
-        }
-
-        // Validasi domisili
-        if (!city) {
-            setRegisterCityError("Domisili wajib diisi.");
-            adaError = true;
-        } else if (!/^[\p{L}\s.'-]+$/u.test(city)) {
-            setRegisterCityError(
-                "Domisili hanya boleh mengandung huruf."
-            );
-            adaError = true;
-        }
-
-        // Validasi kata sandi
-        if (!registerPassword) {
-            setPasswordError("Kata sandi wajib diisi.");
-            adaError = true;
-        } else if (registerPassword.length < 6) {
-            setPasswordError("Kata sandi minimal 6 karakter.");
-            adaError = true;
-        }
-
-        // Validasi konfirmasi kata sandi
-        if (!confirmPassword) {
-            setConfirmPasswordError("Konfirmasi kata sandi wajib diisi.");
-            adaError = true;
-        } else if (registerPassword !== confirmPassword) {
-            setConfirmPasswordError("Konfirmasi kata sandi tidak cocok.");
-            adaError = true;
-        }
-
-        // Menghentikan proses jika validasi form gagal
-        if (adaError) {
-            return;
-        }
-
-        try {
-            // Mengirim data pendaftaran ke API register
-            const response = await fetch("/api/auth/register", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    nama: name,
-                    email,
-                    kota: city,
-                    password: registerPassword,
-                    confirmPassword,
-                }),
-            });
-
-            // Membaca hasil respons dari API
-            const data = (await response.json().catch(() => ({}))) as {
-                message?: string;
-                errors?: Record<string, string>;
-                user?: {
-                    nama?: string;
-                };
-            };
-
-            // Menampilkan pesan validasi dari API
-            if (!response.ok) {
-                const errors = data.errors ?? {};
-
-                if (errors.nama) {
-                    setRegisterNameError(errors.nama);
-                }
-
-                if (errors.email) {
-                    setRegisterEmailError(errors.email);
-                }
-
-                if (errors.kota) {
-                    setRegisterCityError(errors.kota);
-                }
-
-                if (errors.password) {
-                    setPasswordError(errors.password);
-                }
-
-                if (errors.confirmPassword) {
-                    setConfirmPasswordError(errors.confirmPassword);
-                }
-
-                // Menampilkan modal jika error bukan kesalahan input
-                if (Object.keys(errors).length === 0) {
-                    tampilkanNotifikasi(
-                        "error",
-                        "Pendaftaran Gagal",
-                        data.message ||
-                            "Data akun tidak dapat disimpan. Silakan coba kembali."
-                    );
-                }
-
-                return;
-            }
-
-            // Menampilkan notifikasi setelah pendaftaran berhasil
-            tampilkanNotifikasi(
-                "sukses",
-                "Pendaftaran Berhasil",
-                `Selamat datang, ${data.user?.nama ?? name}! Akun kamu berhasil dibuat.`,
-                true
-            );
-        } catch (error) {
-            // Menangani kegagalan saat menghubungi API
-            console.error("Gagal menghubungi API register:", error);
-
-            tampilkanNotifikasi(
-                "error",
-                "Pendaftaran Gagal",
-                "Data akun tidak dapat disimpan. Silakan coba kembali."
-            );
         }
     }
 
@@ -390,39 +217,49 @@ export default function LoginPage() {
                 <div className="login-card">
                     <div className="login-card-body">
 
-                        {/* Tab Navigasi Switch Form */}
-                        <ul className="nav nav-pills nav-justified login-tabs" id="auth-tab" role="tablist">
+                        {/* Tab Navigasi Login dan Register */}
+                        <ul
+                            className="nav nav-pills nav-justified login-tabs"
+                            id="auth-tab"
+                            role="tablist"
+                        >
                             <li className="nav-item" role="presentation">
-                                <button
-                                    className={`nav-link ${activeTab === "login" ? "active" : ""}`}
+                                <Link
+                                    href="/login"
+                                    className="nav-link active"
                                     id="tab-login"
-                                    type="button"
                                     role="tab"
-                                    onClick={() => setActiveTab("login")}
+                                    aria-current="page"
                                 >
                                     Masuk
-                                </button>
+                                </Link>
                             </li>
+
                             <li className="nav-item" role="presentation">
-                                <button
-                                    className={`nav-link ${activeTab === "register" ? "active" : ""}`}
+                                <Link
+                                    href="/register"
+                                    className="nav-link"
                                     id="tab-register"
-                                    type="button"
                                     role="tab"
-                                    onClick={() => setActiveTab("register")}
                                 >
                                     Daftar
-                                </button>
+                                </Link>
                             </li>
                         </ul>
 
                         <div className="tab-content" id="auth-tab-content">
 
                             {/* Form Masuk (Login) */}
-                            <div className={`tab-pane fade ${activeTab === "login" ? "show active" : ""}`} id="content-login" role="tabpanel">
+                            <div
+                                className="tab-pane fade show active"
+                                id="content-login"
+                                role="tabpanel"
+                            >
                                 <form id="form-login" onSubmit={handleLogin} noValidate>
                                     <div className="login-form-group">
-                                        <label htmlFor="login-email" className="login-label">Email</label>
+                                        <label htmlFor="login-email" className="login-label">
+                                            Email
+                                        </label>
                                         <input
                                             type="email"
                                             className={`login-input ${loginEmailError ? "is-invalid" : ""}`}
@@ -460,7 +297,9 @@ export default function LoginPage() {
                                     </div>
 
                                     <div className="login-form-group">
-                                        <label htmlFor="login-password" className="login-label">Kata Sandi</label>
+                                        <label htmlFor="login-password" className="login-label">
+                                            Kata Sandi
+                                        </label>
                                         <input
                                             type="password"
                                             className={`login-input ${loginPasswordError ? "is-invalid" : ""}`}
@@ -491,224 +330,12 @@ export default function LoginPage() {
                                         )}
                                     </div>
 
-                                    <button type="submit" id="btn-submit-login" className="login-submit-btn">
+                                    <button
+                                        type="submit"
+                                        id="btn-submit-login"
+                                        className="login-submit-btn"
+                                    >
                                         Masuk
-                                    </button>
-                                </form>
-                            </div>
-
-                            {/* Form Daftar (Register) */}
-                            <div className={`tab-pane fade ${activeTab === "register" ? "show active" : ""}`} id="content-register" role="tabpanel">
-                                <form id="form-register" onSubmit={handleRegister} noValidate>
-                                    <div className="login-form-group">
-                                        <label htmlFor="register-name" className="login-label">Nama Lengkap</label>
-                                        <input
-                                            type="text"
-                                            className={`login-input ${registerNameError ? "is-invalid" : ""}`}
-                                            id="register-name"
-                                            placeholder="Contoh: Budi Santoso"
-                                            value={registerName}
-                                            onChange={(e) => {
-                                                const value = e.target.value;
-                                                const nama = value.trim();
-
-                                                setRegisterName(value);
-
-                                                if (!nama) {
-                                                    setRegisterNameError("Nama lengkap wajib diisi.");
-                                                } else if (/\d/.test(nama)) {
-                                                    setRegisterNameError("Nama lengkap tidak boleh mengandung angka.");
-                                                } else if (nama.length < 4) {
-                                                    setRegisterNameError("Nama lengkap minimal 4 karakter.");
-                                                } else {
-                                                    setRegisterNameError("");
-                                                }
-                                            }}
-                                            required
-                                        />
-
-                                        {registerNameError && (
-                                            <small className="login-field-error">
-                                                {registerNameError}
-                                            </small>
-                                        )}
-                                    </div>
-
-                                    <div className="login-form-group">
-                                        <label htmlFor="register-email" className="login-label">Email</label>
-                                        <input
-                                            type="email"
-                                            className={`login-input ${registerEmailError ? "is-invalid" : ""}`}
-                                            id="register-email"
-                                            placeholder="nama@email.com"
-                                            value={registerEmail}
-                                            onChange={(e) => {
-                                                const value = e.target.value;
-                                                const email = value.trim().toLowerCase();
-
-                                                setRegisterEmail(value);
-
-                                                if (!email) {
-                                                    setRegisterEmailError(
-                                                        "Email wajib diisi."
-                                                    );
-                                                } else if (!validasiEmail(email)) {
-                                                    setRegisterEmailError(
-                                                        "Masukkan alamat email dengan format yang benar."
-                                                    );
-                                                } else {
-                                                    setRegisterEmailError("");
-                                                }
-                                            }}
-                                            required
-                                        />
-
-                                        {registerEmailError && (
-                                            <small className="login-field-error">
-                                                {registerEmailError}
-                                            </small>
-                                        )}
-                                    </div>
-
-                                    <div className="login-form-group">
-                                        <label htmlFor="register-city" className="login-label">Kota / Kabupaten Domisili</label>
-                                        <select
-                                            className={`login-input ${registerCityError ? "is-invalid" : ""}`}
-                                            id="register-city"
-                                            value={registerCity}
-                                            onChange={(e) => {
-                                                setRegisterCity(e.target.value);
-                                                setRegisterCityError("");
-                                                setRegisterCityOther("");
-                                            }}
-                                            required
-                                        >
-                                            <option value="" disabled>
-                                                -- Pilih Domisili --
-                                            </option>
-
-                                            <optgroup label="Kota/Kabupaten Jawa Barat">
-                                                {regions.map((region) => (
-                                                    <option key={region.id} value={region.daerah}>
-                                                        {region.daerah}
-                                                    </option>
-                                                ))}
-                                            </optgroup>
-
-                                            <option value="Jabodetabek">Jabodetabek</option>
-                                            <option value="Lainnya">Lainnya</option>
-                                        </select>
-
-                                        {registerCity === "Lainnya" && (
-                                            <input
-                                                className={`login-input ${registerCityError ? "is-invalid" : ""}`}
-                                                type="text"
-                                                placeholder="Masukkan kota/kabupaten domisili"
-                                                value={registerCityOther}
-                                                onChange={(e) => {
-                                                    const value = e.target.value;
-                                                    setRegisterCityOther(value);
-
-                                                    if (!value.trim()) {
-                                                        setRegisterCityError("Domisili wajib diisi.");
-                                                    } else if (!/^[\p{L}\s.'-]+$/u.test(value.trim())) {
-                                                        setRegisterCityError(
-                                                            "Domisili hanya boleh mengandung huruf."
-                                                        );
-                                                    } else {
-                                                        setRegisterCityError("");
-                                                    }
-                                                }}
-                                            />
-                                        )}
-
-                                        {registerCityError && (
-                                            <small className="login-field-error">
-                                                {registerCityError}
-                                            </small>
-                                        )}
-                                    </div>
-
-                                    <div className="login-form-group">
-                                        <label htmlFor="register-password" className="login-label">Buat Kata Sandi</label>
-                                        <input
-                                            type="password"
-                                            className={`login-input ${passwordError ? "is-invalid" : ""}`}
-                                            id="register-password"
-                                            placeholder="Minimal 6 karakter"
-                                            value={registerPassword}
-                                            onChange={(e) => {
-                                                const value = e.target.value;
-
-                                                setRegisterPassword(value);
-
-                                                if (!value) {
-                                                    setPasswordError(
-                                                        "Kata sandi wajib diisi."
-                                                    );
-                                                } else if (value.length < 6) {
-                                                    setPasswordError(
-                                                        "Kata sandi minimal 6 karakter."
-                                                    );
-                                                } else {
-                                                    setPasswordError("");
-                                                }
-
-                                                if (confirmPassword) {
-                                                    setConfirmPasswordError(
-                                                        value !== confirmPassword
-                                                            ? "Konfirmasi kata sandi tidak cocok."
-                                                            : ""
-                                                    );
-                                                }
-                                            }}
-                                            required
-                                        />
-
-                                        {passwordError && (
-                                            <small className="login-field-error">
-                                                {passwordError}
-                                            </small>
-                                        )}
-                                    </div>
-
-                                    <div className="login-form-group">
-                                        <label htmlFor="register-password-confirm" className="login-label">Konfirmasi Kata Sandi</label>
-                                        <input
-                                            type="password"
-                                            className={`login-input ${confirmPasswordError ? "is-invalid" : ""}`}
-                                            id="register-password-confirm"
-                                            placeholder="Ulangi kata sandi"
-                                            value={confirmPassword}
-                                            onChange={(e) => {
-                                                const value = e.target.value;
-
-                                                setConfirmPassword(value);
-
-                                                if (!value) {
-                                                    setConfirmPasswordError(
-                                                        "Konfirmasi kata sandi wajib diisi."
-                                                    );
-                                                } else if (value !== registerPassword) {
-                                                    setConfirmPasswordError(
-                                                        "Konfirmasi kata sandi tidak cocok."
-                                                    );
-                                                } else {
-                                                    setConfirmPasswordError("");
-                                                }
-                                            }}
-                                            required
-                                        />
-
-                                        {confirmPasswordError && (
-                                            <small className="login-field-error">
-                                                {confirmPasswordError}
-                                            </small>
-                                        )}
-                                    </div>
-
-                                    <button type="submit" id="btn-submit-register" className="login-submit-btn">
-                                        Daftar Akun
                                     </button>
                                 </form>
                             </div>
@@ -717,7 +344,9 @@ export default function LoginPage() {
                 </div>
 
                 <div className="login-back-wrapper">
-                    <Link href="/" className="login-back-link">Kembali ke Beranda</Link>
+                    <Link href="/" className="login-back-link">
+                        Kembali ke Beranda
+                    </Link>
                 </div>
             </div>
 
